@@ -1,16 +1,21 @@
 package com.example.RatingsApp.serviceImplementation;
 
+import com.example.RatingsApp.dto.RolesResponseDto;
 import com.example.RatingsApp.dto.TeamsRequestDto;
 import com.example.RatingsApp.dto.TeamsResponseDto;
 import com.example.RatingsApp.entity.Employees;
+import com.example.RatingsApp.entity.Roles;
 import com.example.RatingsApp.entity.Teams;
 import com.example.RatingsApp.exception.ResourceNotFoundException;
 import com.example.RatingsApp.repository.EmployeesRepo;
 import com.example.RatingsApp.repository.TeamsRepo;
 import com.example.RatingsApp.service.TeamsService;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class TeamsServiceImpl implements TeamsService {
@@ -45,7 +50,6 @@ public class TeamsServiceImpl implements TeamsService {
                 () -> new ResourceNotFoundException("Employee (PM) not found with ID: " + pmId)
         );
         team.setPm(pm);
-        pm.setManagedTeam(team);
         Teams updatedTeamsObj = teamsRepo.save(team);
         return new TeamsResponseDto(updatedTeamsObj);
     }
@@ -61,7 +65,38 @@ public class TeamsServiceImpl implements TeamsService {
     @Override
     public TeamsResponseDto getTeamByName(String teamName) {
         Teams team = teamsRepo.findByTeamName(teamName)
-                .orElseThrow(() -> new ResourceNotFoundException("Team not found with ID: " + teamName));
+                .orElseThrow(() -> new ResourceNotFoundException("Team not found with name: " + teamName));
         return new TeamsResponseDto(team);
+    }
+
+    @Override
+    public List<TeamsResponseDto> getAllTeams() {
+        List<Teams> teams = teamsRepo.findAll(Sort.by(Sort.Direction.ASC, "teamId"));
+        return teams.stream().map(TeamsResponseDto::new).collect(Collectors.toList());
+    }
+
+    @Override
+    public TeamsResponseDto updateTeam(Long teamId, TeamsRequestDto teamsRequestDto) {
+        Teams team = teamsRepo.findById(teamId)
+                .orElseThrow(() -> new ResourceNotFoundException("Team not found with ID: " + teamId));
+        Long pmId = teamsRequestDto.getPmId();
+        if (pmId == null) {
+            throw new IllegalArgumentException("PM ID must be provided in the request body.");
+        }
+        Employees pm = employeesRepo.findById(pmId).orElseThrow(
+                () -> new ResourceNotFoundException("Employee (PM) not found with ID: " + pmId)
+        );
+        team.setTeamName(teamsRequestDto.getTeamName());
+        team.setPm(pm);
+        Teams updatedTeam = teamsRepo.save(team);
+        return new TeamsResponseDto(updatedTeam);
+    }
+
+    @Override
+    public TeamsResponseDto deleteTeam(Long teamId) {
+        Teams team = teamsRepo.findById(teamId)
+                .orElseThrow(() -> new ResourceNotFoundException("Team not found with ID: " + teamId));
+        teamsRepo.deleteById(teamId);
+        return null;
     }
 }

@@ -4,6 +4,7 @@ import com.example.RatingsApp.dto.TeamsRequestDto;
 import com.example.RatingsApp.dto.TeamsResponseDto;
 import com.example.RatingsApp.entity.Teams;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface TeamsService {
@@ -13,4 +14,10 @@ public interface TeamsService {
     TeamsResponseDto getTeamById(Long teamId);
 
     TeamsResponseDto getTeamByName(String teamName);
+
+    List<TeamsResponseDto> getAllTeams();
+
+    TeamsResponseDto updateTeam(Long teamId, TeamsRequestDto teamsRequestDto);
+
+    TeamsResponseDto deleteTeam(Long teamId);
 }

@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -47,5 +48,25 @@ public class TeamsController {
     public ResponseEntity<TeamsResponseDto> getTeamByName(@PathVariable String teamName){
         TeamsResponseDto teamResponse = teamsService.getTeamByName(teamName);
         return ResponseEntity.ok(teamResponse);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<TeamsResponseDto>> getAllTeams(){
+        List<TeamsResponseDto> listTeams = teamsService.getAllTeams();
+        return ResponseEntity.ok(listTeams);
+    }
+
+    @PutMapping("/update_team/{teamId}")
+    public ResponseEntity<TeamsResponseDto> updateTeam(
+            @PathVariable Long teamId,
+            @RequestBody TeamsRequestDto teamsRequestDto) {
+        TeamsResponseDto savedUpdatedTeam = teamsService.updateTeam(teamId, teamsRequestDto);
+        return new ResponseEntity<>(savedUpdatedTeam, HttpStatus.OK);
+    }
+
+    @DeleteMapping("{teamId}")
+    public ResponseEntity<String> deleteTeam(@PathVariable Long teamId){
+        TeamsResponseDto deletedTeam = teamsService.deleteTeam(teamId);
+        return ResponseEntity.ok("Team Deleted!");
     }
 }

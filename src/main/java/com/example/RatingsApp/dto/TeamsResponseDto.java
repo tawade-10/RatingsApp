@@ -14,7 +14,7 @@ public class TeamsResponseDto {
     public TeamsResponseDto(Teams teams) {
         this.teamId = teams.getTeamId();
         this.teamName = teams.getTeamName();
-        this.pmId = teams.getPm().getEmployeeId();
+        this.pmId = (teams.getPm() != null) ? teams.getPm().getEmployeeId() : null;
     }
 
     public Long getTeamId() {

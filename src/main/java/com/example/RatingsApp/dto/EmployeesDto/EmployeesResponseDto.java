@@ -1,8 +1,6 @@
-package com.example.RatingsApp.dto;
+package com.example.RatingsApp.dto.EmployeesDto;
 
 import com.example.RatingsApp.entity.Employees;
-import com.example.RatingsApp.entity.Roles;
-import com.example.RatingsApp.entity.Teams;
 
 public class EmployeesResponseDto {
 

@@ -1,11 +1,10 @@
 package com.example.RatingsApp.service;
 
-import com.example.RatingsApp.dto.EmployeesRequestDto;
-import com.example.RatingsApp.dto.EmployeesResponseDto;
-import com.example.RatingsApp.entity.Employees;
+import com.example.RatingsApp.dto.EmployeesDto.EmployeesRequestDto;
+import com.example.RatingsApp.dto.EmployeesDto.EmployeesResponseDto;
+import com.example.RatingsApp.dto.TeamsDto.TeamsRequestDto;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface EmployeesService {
     EmployeesResponseDto createEmployee(EmployeesRequestDto employeesRequestDto);
@@ -17,4 +16,10 @@ public interface EmployeesService {
     EmployeesResponseDto updateEmployee(Long employeeId, EmployeesRequestDto employeesRequestDto);
 
     EmployeesResponseDto deleteEmployee(Long employeeId);
+
+    List<EmployeesResponseDto> getEmployeeByTeam(Long teamId);
+
+    List<EmployeesResponseDto> getEmployeesByRole(Long roleId);
+
+    EmployeesResponseDto getPmByTeam(Long teamId);
 }

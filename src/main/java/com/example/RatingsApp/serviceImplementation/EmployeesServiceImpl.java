@@ -1,12 +1,12 @@
 package com.example.RatingsApp.serviceImplementation;
 
-import com.example.RatingsApp.dto.EmployeesRequestDto;
-import com.example.RatingsApp.dto.EmployeesResponseDto;
-import com.example.RatingsApp.dto.RolesResponseDto;
-import com.example.RatingsApp.dto.TeamsResponseDto;
+import com.example.RatingsApp.dto.EmployeesDto.EmployeesRequestDto;
+import com.example.RatingsApp.dto.EmployeesDto.EmployeesResponseDto;
+import com.example.RatingsApp.dto.TeamsDto.TeamsRequestDto;
 import com.example.RatingsApp.entity.Employees;
 import com.example.RatingsApp.entity.Roles;
 import com.example.RatingsApp.entity.Teams;
+import com.example.RatingsApp.exception.APIException;
 import com.example.RatingsApp.exception.ResourceNotFoundException;
 import com.example.RatingsApp.repository.EmployeesRepo;
 import com.example.RatingsApp.repository.RolesRepo;
@@ -15,6 +15,8 @@ import com.example.RatingsApp.service.EmployeesService;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -37,6 +39,16 @@ public class EmployeesServiceImpl implements EmployeesService {
     @Override
     public EmployeesResponseDto createEmployee(EmployeesRequestDto employeesRequestDto) {
         Employees employee = new Employees();
+
+        Optional<Employees> existingEmployeeByName = employeesRepo.findByName(employeesRequestDto.getName());
+        if (existingEmployeeByName.isPresent()) {
+            throw new APIException("Employee with name '" + employeesRequestDto.getName() + "' already exists!");
+        }
+
+        Optional<Employees> existingEmployeeByEmail = employeesRepo.findByEmail(employeesRequestDto.getEmail());
+        if (existingEmployeeByEmail.isPresent()) {
+            throw new APIException("Employee with email '" + employeesRequestDto.getEmail() + "' already exists!");
+        }
 
         Roles role = rolesRepo.findById(employeesRequestDto.getRoleId())
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found with ID: " + employeesRequestDto.getRoleId()));
@@ -92,5 +104,40 @@ public class EmployeesServiceImpl implements EmployeesService {
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + employeeId));
         employeesRepo.deleteById(employeeId);
         return null;
+    }
+
+    @Override
+    public List<EmployeesResponseDto> getEmployeeByTeam(Long teamId) {
+        Teams team = teamsRepo.findById(teamId)
+                .orElseThrow(() -> new ResourceNotFoundException("Team not found with ID: " + teamId));
+
+        List<Employees> employees = employeesRepo.findByTeam(team);
+
+        return employees.stream().map(EmployeesResponseDto::new).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<EmployeesResponseDto> getEmployeesByRole(Long roleId) {
+        Roles role = rolesRepo.findById(roleId)
+                .orElseThrow(() -> new ResourceNotFoundException("Role not found with ID: " + roleId));
+
+        List<Employees> employees = employeesRepo.findByRole(role);
+
+        return employees.stream().map(EmployeesResponseDto::new).collect(Collectors.toList());
+    }
+
+    @Override
+    public EmployeesResponseDto getPmByTeam(Long teamId) {
+        Teams team = teamsRepo.findById(teamId)
+                .orElseThrow(() -> new ResourceNotFoundException("Team not found with ID: " + teamId));
+
+        Long pmId = team.getPm().getEmployeeId();
+        if (pmId == null) {
+            throw new IllegalArgumentException("PM ID must be provided in the request body.");
+        }
+        Employees pm = employeesRepo.findById(pmId).orElseThrow(
+                () -> new ResourceNotFoundException("Employee (PM) not found with ID: " + pmId)
+        );
+        return new EmployeesResponseDto(pm);
     }
 }

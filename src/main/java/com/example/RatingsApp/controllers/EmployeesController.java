@@ -1,7 +1,11 @@
 package com.example.RatingsApp.controllers;
 
-import com.example.RatingsApp.dto.EmployeesRequestDto;
-import com.example.RatingsApp.dto.EmployeesResponseDto;
+import com.example.RatingsApp.dto.EmployeesDto.EmployeesRequestDto;
+import com.example.RatingsApp.dto.EmployeesDto.EmployeesResponseDto;
+import com.example.RatingsApp.dto.TeamsDto.TeamsRequestDto;
+import com.example.RatingsApp.entity.Employees;
+import com.example.RatingsApp.entity.Teams;
+import com.example.RatingsApp.exception.ResourceNotFoundException;
 import com.example.RatingsApp.service.EmployeesService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,16 +35,40 @@ public class EmployeesController {
         return ResponseEntity.ok(getEmployee);
     }
 
-    @PutMapping("{employeeId}")
-    public ResponseEntity<EmployeesResponseDto> updateEmployee(@PathVariable Long employeeId, @RequestBody EmployeesRequestDto employeesRequestDto){
-        EmployeesResponseDto updatedEmployee = employeesService.updateEmployee(employeeId, employeesRequestDto);
-        return new ResponseEntity<>(updatedEmployee, HttpStatus.OK);
-    }
-
     @GetMapping
     public ResponseEntity<List<EmployeesResponseDto>> getAllEmployees(){
         List<EmployeesResponseDto> listEmployees = employeesService.getAllRoles();
         return ResponseEntity.ok(listEmployees);
+    }
+
+    @GetMapping("/{teamId}/employees_by_team")
+    public ResponseEntity<List<EmployeesResponseDto>> getEmployeesByTeam(@PathVariable Long teamId){
+        List<EmployeesResponseDto> listEmployeesByTeam = employeesService.getEmployeeByTeam(teamId);
+        return ResponseEntity.ok(listEmployeesByTeam);
+    }
+
+    @GetMapping("/{roleId}/employees_by_role")
+    public ResponseEntity<List<EmployeesResponseDto>> getEmployeesByRole(@PathVariable Long roleId){
+        List<EmployeesResponseDto> listEmployeesByRole = employeesService.getEmployeesByRole(roleId);
+        return ResponseEntity.ok(listEmployeesByRole);
+    }
+
+    @GetMapping("/{teamId}/pm")
+    public ResponseEntity<EmployeesResponseDto> getPmByTeam(@PathVariable Long teamId){
+        EmployeesResponseDto PmByTeam = employeesService.getPmByTeam(teamId);
+        return ResponseEntity.ok(PmByTeam);
+    }
+
+    @GetMapping("/all_pm")
+    public ResponseEntity<List<EmployeesResponseDto>> getAllPm(){
+        List<EmployeesResponseDto> listAllPm = employeesService.getAllPm();
+        return ResponseEntity.ok(listAllPm);
+    }
+
+    @PutMapping("{employeeId}")
+    public ResponseEntity<EmployeesResponseDto> updateEmployee(@PathVariable Long employeeId, @RequestBody EmployeesRequestDto employeesRequestDto){
+        EmployeesResponseDto updatedEmployee = employeesService.updateEmployee(employeeId, employeesRequestDto);
+        return new ResponseEntity<>(updatedEmployee, HttpStatus.OK);
     }
 
     @DeleteMapping("{employeeId}")

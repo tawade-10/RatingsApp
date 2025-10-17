@@ -1,4 +1,4 @@
-package com.example.RatingsApp.dto;
+package com.example.RatingsApp.dto.RolesDto;
 
 import com.example.RatingsApp.entity.Roles;
 

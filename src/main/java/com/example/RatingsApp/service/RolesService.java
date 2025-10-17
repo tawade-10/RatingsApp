@@ -1,7 +1,7 @@
 package com.example.RatingsApp.service;
 
-import com.example.RatingsApp.dto.RolesRequestDto;
-import com.example.RatingsApp.dto.RolesResponseDto;
+import com.example.RatingsApp.dto.RolesDto.RolesRequestDto;
+import com.example.RatingsApp.dto.RolesDto.RolesResponseDto;
 import com.example.RatingsApp.entity.Roles;
 
 import java.util.List;

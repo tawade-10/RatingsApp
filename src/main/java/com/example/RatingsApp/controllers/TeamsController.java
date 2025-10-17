@@ -1,9 +1,7 @@
 package com.example.RatingsApp.controllers;
 
-import com.example.RatingsApp.dto.TeamsRequestDto;
-import com.example.RatingsApp.dto.TeamsResponseDto;
-import com.example.RatingsApp.entity.Roles;
-import com.example.RatingsApp.entity.Teams;
+import com.example.RatingsApp.dto.TeamsDto.TeamsRequestDto;
+import com.example.RatingsApp.dto.TeamsDto.TeamsResponseDto;
 import com.example.RatingsApp.service.TeamsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/teams")

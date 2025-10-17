@@ -1,11 +1,11 @@
 package com.example.RatingsApp.serviceImplementation;
 
-import com.example.RatingsApp.dto.RolesResponseDto;
-import com.example.RatingsApp.dto.TeamsRequestDto;
-import com.example.RatingsApp.dto.TeamsResponseDto;
+import com.example.RatingsApp.dto.EmployeesDto.EmployeesResponseDto;
+import com.example.RatingsApp.dto.TeamsDto.TeamsRequestDto;
+import com.example.RatingsApp.dto.TeamsDto.TeamsResponseDto;
 import com.example.RatingsApp.entity.Employees;
-import com.example.RatingsApp.entity.Roles;
 import com.example.RatingsApp.entity.Teams;
+import com.example.RatingsApp.exception.APIException;
 import com.example.RatingsApp.exception.ResourceNotFoundException;
 import com.example.RatingsApp.repository.EmployeesRepo;
 import com.example.RatingsApp.repository.TeamsRepo;
@@ -13,6 +13,7 @@ import com.example.RatingsApp.service.TeamsService;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -32,6 +33,12 @@ public class TeamsServiceImpl implements TeamsService {
     @Override
     public TeamsResponseDto createTeam(TeamsRequestDto teamsRequestDto) {
         Teams team = new Teams();
+
+        Optional<Teams> existingTeam = teamsRepo.findByTeamName(teamsRequestDto.getTeamName());
+        if(existingTeam.isPresent()) {
+            throw new APIException("Employee with name '" + teamsRequestDto.getTeamName() + "' already exists!");
+        }
+
         team.setTeamName(teamsRequestDto.getTeamName());
         Teams savedTeam = teamsRepo.save(team);
         return new TeamsResponseDto(savedTeam);

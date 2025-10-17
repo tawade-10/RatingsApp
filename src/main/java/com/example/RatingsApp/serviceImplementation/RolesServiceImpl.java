@@ -1,8 +1,10 @@
 package com.example.RatingsApp.serviceImplementation;
 
-import com.example.RatingsApp.dto.RolesRequestDto;
-import com.example.RatingsApp.dto.RolesResponseDto;
+import com.example.RatingsApp.dto.RolesDto.RolesRequestDto;
+import com.example.RatingsApp.dto.RolesDto.RolesResponseDto;
 import com.example.RatingsApp.entity.Roles;
+import com.example.RatingsApp.entity.Teams;
+import com.example.RatingsApp.exception.APIException;
 import com.example.RatingsApp.exception.ResourceNotFoundException;
 import com.example.RatingsApp.repository.RolesRepo;
 import com.example.RatingsApp.service.RolesService;
@@ -25,6 +27,12 @@ public class RolesServiceImpl implements RolesService {
     @Override
     public RolesResponseDto createRole(RolesRequestDto rolesRequestDto) {
         Roles role = new Roles();
+
+        Optional<Roles> existingRole = rolesRepo.findByRoleName(rolesRequestDto.getRoleName());
+        if(existingRole.isPresent()) {
+            throw new APIException("The given role name'" + rolesRequestDto.getRoleName() + "' already exists!");
+        }
+
         role.setRoleName(rolesRequestDto.getRoleName());
         Roles savedRole = rolesRepo.save(role);
         return new RolesResponseDto(savedRole);
@@ -45,12 +53,11 @@ public class RolesServiceImpl implements RolesService {
     }
 
     @Override
-    public RolesResponseDto updateRole(Long roleId, RolesRequestDto updatedRole) {
+    public RolesResponseDto updateRole(Long roleId, RolesRequestDto rolesRequestDto) {
         Roles role = rolesRepo.findById(roleId).orElseThrow(
                 () -> new ResourceNotFoundException("Role with the given id doesn't exist : "+ roleId)
         );
-
-        role.setRoleName(updatedRole.getRoleName());
+        role.setRoleName(rolesRequestDto.getRoleName());
         Roles updatedRoleObj = rolesRepo.save(role);
         return new RolesResponseDto(updatedRoleObj);
     }

@@ -12,14 +12,20 @@ public class EmployeesResponseDto {
 
     private Long roleId;
 
+    private String roleName;
+
     private Long teamId;
+
+    private String teamName;
 
     public EmployeesResponseDto(Employees employees) {
         this.employeeId = employees.getEmployeeId();
         this.name = employees.getName();
         this.email = employees.getEmail();
         this.roleId = employees.getRole().getRoleId();
+        this.roleName = employees.getRole().getRoleName();
         this.teamId = employees.getTeam().getTeamId();
+        this.teamName = employees.getTeam().getTeamName();
     }
 
     public Long getEmployeeId() {
@@ -60,5 +66,21 @@ public class EmployeesResponseDto {
 
     public void setTeamId(Long teamId) {
         this.teamId = teamId;
+    }
+
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
+    }
+
+    public String getTeamName() {
+        return teamName;
+    }
+
+    public void setTeamName(String teamName) {
+        this.teamName = teamName;
     }
 }

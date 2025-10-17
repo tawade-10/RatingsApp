@@ -11,8 +11,6 @@ public interface EmployeesService {
 
     EmployeesResponseDto getEmployeeById(Long empId);
 
-    List<EmployeesResponseDto> getAllRoles();
-
     EmployeesResponseDto updateEmployee(Long employeeId, EmployeesRequestDto employeesRequestDto);
 
     EmployeesResponseDto deleteEmployee(Long employeeId);
@@ -22,4 +20,10 @@ public interface EmployeesService {
     List<EmployeesResponseDto> getEmployeesByRole(Long roleId);
 
     EmployeesResponseDto getPmByTeam(Long teamId);
+
+    List<EmployeesResponseDto> getAllPm();
+
+    List<EmployeesResponseDto> getAllEmployees();
+
+    List<EmployeesResponseDto> getEmployeeByName(String name);
 }

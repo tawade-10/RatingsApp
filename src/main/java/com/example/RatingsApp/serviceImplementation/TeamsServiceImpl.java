@@ -34,7 +34,7 @@ public class TeamsServiceImpl implements TeamsService {
     public TeamsResponseDto createTeam(TeamsRequestDto teamsRequestDto) {
         Teams team = new Teams();
 
-        Optional<Teams> existingTeam = teamsRepo.findByTeamName(teamsRequestDto.getTeamName());
+        Optional<Teams> existingTeam = teamsRepo.findByTeamNameIgnoreCase(teamsRequestDto.getTeamName());
         if(existingTeam.isPresent()) {
             throw new APIException("Employee with name '" + teamsRequestDto.getTeamName() + "' already exists!");
         }
@@ -56,6 +56,9 @@ public class TeamsServiceImpl implements TeamsService {
         Employees pm = employeesRepo.findById(pmId).orElseThrow(
                 () -> new ResourceNotFoundException("Employee (PM) not found with ID: " + pmId)
         );
+        if(pm.getRole().getRoleId() != 1L){
+            throw new APIException("The employee should have role id 1 for being PM");
+        }
         team.setPm(pm);
         Teams updatedTeamsObj = teamsRepo.save(team);
         return new TeamsResponseDto(updatedTeamsObj);
@@ -71,7 +74,7 @@ public class TeamsServiceImpl implements TeamsService {
 
     @Override
     public TeamsResponseDto getTeamByName(String teamName) {
-        Teams team = teamsRepo.findByTeamName(teamName)
+        Teams team = teamsRepo.findByTeamNameIgnoreCase(teamName)
                 .orElseThrow(() -> new ResourceNotFoundException("Team not found with name: " + teamName));
         return new TeamsResponseDto(team);
     }

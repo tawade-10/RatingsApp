@@ -56,12 +56,24 @@ public class EmployeesServiceImpl implements EmployeesService {
         Teams team = teamsRepo.findById(employeesRequestDto.getTeamId())
                 .orElseThrow(() -> new ResourceNotFoundException("Team not found with ID: " + employeesRequestDto.getTeamId()));
 
+        if (role.getRoleId() == 1L) {
+            if (team.getPm() != null) {
+                throw new APIException("This team already has a PM assigned (" + team.getPm().getName() + ").");
+            }
+        }
+
         employee.setName(employeesRequestDto.getName());
         employee.setEmail(employeesRequestDto.getEmail());
         employee.setPassword(employeesRequestDto.getPassword());
         employee.setRole(role);
         employee.setTeam(team);
         Employees saveEmployee = employeesRepo.save(employee);
+
+        if (role.getRoleId() == 1L) {
+            team.setPm(saveEmployee);
+            teamsRepo.save(team);
+        }
+
         return new EmployeesResponseDto(saveEmployee);
     }
 
@@ -73,9 +85,16 @@ public class EmployeesServiceImpl implements EmployeesService {
     }
 
     @Override
-    public List<EmployeesResponseDto> getAllRoles() {
+    public List<EmployeesResponseDto> getAllEmployees() {
         List<Employees> employees = employeesRepo.findAll(Sort.by(Sort.Direction.ASC, "employeeId"));
         return employees.stream().map(EmployeesResponseDto::new).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<EmployeesResponseDto> getEmployeeByName(String name) {
+        List<Employees> listEmployees = employeesRepo.findAll(Sort.by(Sort.Direction.ASC, "employeeId"));
+        List<Employees> getEmployeesByName = listEmployees.stream().filter(emp -> emp.getName().equalsIgnoreCase(name)).collect(Collectors.toList());
+        return getEmployeesByName.stream().map(EmployeesResponseDto::new).collect(Collectors.toList());
     }
 
     @Override
@@ -139,5 +158,12 @@ public class EmployeesServiceImpl implements EmployeesService {
                 () -> new ResourceNotFoundException("Employee (PM) not found with ID: " + pmId)
         );
         return new EmployeesResponseDto(pm);
+    }
+
+    @Override
+    public List<EmployeesResponseDto> getAllPm() {
+        List<Employees> employees = employeesRepo.findAll(Sort.by(Sort.Direction.ASC, "employeeId"));
+        List<Employees> getPmList = employees.stream().filter(emp -> emp.getRole().getRoleId() == 1).collect(Collectors.toList());
+        return getPmList.stream().map(EmployeesResponseDto::new).collect(Collectors.toList());
     }
 }

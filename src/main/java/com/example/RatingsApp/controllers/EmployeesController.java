@@ -37,8 +37,14 @@ public class EmployeesController {
 
     @GetMapping
     public ResponseEntity<List<EmployeesResponseDto>> getAllEmployees(){
-        List<EmployeesResponseDto> listEmployees = employeesService.getAllRoles();
+        List<EmployeesResponseDto> listEmployees = employeesService.getAllEmployees();
         return ResponseEntity.ok(listEmployees);
+    }
+
+    @GetMapping("/employees_by_name")
+    public ResponseEntity<List<EmployeesResponseDto>> getEmployeesByName(@RequestParam String name){
+        List<EmployeesResponseDto> listEmployeesByName = employeesService.getEmployeeByName(name);
+        return ResponseEntity.ok(listEmployeesByName);
     }
 
     @GetMapping("/{teamId}/employees_by_team")
@@ -70,6 +76,8 @@ public class EmployeesController {
         EmployeesResponseDto updatedEmployee = employeesService.updateEmployee(employeeId, employeesRequestDto);
         return new ResponseEntity<>(updatedEmployee, HttpStatus.OK);
     }
+
+    @GetMapping("/search_by_na")
 
     @DeleteMapping("{employeeId}")
     public ResponseEntity<String> deleteEmployee(@PathVariable Long employeeId){

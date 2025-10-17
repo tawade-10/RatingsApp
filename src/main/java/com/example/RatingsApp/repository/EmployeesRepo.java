@@ -19,5 +19,4 @@ public interface EmployeesRepo extends JpaRepository<Employees,Long> {
 
     List<Employees> findByRole(Roles role);
 
-    List<Employees> findAllByPm(List<Teams> listAllTeams);
 }

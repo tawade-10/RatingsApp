@@ -1,4 +1,4 @@
-package com.example.RatingsApp.strategyimpl;
+package com.example.RatingsApp.strategyimpl.pmratings;
 
 import com.example.RatingsApp.dto.RatingsDto.RatingsRequestDto;
 import com.example.RatingsApp.entity.Employees;
@@ -7,16 +7,14 @@ import com.example.RatingsApp.exception.APIException;
 import com.example.RatingsApp.exception.ResourceNotFoundException;
 import com.example.RatingsApp.repository.EmployeesRepo;
 import com.example.RatingsApp.strategy.RatingStrategy;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component("PM_TO_EMPLOYEE")
-public class PmToEmployeeRating implements RatingStrategy {
+@Component("PM_TO_TL")
+public class PmToTLRating implements RatingStrategy {
 
     private final EmployeesRepo employeesRepo;
 
-    @Autowired
-    public PmToEmployeeRating(EmployeesRepo employeesRepo) {
+    public PmToTLRating(EmployeesRepo employeesRepo) {
         this.employeesRepo = employeesRepo;
     }
 
@@ -25,7 +23,7 @@ public class PmToEmployeeRating implements RatingStrategy {
         Long pmId = ratingsRequestDto.getRated_by_id();
         Long employeeId = ratingsRequestDto.getEmployee_id();
 
-        if (pmId == null || employeeId == null) {
+        if(pmId == null || employeeId == null){
             throw new APIException("Both PM ID and Employee ID must be provided.");
         }
 
@@ -39,8 +37,12 @@ public class PmToEmployeeRating implements RatingStrategy {
         Employees employee = employeesRepo.findById(employeeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + employeeId));
 
-        if(employee.getRole() == null || employee.getRole().getRoleId() != 4L){
-            throw new APIException("Only Employee can receive this rating.");
+        if(employee.getRole() == null || employee.getRole().getRoleId() != 3L){
+            throw new APIException("Only TL can receive this rating.");
+        }
+
+        if(!pm.getTeam().getTeamId().equals(employee.getTeam().getTeamId())){
+            throw new APIException("PM can only rate TL's of their own team");
         }
 
         Ratings rating = new Ratings();

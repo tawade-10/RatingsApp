@@ -34,8 +34,12 @@ public class RatingsServiceImpl implements RatingsService {
         Employees ratedBy = employeesRepo.findById(ratingsRequestDto.getRated_by_id())
                 .orElseThrow(() -> new ResourceNotFoundException("RatedBy employee not found"));
 
+        //For fetching the type of rating in String Format
         RatingStrategy strategy = ratingFactory.getStrategy(ratingsRequestDto.getRating_role().toString());
+
+        //For fetching the logic for that particular rating
         Ratings rating = strategy.giveRating(ratingsRequestDto);
+
         rating.setEmployee(employee);
         rating.setRatedBy(ratedBy);
 

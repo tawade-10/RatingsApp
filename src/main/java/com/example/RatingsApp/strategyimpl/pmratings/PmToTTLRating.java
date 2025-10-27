@@ -1,4 +1,4 @@
-package com.example.RatingsApp.strategyimpl;
+package com.example.RatingsApp.strategyimpl.pmratings;
 
 import com.example.RatingsApp.dto.RatingsDto.RatingsRequestDto;
 import com.example.RatingsApp.entity.Employees;
@@ -9,12 +9,12 @@ import com.example.RatingsApp.repository.EmployeesRepo;
 import com.example.RatingsApp.strategy.RatingStrategy;
 import org.springframework.stereotype.Component;
 
-@Component("PM_TO_TL")
-public class PmToTlRating implements RatingStrategy {
+@Component("PM_TO_TTL")
+public class PmToTTLRating implements RatingStrategy {
 
     private final EmployeesRepo employeesRepo;
 
-    public PmToTlRating(EmployeesRepo employeesRepo) {
+    public PmToTTLRating(EmployeesRepo employeesRepo) {
         this.employeesRepo = employeesRepo;
     }
 
@@ -37,11 +37,20 @@ public class PmToTlRating implements RatingStrategy {
         Employees employee = employeesRepo.findById(employeeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + employeeId));
 
-        if(employee.getRole() == null || employee.getRole().getRoleId() != 3){
-            throw new APIException("Only TL can receive this rating.");
+        if(employee.getRole() == null || employee.getRole().getRoleId() != 2L){
+            throw new APIException("Only TTL can receive this rating.");
+        }
+
+        if (pm.getTeam() == null || employee.getTeam() == null) {
+            throw new APIException("Both PM and Employee must be assigned to a team.");
+        }
+
+        if(!pm.getTeam().getTeamId().equals(employee.getTeam().getTeamId())){
+            throw new APIException("PM can only rate members from their own team.");
         }
 
         Ratings rating = new Ratings();
+
         rating.setRatingValue(ratingsRequestDto.getRating_value());
         rating.setRatingRole(ratingsRequestDto.getRating_role());
         rating.setRatingStatus(ratingsRequestDto.getRating_status());

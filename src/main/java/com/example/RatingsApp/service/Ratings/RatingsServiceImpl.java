@@ -1,6 +1,7 @@
 package com.example.RatingsApp.service.Ratings;
 
 import com.example.RatingsApp.Factory.RatingFactory;
+import com.example.RatingsApp.dto.EmployeesDto.EmployeesResponseDto;
 import com.example.RatingsApp.dto.RatingsDto.RatingsRequestDto;
 import com.example.RatingsApp.dto.RatingsDto.RatingsResponseDto;
 import com.example.RatingsApp.entity.Employees;
@@ -9,7 +10,11 @@ import com.example.RatingsApp.exception.ResourceNotFoundException;
 import com.example.RatingsApp.repository.EmployeesRepo;
 import com.example.RatingsApp.repository.RatingsRepo;
 import com.example.RatingsApp.strategy.RatingStrategy;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class RatingsServiceImpl implements RatingsService {
@@ -45,6 +50,19 @@ public class RatingsServiceImpl implements RatingsService {
         Ratings savedRating = ratingsRepo.save(rating);
 
         return new RatingsResponseDto(savedRating);
+    }
+
+    @Override
+    public List<RatingsResponseDto> getAllRatings() {
+        List<Ratings> ratings = ratingsRepo.findAll(Sort.by(Sort.Direction.ASC, "ratingId"));
+        return ratings.stream().map(RatingsResponseDto::new).collect(Collectors.toList());
+    }
+
+    @Override
+    public RatingsResponseDto getRatingById(Long ratingId) {
+        Ratings rating = ratingsRepo.findById(ratingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Rating not found with ID: " + ratingId));
+        return new RatingsResponseDto(rating);
     }
 
 }

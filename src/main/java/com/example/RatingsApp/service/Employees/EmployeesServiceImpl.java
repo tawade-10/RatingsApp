@@ -1,8 +1,7 @@
-package com.example.RatingsApp.serviceImplementation;
+package com.example.RatingsApp.service.Employees;
 
 import com.example.RatingsApp.dto.EmployeesDto.EmployeesRequestDto;
 import com.example.RatingsApp.dto.EmployeesDto.EmployeesResponseDto;
-import com.example.RatingsApp.dto.TeamsDto.TeamsRequestDto;
 import com.example.RatingsApp.entity.Employees;
 import com.example.RatingsApp.entity.Roles;
 import com.example.RatingsApp.entity.Teams;
@@ -11,12 +10,9 @@ import com.example.RatingsApp.exception.ResourceNotFoundException;
 import com.example.RatingsApp.repository.EmployeesRepo;
 import com.example.RatingsApp.repository.RolesRepo;
 import com.example.RatingsApp.repository.TeamsRepo;
-import com.example.RatingsApp.service.EmployeesService;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;

@@ -1,8 +1,7 @@
-package com.example.RatingsApp.service;
+package com.example.RatingsApp.service.Employees;
 
 import com.example.RatingsApp.dto.EmployeesDto.EmployeesRequestDto;
 import com.example.RatingsApp.dto.EmployeesDto.EmployeesResponseDto;
-import com.example.RatingsApp.dto.TeamsDto.TeamsRequestDto;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.example.RatingsApp.service;
+package com.example.RatingsApp.service.Teams;
 
 import com.example.RatingsApp.dto.TeamsDto.TeamsRequestDto;
 import com.example.RatingsApp.dto.TeamsDto.TeamsResponseDto;

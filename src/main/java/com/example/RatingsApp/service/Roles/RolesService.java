@@ -1,4 +1,4 @@
-package com.example.RatingsApp.service;
+package com.example.RatingsApp.service.Roles;
 
 import com.example.RatingsApp.dto.RolesDto.RolesRequestDto;
 import com.example.RatingsApp.dto.RolesDto.RolesResponseDto;

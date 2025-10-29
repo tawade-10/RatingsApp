@@ -2,11 +2,7 @@ package com.example.RatingsApp.controllers;
 
 import com.example.RatingsApp.dto.EmployeesDto.EmployeesRequestDto;
 import com.example.RatingsApp.dto.EmployeesDto.EmployeesResponseDto;
-import com.example.RatingsApp.dto.TeamsDto.TeamsRequestDto;
-import com.example.RatingsApp.entity.Employees;
-import com.example.RatingsApp.entity.Teams;
-import com.example.RatingsApp.exception.ResourceNotFoundException;
-import com.example.RatingsApp.service.EmployeesService;
+import com.example.RatingsApp.service.Employees.EmployeesService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -2,7 +2,7 @@ package com.example.RatingsApp.controllers;
 
 import com.example.RatingsApp.dto.TeamsDto.TeamsRequestDto;
 import com.example.RatingsApp.dto.TeamsDto.TeamsResponseDto;
-import com.example.RatingsApp.service.TeamsService;
+import com.example.RatingsApp.service.Teams.TeamsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

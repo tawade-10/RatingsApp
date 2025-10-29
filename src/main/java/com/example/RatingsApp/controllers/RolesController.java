@@ -3,7 +3,7 @@ package com.example.RatingsApp.controllers;
 import com.example.RatingsApp.dto.RolesDto.RolesRequestDto;
 import com.example.RatingsApp.dto.RolesDto.RolesResponseDto;
 import com.example.RatingsApp.entity.Roles;
-import com.example.RatingsApp.service.RolesService;
+import com.example.RatingsApp.service.Roles.RolesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

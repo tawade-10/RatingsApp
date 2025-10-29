@@ -1,13 +1,11 @@
-package com.example.RatingsApp.serviceImplementation;
+package com.example.RatingsApp.service.Roles;
 
 import com.example.RatingsApp.dto.RolesDto.RolesRequestDto;
 import com.example.RatingsApp.dto.RolesDto.RolesResponseDto;
 import com.example.RatingsApp.entity.Roles;
-import com.example.RatingsApp.entity.Teams;
 import com.example.RatingsApp.exception.APIException;
 import com.example.RatingsApp.exception.ResourceNotFoundException;
 import com.example.RatingsApp.repository.RolesRepo;
-import com.example.RatingsApp.service.RolesService;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 

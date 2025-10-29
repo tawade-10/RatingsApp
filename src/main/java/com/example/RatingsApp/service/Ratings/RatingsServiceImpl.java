@@ -1,4 +1,4 @@
-package com.example.RatingsApp.serviceImplementation;
+package com.example.RatingsApp.service.Ratings;
 
 import com.example.RatingsApp.Factory.RatingFactory;
 import com.example.RatingsApp.dto.RatingsDto.RatingsRequestDto;
@@ -8,7 +8,6 @@ import com.example.RatingsApp.entity.Ratings;
 import com.example.RatingsApp.exception.ResourceNotFoundException;
 import com.example.RatingsApp.repository.EmployeesRepo;
 import com.example.RatingsApp.repository.RatingsRepo;
-import com.example.RatingsApp.service.RatingsService;
 import com.example.RatingsApp.strategy.RatingStrategy;
 import org.springframework.stereotype.Service;
 

@@ -11,4 +11,8 @@ public interface RatingsService {
     List<RatingsResponseDto> getAllRatings();
 
     RatingsResponseDto getRatingById(Long ratingsId);
+
+    RatingsResponseDto updateRating(Long ratingId, RatingsRequestDto ratingsRequestDto);
+
+    RatingsResponseDto deleteRating(Long ratingId);
 }

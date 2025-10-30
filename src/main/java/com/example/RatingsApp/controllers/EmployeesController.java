@@ -73,8 +73,6 @@ public class EmployeesController {
         return new ResponseEntity<>(updatedEmployee, HttpStatus.OK);
     }
 
-    @GetMapping("/search_by_na")
-
     @DeleteMapping("{employeeId}")
     public ResponseEntity<String> deleteEmployee(@PathVariable Long employeeId){
         EmployeesResponseDto deletedEmployee = employeesService.deleteEmployee(employeeId);

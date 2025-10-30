@@ -65,4 +65,28 @@ public class RatingsServiceImpl implements RatingsService {
         return new RatingsResponseDto(rating);
     }
 
+    @Override
+    public RatingsResponseDto updateRating(Long ratingId, RatingsRequestDto ratingsRequestDto) {
+        Ratings rating = ratingsRepo.findById(ratingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Rating not found with ID: " + ratingId));
+
+        Employees employee = employeesRepo.findById(ratingsRequestDto.getEmployee_id())
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+        Employees ratedBy = employeesRepo.findById(ratingsRequestDto.getRated_by_id())
+                .orElseThrow(() -> new ResourceNotFoundException("Rated By Employee not found"));
+
+        rating.setRatingStatus(ratingsRequestDto.getRating_status());
+        rating.setRatingValue(rating.getRatingValue());
+
+        return new RatingsResponseDto(rating);
+    }
+
+    @Override
+    public RatingsResponseDto deleteRating(Long ratingId) {
+        Ratings rating = ratingsRepo.findById(ratingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Rating not found with ID: " + ratingId));
+        ratingsRepo.deleteById(ratingId);
+        return null;
+    }
+
 }

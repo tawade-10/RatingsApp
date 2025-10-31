@@ -76,7 +76,7 @@ public class RatingsServiceImpl implements RatingsService {
                 .orElseThrow(() -> new ResourceNotFoundException("Rated By Employee not found"));
 
         rating.setRatingStatus(ratingsRequestDto.getRating_status());
-        rating.setRatingValue(rating.getRatingValue());
+        rating.setRatingValue(ratingsRequestDto.getRating_value());
 
         return new RatingsResponseDto(rating);
     }

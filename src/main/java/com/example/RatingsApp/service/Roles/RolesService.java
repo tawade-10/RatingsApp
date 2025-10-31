@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface RolesService {
     RolesResponseDto createRole(RolesRequestDto roleRequestDto);
 
-    Optional<Roles> getRoleById(Long roleId);
+    RolesResponseDto getRoleById(Long roleId);
 
     List<RolesResponseDto> getAllRoles();
 

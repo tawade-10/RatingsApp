@@ -37,11 +37,15 @@ public class RolesServiceImpl implements RolesService {
     }
 
     @Override
-    public Optional<Roles> getRoleById(Long roleId){
+    public RolesResponseDto getRoleById(Long roleId){
         if(roleId == null){
             throw new IllegalArgumentException("Role id must not be null");
         }
-        return rolesRepo.findById(roleId);
+
+        Roles role = rolesRepo.findById(roleId)
+                .orElseThrow(() -> new ResourceNotFoundException("Role with id " + roleId + " not found"));
+
+        return new RolesResponseDto(role);
     }
 
     @Override

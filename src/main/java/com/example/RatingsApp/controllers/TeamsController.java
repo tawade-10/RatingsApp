@@ -25,7 +25,7 @@ public class TeamsController {
     public ResponseEntity<TeamsResponseDto> createTeam(@RequestBody TeamsRequestDto teamsRequestDto){
         TeamsResponseDto savedTeam = teamsService.createTeam(teamsRequestDto);
         return new ResponseEntity<>(savedTeam, HttpStatus.CREATED);
-    }
+    }   
 
     @PutMapping("/{teamId}")
     public ResponseEntity<TeamsResponseDto> assignPmId(

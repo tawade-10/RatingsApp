@@ -49,13 +49,14 @@ public class EmployeesServiceImpl implements EmployeesService {
         Roles role = rolesRepo.findById(employeesRequestDto.getRoleId())
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found with ID: " + employeesRequestDto.getRoleId()));
 
-        Teams team = teamsRepo.findById(employeesRequestDto.getTeamId())
-                .orElseThrow(() -> new ResourceNotFoundException("Team not found with ID: " + employeesRequestDto.getTeamId()));
+        Teams team = null;
 
-        if (role.getRoleId() == 1L) {
-            if (team.getPm() != null) {
-                throw new APIException("This team already has a PM assigned (" + team.getPm().getName() + ").");
+        if (role.getRoleId() != 1L) {
+            if (employeesRequestDto.getTeamId() == null) {
+                throw new APIException("Team ID must be provided for non-PM employees.");
             }
+            team = teamsRepo.findById(employeesRequestDto.getTeamId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Team not found with ID: " + employeesRequestDto.getTeamId()));
         }
 
         employee.setName(employeesRequestDto.getName());
@@ -64,11 +65,6 @@ public class EmployeesServiceImpl implements EmployeesService {
         employee.setRole(role);
         employee.setTeam(team);
         Employees saveEmployee = employeesRepo.save(employee);
-
-        if (role.getRoleId() == 1L) {
-            team.setPm(saveEmployee);
-            teamsRepo.save(team);
-        }
 
         return new EmployeesResponseDto(saveEmployee);
     }

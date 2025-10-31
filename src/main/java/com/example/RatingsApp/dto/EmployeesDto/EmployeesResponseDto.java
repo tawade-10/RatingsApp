@@ -24,8 +24,8 @@ public class EmployeesResponseDto {
         this.email = employees.getEmail();
         this.roleId = employees.getRole().getRoleId();
         this.roleName = employees.getRole().getRoleName();
-        this.teamId = employees.getTeam().getTeamId();
-        this.teamName = employees.getTeam().getTeamName();
+        this.teamId = (employees.getTeam() != null) ? employees.getTeam().getTeamId() : null;
+        this.teamName = (employees.getTeam() != null) ? employees.getTeam().getTeamName() : null;
     }
 
     public Long getEmployeeId() {

@@ -4,6 +4,7 @@ import com.example.RatingsApp.strategyimpl.pmratings.PmToEmployeeRating;
 import com.example.RatingsApp.strategyimpl.pmratings.PmToTLRating;
 import com.example.RatingsApp.strategyimpl.SelfRating;
 import com.example.RatingsApp.strategy.RatingStrategy;
+import com.example.RatingsApp.strategyimpl.pmratings.PmToTTLRating;
 import com.example.RatingsApp.strategyimpl.tlratings.TLToEmployeeRating;
 import com.example.RatingsApp.strategyimpl.ttlratings.TTLToEmployeeRating;
 import com.example.RatingsApp.strategyimpl.ttlratings.TTLToTLRating;
@@ -18,16 +19,19 @@ public class RatingFactory {
 
     private final PmToTLRating pmToTlRating;
 
+    private final PmToTTLRating pmToTTLRating;
+
     private final TTLToEmployeeRating ttlToEmployeeRating;
 
     private final TTLToTLRating ttlToTLRating;
 
     private final TLToEmployeeRating tlToEmployeeRating;
 
-    public RatingFactory(SelfRating selfRating, PmToEmployeeRating pmToEmployeeRating, PmToTLRating pmToTlRating, TTLToEmployeeRating ttlToEmployeeRating, TTLToTLRating ttlToTLRating, TLToEmployeeRating tlToEmployeeRating) {
+    public RatingFactory(SelfRating selfRating, PmToEmployeeRating pmToEmployeeRating, PmToTLRating pmToTlRating, PmToTTLRating pmToTTLRating, TTLToEmployeeRating ttlToEmployeeRating, TTLToTLRating ttlToTLRating, TLToEmployeeRating tlToEmployeeRating) {
         this.selfRating = selfRating;
         this.pmToEmployeeRating = pmToEmployeeRating;
         this.pmToTlRating = pmToTlRating;
+        this.pmToTTLRating = pmToTTLRating;
         this.ttlToEmployeeRating = ttlToEmployeeRating;
         this.ttlToTLRating = ttlToTLRating;
         this.tlToEmployeeRating = tlToEmployeeRating;
@@ -38,9 +42,11 @@ public class RatingFactory {
             return selfRating;
         }else if(role.equalsIgnoreCase("PM_TO_EMPLOYEE")){
             return pmToEmployeeRating;
-        }else if(role.equalsIgnoreCase("PM_TO_TL")){
+        }else if(role.equalsIgnoreCase("PM_TO_TL")) {
             return pmToTlRating;
-        }else if(role.equalsIgnoreCase("TTL_TO_EMPLOYEE")){
+        } else if (role.equalsIgnoreCase("PM_TO_TTL")) {
+            return pmToTTLRating;
+        } else if(role.equalsIgnoreCase("TTL_TO_EMPLOYEE")){
             return ttlToEmployeeRating;
         }else if(role.equalsIgnoreCase("TTL_TO_TL")){
             return ttlToTLRating;

@@ -30,8 +30,8 @@ public class RolesController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<Optional<Roles>> getRoleById(@PathVariable("id") Long roleId){
-        Optional<Roles> rolesResponseDto = rolesService.getRoleById(roleId);
+    public ResponseEntity<RolesResponseDto> getRoleById(@PathVariable("id") Long roleId){
+        RolesResponseDto rolesResponseDto = rolesService.getRoleById(roleId);
         return ResponseEntity.ok(rolesResponseDto);
     }
 
@@ -50,6 +50,6 @@ public class RolesController {
     @DeleteMapping("{id}")
     public ResponseEntity<String> deleteRole(@PathVariable("id") Long roleId){
         RolesResponseDto rolesResponseDto = rolesService.deleteRole(roleId);
-        return ResponseEntity.ok("Role Deleted!");
+        return ResponseEntity.ok("Role deleted successfully!");
     }
 }

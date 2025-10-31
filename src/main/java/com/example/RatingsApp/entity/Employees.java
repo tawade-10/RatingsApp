@@ -25,7 +25,7 @@ public class Employees {
     private Roles role;
 
     @ManyToOne
-    @JoinColumn(name = "team_id", nullable = false)
+    @JoinColumn(name = "team_id",  nullable = true)
     private Teams team;
 
     @OneToMany(mappedBy = "ratedBy")

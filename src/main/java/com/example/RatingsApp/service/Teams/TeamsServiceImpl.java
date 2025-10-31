@@ -36,8 +36,32 @@ public class TeamsServiceImpl implements TeamsService {
             throw new APIException("Employee with name '" + teamsRequestDto.getTeamName() + "' already exists!");
         }
 
+        if (teamsRequestDto.getPmId() == null) {
+            throw new APIException("PM ID must be provided while creating a team.");
+        }
+
+        Employees pm = employeesRepo.findById(teamsRequestDto.getPmId())
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + teamsRequestDto.getPmId()));
+
+        // Ensure the employee has role ID = 1 (PM role)
+        if (pm.getRole().getRoleId() != 1L) {
+            throw new APIException("The employee (ID: " + pm.getEmployeeId() + ") is not a PM (roleId must be 1).");
+        }
+
+        // Check if this PM is already managing another team
+        if (pm.getManagedTeam() != null) {
+            throw new APIException("The PM '" + pm.getName() + "' is already managing another team.");
+        }
+
         team.setTeamName(teamsRequestDto.getTeamName());
+        team.setPm(pm);
+
         Teams savedTeam = teamsRepo.save(team);
+
+        // Update PM to point to this team
+        pm.setTeam(savedTeam);
+        employeesRepo.save(pm);
+
         return new TeamsResponseDto(savedTeam);
     }
 
@@ -56,7 +80,13 @@ public class TeamsServiceImpl implements TeamsService {
         if(pm.getRole().getRoleId() != 1L){
             throw new APIException("The employee should have role id 1 for being PM");
         }
+
         team.setPm(pm);
+        teamsRepo.save(team);
+
+        pm.setTeam(team);
+        employeesRepo.save(pm);
+
         Teams updatedTeamsObj = teamsRepo.save(team);
         return new TeamsResponseDto(updatedTeamsObj);
     }

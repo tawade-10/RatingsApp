@@ -24,13 +24,16 @@ public class RolesServiceImpl implements RolesService {
 
     @Override
     public RolesResponseDto createRole(RolesRequestDto rolesRequestDto) {
-        Roles role = new Roles();
-
-        Optional<Roles> existingRole = rolesRepo.findByRoleName(rolesRequestDto.getRoleName());
-        if(existingRole.isPresent()) {
-            throw new APIException("The given role name'" + rolesRequestDto.getRoleName() + "' already exists!");
+        if (rolesRequestDto.getRoleName() == null) {
+            throw new IllegalArgumentException("Role name cannot be null or empty");
         }
 
+        Optional<Roles> existingRole = rolesRepo.findByRoleName(rolesRequestDto.getRoleName());
+        if (existingRole.isPresent()) {
+            throw new APIException("The given role name '" + rolesRequestDto.getRoleName() + "' already exists!");
+        }
+
+        Roles role = new Roles();
         role.setRoleName(rolesRequestDto.getRoleName());
         Roles savedRole = rolesRepo.save(role);
         return new RolesResponseDto(savedRole);

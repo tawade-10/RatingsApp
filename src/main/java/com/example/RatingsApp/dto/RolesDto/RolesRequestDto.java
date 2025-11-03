@@ -4,6 +4,9 @@ public class RolesRequestDto {
 
     private String roleName;
 
+    public RolesRequestDto() {
+    }
+
     public RolesRequestDto(String roleName) {
         this.roleName = roleName;
     }

@@ -69,7 +69,7 @@ class RolesServiceImplTest {
 
         assertEquals("The given role name 'PM' already exists!", ex.getMessage());
         verify(rolesRepo, times(1)).findByRoleName("PM");
-        verify(rolesRepo, never()).save(any(Roles.class)); // Should never save since it already exists
+        verify(rolesRepo, never()).save(any(Roles.class));
     }
 
     @Test
@@ -109,10 +109,10 @@ class RolesServiceImplTest {
     }
 
     @Test
-    void updateRole_Success() {
+    void updateRoleSuccess() {
 
         RolesRequestDto requestDto = new RolesRequestDto();
-        requestDto.setRoleName("Project Manager");
+        requestDto.setRoleName("PM");
 
         Roles existingRole = new Roles();
         existingRole.setRoleId(1L);
@@ -128,8 +128,8 @@ class RolesServiceImplTest {
         RolesResponseDto response = rolesService.updateRole(1L, requestDto);
 
         assertNotNull(response);
-        assertEquals("Project Manager", response.getRoleName());
         assertEquals(1L, response.getRoleId());
+        assertEquals("Project Manager", response.getRoleName());
 
         verify(rolesRepo, times(1)).findById(1L);
         verify(rolesRepo, times(1)).save(any(Roles.class));

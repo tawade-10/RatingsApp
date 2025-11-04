@@ -6,6 +6,9 @@ public class TeamsRequestDto {
 
     private Long pmId;
 
+    public TeamsRequestDto() {
+    }
+
     public TeamsRequestDto(String teamName, Long pmId) {
         this.teamName = teamName;
         this.pmId = pmId;

@@ -33,15 +33,15 @@ public class TeamsServiceImpl implements TeamsService {
 
         Optional<Teams> existingTeam = teamsRepo.findByTeamNameIgnoreCase(teamsRequestDto.getTeamName());
         if(existingTeam.isPresent()) {
-            throw new APIException("Employee with name '" + teamsRequestDto.getTeamName() + "' already exists!");
+            throw new APIException("Team name '" + teamsRequestDto.getTeamName() + "' already exists!");
         }
 
         if (teamsRequestDto.getPmId() == null) {
-            throw new APIException("PM ID must be provided while creating a team.");
+            throw new IllegalArgumentException("Role name cannot be null or empty");
         }
 
         Employees pm = employeesRepo.findById(teamsRequestDto.getPmId())
-                .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + teamsRequestDto.getPmId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Employee found with ID: " + teamsRequestDto.getPmId() + " is not a PM"));
 
         // Ensure the employee has role ID = 1 (PM role)
         if (pm.getRole().getRoleId() != 1L) {
@@ -50,7 +50,7 @@ public class TeamsServiceImpl implements TeamsService {
 
         // Check if this PM is already managing another team
         if (pm.getManagedTeam() != null) {
-            throw new APIException("The PM '" + pm.getName() + "' is already managing another team.");
+            throw new IllegalArgumentException("The PM '" + pm.getName() + "' is already managing another team.");
         }
 
         team.setTeamName(teamsRequestDto.getTeamName());

@@ -11,6 +11,5 @@ import java.util.Optional;
 public interface TeamsRepo extends JpaRepository<Teams,Long> {
     Optional<Teams> findByTeamNameIgnoreCase(String teamName);
 
-
     Optional<Teams> findByPm(Employees pm);
 }

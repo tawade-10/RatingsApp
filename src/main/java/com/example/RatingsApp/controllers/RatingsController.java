@@ -1,10 +1,9 @@
 package com.example.RatingsApp.controllers;
 
-import com.example.RatingsApp.dto.EmployeesDto.EmployeesResponseDto;
 import com.example.RatingsApp.dto.RatingsDto.RatingsRequestDto;
 import com.example.RatingsApp.dto.RatingsDto.RatingsResponseDto;
-import com.example.RatingsApp.facade.RatingsFacade;
-import com.example.RatingsApp.service.Ratings.RatingsService;
+import com.example.RatingsApp.facade.ratings.RatingsFacade;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +21,7 @@ public class RatingsController {
     }
 
     @PostMapping
-    public ResponseEntity<RatingsResponseDto> createRating(@RequestBody RatingsRequestDto ratingsRequestDto) {
+    public ResponseEntity<RatingsResponseDto> createRating(@Valid @RequestBody RatingsRequestDto ratingsRequestDto) {
         RatingsResponseDto savedRating = ratingsFacade.createRating(ratingsRequestDto);
         return new ResponseEntity<>(savedRating, HttpStatus.CREATED);
     }
@@ -34,19 +33,25 @@ public class RatingsController {
     }
 
     @GetMapping("{ratingId}")
-    public ResponseEntity<RatingsResponseDto> getRatingById(@PathVariable Long ratingId) {
+    public ResponseEntity<RatingsResponseDto> getRatingById(@PathVariable String ratingId) {
         RatingsResponseDto getRatings = ratingsFacade.getRatingById(ratingId);
         return ResponseEntity.ok(getRatings);
     }
 
+    @GetMapping("/ratingCycle/{ratingCycles}")
+    public ResponseEntity<List<RatingsResponseDto>> getRatingsByCycles(@PathVariable String ratingCycles){
+        List<RatingsResponseDto> getRatings = ratingsFacade.getRatingsByCycles(ratingCycles);
+        return ResponseEntity.ok(getRatings);
+    }
+
     @PutMapping("{ratingId}")
-    public ResponseEntity<RatingsResponseDto> updateRating(@PathVariable Long ratingId, @RequestBody RatingsRequestDto ratingsRequestDto) {
+    public ResponseEntity<RatingsResponseDto> updateRating(@PathVariable String ratingId, @RequestBody RatingsRequestDto ratingsRequestDto) {
         RatingsResponseDto updatedRating = ratingsFacade.updateRating(ratingId, ratingsRequestDto);
         return ResponseEntity.ok(updatedRating);
     }
 
     @DeleteMapping("{ratingId}")
-    public ResponseEntity<String> deleteRating(@PathVariable Long ratingId) {
+    public ResponseEntity<String> deleteRating(@PathVariable String ratingId) {
         ratingsFacade.deleteRating(ratingId);
         return ResponseEntity.ok("Rating Deleted!");
     }

@@ -21,6 +21,10 @@ public class SelfRating implements RatingStrategy {
         ratings.setRatingRole(ratingsRequestDto.getRating_role());
         ratings.setRatingStatus(ratingsRequestDto.getRating_status());
         ratings.setRatingValue(ratingsRequestDto.getRating_value());
+        ratings.setRatingCycles(ratingsRequestDto.getRating_cycles());
+
         return ratings;
     }
 }
+
+//Rating cycle

@@ -1,4 +1,4 @@
-package com.example.RatingsApp.facade;
+package com.example.RatingsApp.facade.ratings;
 
 import com.example.RatingsApp.dto.RatingsDto.RatingsRequestDto;
 import com.example.RatingsApp.dto.RatingsDto.RatingsResponseDto;
@@ -10,9 +10,11 @@ public interface RatingsFacade {
 
     List<RatingsResponseDto> getAllRatings();
 
-    RatingsResponseDto getRatingById(Long ratingId);
+    RatingsResponseDto getRatingById(String ratingId);
 
-    RatingsResponseDto updateRating(Long ratingId, RatingsRequestDto ratingsRequestDto);
+    RatingsResponseDto updateRating(String ratingId, RatingsRequestDto ratingsRequestDto);
 
-    void deleteRating(Long ratingId);
+    void deleteRating(String ratingId);
+
+    List<RatingsResponseDto> getRatingsByCycles(String ratingCycles);
 }

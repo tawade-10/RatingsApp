@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -36,23 +37,24 @@ public class TeamsServiceImpl implements TeamsService {
             throw new APIException("Team name '" + teamsRequestDto.getTeamName() + "' already exists!");
         }
 
-        if (teamsRequestDto.getPmId() == null) {
+        if (teamsRequestDto.getPmId() == null || Objects.equals(teamsRequestDto.getPmId(), "")) {
             throw new IllegalArgumentException("Role name cannot be null or empty");
         }
 
-        Employees pm = employeesRepo.findById(teamsRequestDto.getPmId())
+        Employees pm = employeesRepo.findByEmployeeIdIgnoreCase(teamsRequestDto.getPmId())
                 .orElseThrow(() -> new ResourceNotFoundException("Employee found with ID: " + teamsRequestDto.getPmId() + " is not a PM"));
 
         // Ensure the employee has role ID = 1 (PM role)
-        if (pm.getRole().getRoleId() != 1L) {
-            throw new APIException("The employee (ID: " + pm.getEmployeeId() + ") is not a PM (roleId must be 1).");
-        }
+//        if (pm.getRole().getRoleId() != 1L) {
+//            throw new APIException("The employee (ID: " + pm.getEmployeeId() + ") is not a PM (roleId must be 1).");
+//        }
 
         // Check if this PM is already managing another team
         if (pm.getManagedTeam() != null) {
             throw new IllegalArgumentException("The PM '" + pm.getName() + "' is already managing another team.");
         }
 
+        team.setTeamId(teamsRequestDto.getTeamId());
         team.setTeamName(teamsRequestDto.getTeamName());
         team.setPm(pm);
 
@@ -66,20 +68,20 @@ public class TeamsServiceImpl implements TeamsService {
     }
 
     @Override
-    public TeamsResponseDto assignPm(Long teamId , TeamsRequestDto teamsRequestDto) {
-        Teams team = teamsRepo.findById(teamId).orElseThrow(
+    public TeamsResponseDto assignPm(String teamId , TeamsRequestDto teamsRequestDto) {
+        Teams team = teamsRepo.findByTeamIdIgnoreCase(teamId).orElseThrow(
                 () -> new ResourceNotFoundException("Team with the given id doesn't exist: " + teamId)
         );
-        Long pmId = teamsRequestDto.getPmId();
+        String pmId = teamsRequestDto.getPmId();
         if (pmId == null) {
             throw new IllegalArgumentException("PM ID must be provided in the request body.");
         }
-        Employees pm = employeesRepo.findById(pmId).orElseThrow(
+        Employees pm = employeesRepo.findByEmployeeIdIgnoreCase(pmId).orElseThrow(
                 () -> new ResourceNotFoundException("Employee (PM) not found with ID: " + pmId)
         );
-        if(pm.getRole().getRoleId() != 1L){
-            throw new APIException("The employee should have role id 1 for being PM");
-        }
+//        if(pm.getRole().getRoleId() != 1L){
+//            throw new APIException("The employee should have role id 1 for being PM");
+//        }
 
         team.setPm(pm);
         teamsRepo.save(team);
@@ -92,8 +94,8 @@ public class TeamsServiceImpl implements TeamsService {
     }
 
     @Override
-    public TeamsResponseDto getTeamById(Long teamId) {
-        Teams team = teamsRepo.findById(teamId)
+    public TeamsResponseDto getTeamById(String teamId) {
+        Teams team = teamsRepo.findByTeamIdIgnoreCase(teamId)
                 .orElseThrow(() -> new ResourceNotFoundException("Team not found with ID: " + teamId));
 
         return new TeamsResponseDto(team);
@@ -113,16 +115,17 @@ public class TeamsServiceImpl implements TeamsService {
     }
 
     @Override
-    public TeamsResponseDto updateTeam(Long teamId, TeamsRequestDto teamsRequestDto) {
-        Teams team = teamsRepo.findById(teamId)
+    public TeamsResponseDto updateTeam(String teamId, TeamsRequestDto teamsRequestDto) {
+        Teams team = teamsRepo.findByTeamIdIgnoreCase(teamId)
                 .orElseThrow(() -> new ResourceNotFoundException("Team not found with ID: " + teamId));
-        Long pmId = teamsRequestDto.getPmId();
+        String pmId = teamsRequestDto.getPmId();
         if (pmId == null) {
             throw new IllegalArgumentException("PM ID must be provided in the request body.");
         }
-        Employees pm = employeesRepo.findById(pmId).orElseThrow(
+        Employees pm = employeesRepo.findByEmployeeIdIgnoreCase(pmId).orElseThrow(
                 () -> new ResourceNotFoundException("Employee (PM) not found with ID: " + pmId)
         );
+        team.setTeamId(teamsRequestDto.getTeamId());
         team.setTeamName(teamsRequestDto.getTeamName());
         team.setPm(pm);
         Teams updatedTeam = teamsRepo.save(team);
@@ -130,10 +133,10 @@ public class TeamsServiceImpl implements TeamsService {
     }
 
     @Override
-    public TeamsResponseDto deleteTeam(Long teamId) {
-        Teams team = teamsRepo.findById(teamId)
+    public TeamsResponseDto deleteTeam(String teamId) {
+        Teams team = teamsRepo.findByTeamIdIgnoreCase(teamId)
                 .orElseThrow(() -> new ResourceNotFoundException("Team not found with ID: " + teamId));
-        teamsRepo.deleteById(teamId);
+        teamsRepo.delete(team);
         return null;
     }
 }

@@ -2,19 +2,21 @@ package com.example.RatingsApp.dto.EmployeesDto;
 
 import com.example.RatingsApp.entity.Employees;
 
+import java.util.UUID;
+
 public class EmployeesResponseDto {
 
-    private Long employeeId;
+    private String employeeId;
 
     private String name;
 
     private String email;
 
-    private Long roleId;
+    private String roleId;
 
     private String roleName;
 
-    private Long teamId;
+    private String teamId;
 
     private String teamName;
 
@@ -28,11 +30,11 @@ public class EmployeesResponseDto {
         this.teamName = (employees.getTeam() != null) ? employees.getTeam().getTeamName() : null;
     }
 
-    public Long getEmployeeId() {
+    public String getEmployeeId() {
         return employeeId;
     }
 
-    public void setEmployeeId(Long employeeId) {
+    public void setEmployeeId(String employeeId) {
         this.employeeId = employeeId;
     }
 
@@ -52,19 +54,19 @@ public class EmployeesResponseDto {
         this.email = email;
     }
 
-    public Long getRoleId() {
+    public String getRoleId() {
         return roleId;
     }
 
-    public void setRoleId(Long roleId) {
+    public void setRoleId(String roleId) {
         this.roleId = roleId;
     }
 
-    public Long getTeamId() {
+    public String getTeamId() {
         return teamId;
     }
 
-    public void setTeamId(Long teamId) {
+    public void setTeamId(String teamId) {
         this.teamId = teamId;
     }
 

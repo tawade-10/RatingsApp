@@ -2,6 +2,7 @@ package com.example.RatingsApp.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
@@ -11,8 +12,13 @@ public class Roles {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long roleId;
+    private Long id;
 
+    @NotNull
+    @Column(nullable = false, unique = true)
+    private String roleId;
+
+    @NotNull
     @Column(nullable = false, unique = true)
     private String roleName;
 
@@ -20,11 +26,19 @@ public class Roles {
     @JsonIgnore
     private List<Employees> employees;
 
-    public Long getRoleId() {
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getRoleId() {
         return roleId;
     }
 
-    public void setRoleId(Long roleId) {
+    public void setRoleId(String roleId) {
         this.roleId = roleId;
     }
 

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,19 +47,20 @@ public class EmployeesServiceImpl implements EmployeesService {
             throw new APIException("Employee with email '" + employeesRequestDto.getEmail() + "' already exists!");
         }
 
-        Roles role = rolesRepo.findById(employeesRequestDto.getRoleId())
+        Roles role = rolesRepo.findByRoleIdIgnoreCase(employeesRequestDto.getRoleId())
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found with ID: " + employeesRequestDto.getRoleId()));
 
         Teams team = null;
 
-        if (role.getRoleId() != 1L) {
+        if (!"R101".equalsIgnoreCase(role.getRoleId())) {
             if (employeesRequestDto.getTeamId() == null) {
                 throw new APIException("Team ID must be provided for non-PM employees.");
             }
-            team = teamsRepo.findById(employeesRequestDto.getTeamId())
+            team = teamsRepo.findByTeamIdIgnoreCase(employeesRequestDto.getTeamId())
                     .orElseThrow(() -> new ResourceNotFoundException("Team not found with ID: " + employeesRequestDto.getTeamId()));
         }
 
+        employee.setEmployeeId(employeesRequestDto.getEmployeeId());
         employee.setName(employeesRequestDto.getName());
         employee.setEmail(employeesRequestDto.getEmail());
         employee.setPassword(employeesRequestDto.getPassword());
@@ -70,8 +72,8 @@ public class EmployeesServiceImpl implements EmployeesService {
     }
 
     @Override
-    public EmployeesResponseDto getEmployeeById(Long employeeId) {
-        Employees employee = employeesRepo.findById(employeeId)
+    public EmployeesResponseDto getEmployeeById(String employeeId) {
+        Employees employee = employeesRepo.findByEmployeeIdIgnoreCase(employeeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + employeeId));
         return new EmployeesResponseDto(employee);
     }
@@ -90,16 +92,17 @@ public class EmployeesServiceImpl implements EmployeesService {
     }
 
     @Override
-    public EmployeesResponseDto updateEmployee(Long employeeId, EmployeesRequestDto employeesRequestDto) {
-        Employees employee = employeesRepo.findById(employeeId)
+    public EmployeesResponseDto updateEmployee(String employeeId, EmployeesRequestDto employeesRequestDto) {
+        Employees employee = employeesRepo.findByEmployeeIdIgnoreCase(employeeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + employeeId));
 
-        Roles role = rolesRepo.findById(employeesRequestDto.getRoleId())
+        Roles role = rolesRepo.findByRoleIdIgnoreCase(employeesRequestDto.getRoleId())
                         .orElseThrow(() -> new ResourceNotFoundException("Role not found with ID: " + employeesRequestDto.getRoleId()));
 
-        Teams team = teamsRepo.findById(employeesRequestDto.getTeamId())
+        Teams team = teamsRepo.findByTeamNameIgnoreCase(employeesRequestDto.getTeamId())
                         .orElseThrow(() -> new ResourceNotFoundException("Team not found with ID: " + employeesRequestDto.getTeamId()));
 
+        employee.setEmployeeId(employeesRequestDto.getEmployeeId());
         employee.setName(employeesRequestDto.getName());
         employee.setEmail(employeesRequestDto.getEmail());
         employee.setPassword(employeesRequestDto.getPassword());
@@ -110,16 +113,16 @@ public class EmployeesServiceImpl implements EmployeesService {
     }
 
     @Override
-    public EmployeesResponseDto deleteEmployee(Long employeeId) {
-        Employees employee = employeesRepo.findById(employeeId)
+    public EmployeesResponseDto deleteEmployee(String employeeId) {
+        Employees employee = employeesRepo.findByEmployeeIdIgnoreCase(employeeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + employeeId));
-        employeesRepo.deleteById(employeeId);
+        employeesRepo.delete(employee);
         return null;
     }
 
     @Override
-    public List<EmployeesResponseDto> getEmployeeByTeam(Long teamId) {
-        Teams team = teamsRepo.findById(teamId)
+    public List<EmployeesResponseDto> getEmployeeByTeam(String teamId) {
+        Teams team = teamsRepo.findByTeamIdIgnoreCase(teamId)
                 .orElseThrow(() -> new ResourceNotFoundException("Team not found with ID: " + teamId));
 
         List<Employees> employees = employeesRepo.findByTeam(team);
@@ -128,8 +131,8 @@ public class EmployeesServiceImpl implements EmployeesService {
     }
 
     @Override
-    public List<EmployeesResponseDto> getEmployeesByRole(Long roleId) {
-        Roles role = rolesRepo.findById(roleId)
+    public List<EmployeesResponseDto> getEmployeesByRole(String roleId) {
+        Roles role = rolesRepo.findByRoleIdIgnoreCase(roleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found with ID: " + roleId));
 
         List<Employees> employees = employeesRepo.findByRole(role);
@@ -138,15 +141,15 @@ public class EmployeesServiceImpl implements EmployeesService {
     }
 
     @Override
-    public EmployeesResponseDto getPmByTeam(Long teamId) {
-        Teams team = teamsRepo.findById(teamId)
+    public EmployeesResponseDto getPmByTeam(String teamId) {
+        Teams team = teamsRepo.findByTeamNameIgnoreCase(teamId)
                 .orElseThrow(() -> new ResourceNotFoundException("Team not found with ID: " + teamId));
 
-        Long pmId = team.getPm().getEmployeeId();
+        String pmId = team.getPm().getEmployeeId();
         if (pmId == null) {
             throw new IllegalArgumentException("PM ID must be provided in the request body.");
         }
-        Employees pm = employeesRepo.findById(pmId).orElseThrow(
+        Employees pm = employeesRepo.findByEmployeeIdIgnoreCase(pmId).orElseThrow(
                 () -> new ResourceNotFoundException("Employee (PM) not found with ID: " + pmId)
         );
         return new EmployeesResponseDto(pm);
@@ -155,7 +158,7 @@ public class EmployeesServiceImpl implements EmployeesService {
     @Override
     public List<EmployeesResponseDto> getAllPm() {
         List<Employees> employees = employeesRepo.findAll(Sort.by(Sort.Direction.ASC, "employeeId"));
-        List<Employees> getPmList = employees.stream().filter(emp -> emp.getRole().getRoleId() == 1).collect(Collectors.toList());
+        List<Employees> getPmList = employees.stream().filter(emp -> "R101".equalsIgnoreCase(emp.getRole().getRoleId())).collect(Collectors.toList());;
         return getPmList.stream().map(EmployeesResponseDto::new).collect(Collectors.toList());
     }
 }

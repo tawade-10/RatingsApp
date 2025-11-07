@@ -10,9 +10,11 @@ public interface RatingsService {
 
     List<RatingsResponseDto> getAllRatings();
 
-    RatingsResponseDto getRatingById(Long ratingsId);
+    RatingsResponseDto getRatingById(String ratingsId);
 
-    RatingsResponseDto updateRating(Long ratingId, RatingsRequestDto ratingsRequestDto);
+    RatingsResponseDto updateRating(String ratingId, RatingsRequestDto ratingsRequestDto);
 
-    RatingsResponseDto deleteRating(Long ratingId);
+    RatingsResponseDto deleteRating(String ratingId);
+
+    List<RatingsResponseDto> getRatingsByCycles(String ratingCycles);
 }

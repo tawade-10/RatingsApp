@@ -10,23 +10,34 @@ public class Teams {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long teamId;
+    private Long id;
+
+    @Column(nullable = false, unique = true)
+    private String teamId;
 
     @Column(nullable = false, unique = true)
     private String teamName;
 
     @OneToOne
-    @JoinColumn(name = "pm_id", unique = true)
+    @JoinColumn(name = "pm_id", referencedColumnName = "employeeId", unique = true)
     private Employees pm;
 
     @OneToMany(mappedBy = "team")
     private List<Employees> members;
 
-    public Long getTeamId() {
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getTeamId() {
         return teamId;
     }
 
-    public void setTeamId(Long teamId) {
+    public void setTeamId(String teamId) {
         this.teamId = teamId;
     }
 

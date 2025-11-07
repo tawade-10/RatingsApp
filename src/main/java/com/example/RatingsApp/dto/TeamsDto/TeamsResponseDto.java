@@ -2,13 +2,15 @@ package com.example.RatingsApp.dto.TeamsDto;
 
 import com.example.RatingsApp.entity.Teams;
 
+import java.util.UUID;
+
 public class TeamsResponseDto {
 
-    private Long teamId;
+    private String teamId;
 
     private String teamName;
 
-    private Long pmId;
+    private String pmId;
 
     public TeamsResponseDto(Teams teams) {
         this.teamId = teams.getTeamId();
@@ -16,11 +18,11 @@ public class TeamsResponseDto {
         this.pmId = (teams.getPm() != null) ? teams.getPm().getEmployeeId() : null;
     }
 
-    public Long getTeamId() {
+    public String getTeamId() {
         return teamId;
     }
 
-    public void setTeamId(Long teamId) {
+    public void setTeamId(String teamId) {
         this.teamId = teamId;
     }
 
@@ -32,11 +34,11 @@ public class TeamsResponseDto {
         this.teamName = teamName;
     }
 
-    public Long getPmId() {
+    public String getPmId() {
         return pmId;
     }
 
-    public void setPm(Long pmId) {
+    public void setPm(String pmId) {
         this.pmId = pmId;
     }
 }

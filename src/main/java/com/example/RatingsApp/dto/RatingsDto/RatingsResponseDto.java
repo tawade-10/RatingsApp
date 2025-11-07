@@ -1,18 +1,21 @@
 package com.example.RatingsApp.dto.RatingsDto;
 
 import com.example.RatingsApp.entity.Ratings;
+import com.example.RatingsApp.entity.enums.RatingCycles;
 import com.example.RatingsApp.entity.enums.RatingRoles;
 import com.example.RatingsApp.entity.enums.RatingStatus;
 
 public class RatingsResponseDto {
 
-    private Long ratingId;
+    private Long id;
 
-    private Long employeeId;
+    private String ratingId;
+
+    private String employeeId;
 
     private String employeeName;
 
-    private Long ratedById;
+    private String ratedById;
 
     private String ratedByName;
 
@@ -22,8 +25,11 @@ public class RatingsResponseDto {
 
     private int ratingValue;
 
+    private RatingCycles ratingCycles;
+
 
     public RatingsResponseDto(Ratings rating) {
+        this.id = rating.getRatedBy().getId();
         this.ratingId = rating.getRatingId();
         this.employeeId = rating.getEmployee().getEmployeeId();
         this.employeeName = rating.getEmployee().getName();
@@ -32,22 +38,30 @@ public class RatingsResponseDto {
         this.ratingRole = rating.getRatingRole();
         this.ratingStatus = rating.getRatingStatus();
         this.ratingValue = rating.getRatingValue();
+        this.ratingCycles = rating.getRatingCycles();
     }
 
+    public Long getId() {
+        return id;
+    }
 
-    public Long getRatingId() {
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getRatingId() {
         return ratingId;
     }
 
-    public void setRatingId(Long ratingId) {
+    public void setRatingId(String ratingId) {
         this.ratingId = ratingId;
     }
 
-    public Long getEmployeeId() {
+    public String getEmployeeId() {
         return employeeId;
     }
 
-    public void setEmployeeId(Long employeeId) {
+    public void setEmployeeId(String employeeId) {
         this.employeeId = employeeId;
     }
 
@@ -59,11 +73,11 @@ public class RatingsResponseDto {
         this.employeeName = employeeName;
     }
 
-    public Long getRatedById() {
+    public String getRatedById() {
         return ratedById;
     }
 
-    public void setRatedById(Long ratedById) {
+    public void setRatedById(String ratedById) {
         this.ratedById = ratedById;
     }
 
@@ -97,5 +111,13 @@ public class RatingsResponseDto {
 
     public void setRatingValue(int ratingValue) {
         this.ratingValue = ratingValue;
+    }
+
+    public RatingCycles getRatingCycles() {
+        return ratingCycles;
+    }
+
+    public void setRatingCycles(RatingCycles ratingCycles) {
+        this.ratingCycles = ratingCycles;
     }
 }

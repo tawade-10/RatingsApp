@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface EmployeesRepo extends JpaRepository<Employees,Long> {
@@ -20,6 +21,8 @@ public interface EmployeesRepo extends JpaRepository<Employees,Long> {
     List<Employees> findByTeam(Teams team);
 
     List<Employees> findByRole(Roles role);
+
+    Optional<Employees> findByEmployeeIdIgnoreCase(String employeeId);
 
     //Optional<UserDetails> findByUsername(String email);
 }

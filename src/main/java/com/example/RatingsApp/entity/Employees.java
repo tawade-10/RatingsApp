@@ -2,14 +2,19 @@ package com.example.RatingsApp.entity;
 
 import jakarta.persistence.*;
 import java.util.List;
+import java.util.UUID;
 
+//lombok @Getter @Setter
 @Entity
 @Table(name = "employee")
 public class Employees {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long employeeId;
+    private Long id;
+
+    @Column(nullable = false, unique = true)
+    private String employeeId;
 
     @Column(nullable = false)
     private String name;
@@ -20,15 +25,15 @@ public class Employees {
     @Column(nullable = false)
     private String password;
 
-    @ManyToOne
-    @JoinColumn(name = "role_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "role_id", referencedColumnName = "roleId", nullable = false)
     private Roles role;
 
-    @ManyToOne
-    @JoinColumn(name = "team_id",  nullable = true)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "team_id", referencedColumnName = "teamId", nullable = true)
     private Teams team;
 
-    @OneToMany(mappedBy = "ratedBy")
+    @OneToMany(mappedBy = "ratedBy") // why
     private List<Ratings> ratingsGiven;
 
     @OneToMany(mappedBy = "employee")
@@ -37,11 +42,19 @@ public class Employees {
     @OneToOne(mappedBy = "pm")
     private Teams managedTeam;
 
-    public Long getEmployeeId() {
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getEmployeeId() {
         return employeeId;
     }
 
-    public void setEmployeeId(Long employeeId) {
+    public void setEmployeeId(String employeeId) {
         this.employeeId = employeeId;
     }
 

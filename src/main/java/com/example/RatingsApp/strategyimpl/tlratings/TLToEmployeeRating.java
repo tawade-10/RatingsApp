@@ -21,24 +21,24 @@ public class TLToEmployeeRating implements RatingStrategy {
     @Override
     public Ratings giveRating(RatingsRequestDto ratingsRequestDto) {
 
-        Long tlId = ratingsRequestDto.getRated_by_id();
-        Long empId = ratingsRequestDto.getEmployee_id();
+        String tlId = ratingsRequestDto.getRated_by_id();
+        String empId = ratingsRequestDto.getEmployee_id();
 
         if(tlId == null || empId == null){
             throw new ResourceNotFoundException("Both TL ID and Employee ID should be provided!");
         }
 
-        Employees tl = employeesRepo.findById(tlId)
+        Employees tl = employeesRepo.findByEmployeeIdIgnoreCase(tlId)
                 .orElseThrow(() -> new ResourceNotFoundException("TL not found with ID: " + tlId));
 
-        if(tl.getRole() == null || tl.getRole().getRoleId() != 3L){
+        if(tl.getRole() == null || !"R103".equalsIgnoreCase(tl.getRole().getRoleId())){
             throw new APIException("Only TL can give this rating.");
         }
 
-        Employees emp = employeesRepo.findById(empId)
+        Employees emp = employeesRepo.findByEmployeeIdIgnoreCase(empId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + empId));
 
-        if(emp.getRole() == null || emp.getRole().getRoleId() != 4L){
+        if(emp.getRole() == null || !"R104".equalsIgnoreCase(emp.getRole().getRoleId())){
             throw new APIException("Only Employee can receive this rating.");
         }
 

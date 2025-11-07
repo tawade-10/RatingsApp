@@ -12,4 +12,6 @@ public interface TeamsRepo extends JpaRepository<Teams,Long> {
     Optional<Teams> findByTeamNameIgnoreCase(String teamName);
 
     Optional<Teams> findByPm(Employees pm);
+
+    Optional<Teams> findByTeamIdIgnoreCase(String teamId);
 }

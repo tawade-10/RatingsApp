@@ -1,5 +1,6 @@
 package com.example.RatingsApp.entity;
 
+import com.example.RatingsApp.entity.enums.RatingCycles;
 import com.example.RatingsApp.entity.enums.RatingRoles;
 import com.example.RatingsApp.entity.enums.RatingStatus;
 import jakarta.persistence.*;
@@ -10,13 +11,16 @@ public class Ratings {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long ratingId;
+    private Long id;
 
-    @ManyToOne
+    @Column(nullable = false, unique = true)
+    private String ratingId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", nullable = false)
     private Employees employee;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "rated_by_id", nullable = false)
     private Employees ratedBy;
 
@@ -28,14 +32,26 @@ public class Ratings {
     @Column(nullable = false)
     private RatingStatus ratingStatus;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    private RatingCycles ratingCycles;
+
+    @Column(nullable = false)//Data type of rating
     private int ratingValue;
 
-    public Long getRatingId() {
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getRatingId() {
         return ratingId;
     }
 
-    public void setRatingId(Long ratingId) {
+    public void setRatingId(String ratingId) {
         this.ratingId = ratingId;
     }
 
@@ -77,5 +93,13 @@ public class Ratings {
 
     public void setRatingValue(int ratingValue) {
         this.ratingValue = ratingValue;
+    }
+
+    public RatingCycles getRatingCycles() {
+        return ratingCycles;
+    }
+
+    public void setRatingCycles(RatingCycles ratingCycles) {
+        this.ratingCycles = ratingCycles;
     }
 }

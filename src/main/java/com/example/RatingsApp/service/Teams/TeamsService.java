@@ -8,14 +8,14 @@ import java.util.List;
 public interface TeamsService {
     TeamsResponseDto createTeam(TeamsRequestDto teamsRequestDto);
 
-    TeamsResponseDto assignPm(Long teamId, TeamsRequestDto teamsRequestDto);
-    TeamsResponseDto getTeamById(Long teamId);
+    TeamsResponseDto assignPm(String teamId, TeamsRequestDto teamsRequestDto);
+    TeamsResponseDto getTeamById(String teamId);
 
     TeamsResponseDto getTeamByName(String teamName);
 
     List<TeamsResponseDto> getAllTeams();
 
-    TeamsResponseDto updateTeam(Long teamId, TeamsRequestDto teamsRequestDto);
+    TeamsResponseDto updateTeam(String teamId, TeamsRequestDto teamsRequestDto);
 
-    TeamsResponseDto deleteTeam(Long teamId);
+    TeamsResponseDto deleteTeam(String teamId);
 }

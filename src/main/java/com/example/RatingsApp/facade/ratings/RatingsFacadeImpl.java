@@ -1,8 +1,7 @@
-package com.example.RatingsApp.facade;
+package com.example.RatingsApp.facade.ratings;
 
 import com.example.RatingsApp.dto.RatingsDto.RatingsRequestDto;
 import com.example.RatingsApp.dto.RatingsDto.RatingsResponseDto;
-import com.example.RatingsApp.facade.RatingsFacade;
 import com.example.RatingsApp.service.Ratings.RatingsService;
 import org.springframework.stereotype.Component;
 import java.util.List;
@@ -27,17 +26,22 @@ public class RatingsFacadeImpl implements RatingsFacade {
     }
 
     @Override
-    public RatingsResponseDto getRatingById(Long ratingId) {
+    public RatingsResponseDto getRatingById(String ratingId) {
         return ratingsService.getRatingById(ratingId);
     }
 
     @Override
-    public RatingsResponseDto updateRating(Long ratingId, RatingsRequestDto ratingsRequestDto) {
+    public RatingsResponseDto updateRating(String ratingId, RatingsRequestDto ratingsRequestDto) {
         return ratingsService.updateRating(ratingId, ratingsRequestDto);
     }
 
     @Override
-    public void deleteRating(Long ratingId) {
+    public void deleteRating(String ratingId) {
         ratingsService.deleteRating(ratingId);
+    }
+
+    @Override
+    public List<RatingsResponseDto> getRatingsByCycles(String ratingCycles) {
+        return ratingsService.getRatingsByCycles(ratingCycles);
     }
 }

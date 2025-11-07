@@ -4,6 +4,7 @@ import com.example.RatingsApp.dto.RolesDto.RolesRequestDto;
 import com.example.RatingsApp.dto.RolesDto.RolesResponseDto;
 import com.example.RatingsApp.entity.Roles;
 import com.example.RatingsApp.service.Roles.RolesService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,13 +25,13 @@ public class RolesController {
     }
 
     @PostMapping
-    public ResponseEntity<RolesResponseDto> createRole(@RequestBody RolesRequestDto rolesRequestDto) {
+    public ResponseEntity<RolesResponseDto> createRole(@Valid @RequestBody RolesRequestDto rolesRequestDto) {
         RolesResponseDto savedRole = rolesService.createRole(rolesRequestDto);
         return new ResponseEntity<>(savedRole, HttpStatus.CREATED);
     }
 
-    @GetMapping("{id}")
-    public ResponseEntity<RolesResponseDto> getRoleById(@PathVariable("id") Long roleId){
+    @GetMapping("{roleId}")
+    public ResponseEntity<RolesResponseDto> getRoleById(@PathVariable("roleId") String roleId){
         RolesResponseDto rolesResponseDto = rolesService.getRoleById(roleId);
         return ResponseEntity.ok(rolesResponseDto);
     }
@@ -41,14 +42,14 @@ public class RolesController {
         return ResponseEntity.ok(listRoles);
     }
 
-    @PutMapping("{id}")
-    public ResponseEntity<RolesResponseDto> updateRole(@PathVariable("id") Long roleId, @RequestBody RolesRequestDto updatedRole){
+    @PutMapping("{roleId}")
+    public ResponseEntity<RolesResponseDto> updateRole(@PathVariable("roleId") String roleId, @RequestBody RolesRequestDto updatedRole){
         RolesResponseDto rolesResponseDto = rolesService.updateRole(roleId,updatedRole);
         return ResponseEntity.ok(rolesResponseDto);
     }
 
-    @DeleteMapping("{id}")
-    public ResponseEntity<String> deleteRole(@PathVariable("id") Long roleId){
+    @DeleteMapping("{roleId}")
+    public ResponseEntity<String> deleteRole(@PathVariable("roleId") String roleId){
         RolesResponseDto rolesResponseDto = rolesService.deleteRole(roleId);
         return ResponseEntity.ok("Role deleted successfully!");
     }

@@ -2,16 +2,27 @@ package com.example.RatingsApp.dto.TeamsDto;
 
 public class TeamsRequestDto {
 
+    private String teamId;
+
     private String teamName;
 
-    private Long pmId;
+    private String pmId;
 
     public TeamsRequestDto() {
     }
 
-    public TeamsRequestDto(String teamName, Long pmId) {
+    public TeamsRequestDto(String teamId, String teamName, String pmId) {
+        this.teamId = teamId;
         this.teamName = teamName;
         this.pmId = pmId;
+    }
+
+    public String getTeamId() {
+        return teamId;
+    }
+
+    public void setTeamId(String teamId) {
+        this.teamId = teamId;
     }
 
     public String getTeamName() {
@@ -22,11 +33,11 @@ public class TeamsRequestDto {
         this.teamName = teamName;
     }
 
-    public Long getPmId() {
+    public String getPmId() {
         return pmId;
     }
 
-    public void setPmId(Long pmId) {
+    public void setPmId(String pmId) {
         this.pmId = pmId;
     }
 }

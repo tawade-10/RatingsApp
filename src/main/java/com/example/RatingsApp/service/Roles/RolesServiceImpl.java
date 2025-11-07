@@ -10,6 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -24,28 +25,39 @@ public class RolesServiceImpl implements RolesService {
 
     @Override
     public RolesResponseDto createRole(RolesRequestDto rolesRequestDto) {
-        if (rolesRequestDto.getRoleName() == null) {
+
+        if (rolesRequestDto.getRoleId() == null || Objects.equals(rolesRequestDto.getRoleId(), "")) {
+            throw new IllegalArgumentException("Role ID cannot be null or empty");
+        }
+
+        if (rolesRequestDto.getRoleName() == null || Objects.equals(rolesRequestDto.getRoleName(), "")) {
             throw new IllegalArgumentException("Role name cannot be null or empty");
         }
 
-        Optional<Roles> existingRole = rolesRepo.findByRoleName(rolesRequestDto.getRoleName());
-        if (existingRole.isPresent()) {
+        Optional<Roles> existingRoleId = rolesRepo.findByRoleIdIgnoreCase(rolesRequestDto.getRoleId());
+        if (existingRoleId.isPresent()) {
+            throw new APIException("The given role ID '" + rolesRequestDto.getRoleId() + "' already exists!");
+        }
+
+        Optional<Roles> existingRoleName = rolesRepo.findByRoleNameIgnoreCase(rolesRequestDto.getRoleName());
+        if (existingRoleName.isPresent()) {
             throw new APIException("The given role name '" + rolesRequestDto.getRoleName() + "' already exists!");
         }
 
         Roles role = new Roles();
+        role.setRoleId(rolesRequestDto.getRoleId());
         role.setRoleName(rolesRequestDto.getRoleName());
         Roles savedRole = rolesRepo.save(role);
         return new RolesResponseDto(savedRole);
     }
 
     @Override
-    public RolesResponseDto getRoleById(Long roleId){
+    public RolesResponseDto getRoleById(String roleId){
         if(roleId == null){
             throw new IllegalArgumentException("Role id must not be null");
         }
 
-        Roles role = rolesRepo.findById(roleId)
+        Roles role = rolesRepo.findByRoleIdIgnoreCase(roleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Role with id " + roleId + " not found"));
 
         return new RolesResponseDto(role);
@@ -58,21 +70,22 @@ public class RolesServiceImpl implements RolesService {
     }
 
     @Override
-    public RolesResponseDto updateRole(Long roleId, RolesRequestDto rolesRequestDto) {
-        Roles role = rolesRepo.findById(roleId).orElseThrow(
-                () -> new ResourceNotFoundException("Role with the given id doesn't exist : "+ roleId)
-        );
-        role.setRoleName(rolesRequestDto.getRoleName());
-        Roles updatedRoleObj = rolesRepo.save(role);
-        return new RolesResponseDto(updatedRoleObj);
+    public RolesResponseDto updateRole(String roleId, RolesRequestDto rolesRequestDto) {
+        Roles existingRole = rolesRepo.findByRoleIdIgnoreCase(roleId)
+                .orElseThrow(() -> new ResourceNotFoundException("Role with the given id doesn't exist: " + roleId));
+
+        existingRole.setRoleName(rolesRequestDto.getRoleName());
+        Roles updatedRole = rolesRepo.save(existingRole);
+        return new RolesResponseDto(updatedRole);
     }
 
+
     @Override
-    public RolesResponseDto deleteRole(Long roleId) {
-        Roles role = rolesRepo.findById(roleId).orElseThrow(
+    public RolesResponseDto deleteRole(String roleId) {
+        Roles role = rolesRepo.findByRoleIdIgnoreCase(roleId).orElseThrow(
                 () -> new ResourceNotFoundException("Role with the given id doesn't exist : "+ roleId)
         );
-        rolesRepo.deleteById(roleId);
+        rolesRepo.delete(role);
         return null;
     }
 }

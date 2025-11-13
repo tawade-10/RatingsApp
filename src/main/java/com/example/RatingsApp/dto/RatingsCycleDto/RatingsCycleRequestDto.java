@@ -1,41 +1,30 @@
-package com.example.RatingsApp.entity;
+package com.example.RatingsApp.dto.RatingsCycleDto;
 
 import com.example.RatingsApp.entity.enums.CycleStatus;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+
 import java.time.LocalDate;
-import java.util.List;
 
-@Entity
-@Table(name = "ratings_cycle")
-public class RatingsCycle {
+public class RatingsCycleRequestDto {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false, unique = true)
     private String cycleId;
 
-    @Column(nullable = false, unique = true)
     private String cycleName;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private CycleStatus status;
 
     private LocalDate startDate;
 
     private LocalDate endDate;
 
-    @OneToMany(mappedBy = "ratingsCycle",fetch = FetchType.LAZY)
-    private List<Ratings> ratings;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+    public RatingsCycleRequestDto(String cycleId, String cycleName, CycleStatus status, LocalDate startDate, LocalDate endDate) {
+        this.cycleId = cycleId;
+        this.cycleName = cycleName;
+        this.status = status;
+        this.startDate = startDate;
+        this.endDate = endDate;
     }
 
     public String getCycleId() {
@@ -76,13 +65,5 @@ public class RatingsCycle {
 
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
-    }
-
-    public List<Ratings> getRatings() {
-        return ratings;
-    }
-
-    public void setRatings(List<Ratings> ratings) {
-        this.ratings = ratings;
     }
 }

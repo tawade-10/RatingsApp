@@ -25,4 +25,6 @@ public interface EmployeesService {
     List<EmployeesResponseDto> getAllEmployees();
 
     List<EmployeesResponseDto> getEmployeeByName(String name);
+
+    String verify(EmployeesRequestDto employeesRequestDto);
 }

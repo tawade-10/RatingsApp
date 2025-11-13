@@ -26,4 +26,6 @@ public interface EmployeesFacade {
     EmployeesResponseDto updateEmployee(String employeeId, EmployeesRequestDto employeesRequestDto);
 
     EmployeesResponseDto deleteEmployee(String employeeId);
+
+    String verify(EmployeesRequestDto employeesRequestDto);
 }

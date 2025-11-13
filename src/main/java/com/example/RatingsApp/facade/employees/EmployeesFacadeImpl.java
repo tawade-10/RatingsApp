@@ -65,4 +65,9 @@ public class EmployeesFacadeImpl implements EmployeesFacade{
     public EmployeesResponseDto deleteEmployee(String employeeId) {
         return employeesService.deleteEmployee(employeeId);
     }
+
+    @Override
+    public String verify(EmployeesRequestDto employeesRequestDto) {
+        return employeesService.verify(employeesRequestDto);
+    }
 }

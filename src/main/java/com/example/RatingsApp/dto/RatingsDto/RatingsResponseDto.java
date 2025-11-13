@@ -33,7 +33,7 @@ public class RatingsResponseDto {
         this.ratedByName = rating.getRatedBy().getName();
         this.ratingStatus = rating.getRatingStatus();
         this.ratingValue = rating.getRatingValue();
-        this.ratings_cycle = rating.getRatingsCycle();
+        this.ratings_cycle = (rating.getRatingsCycle() != null) ? rating.getRatingsCycle().getCycleId() : null;
     }
 
     public Long getId() {

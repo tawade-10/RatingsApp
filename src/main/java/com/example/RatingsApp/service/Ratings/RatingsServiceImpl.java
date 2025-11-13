@@ -69,7 +69,7 @@ public class RatingsServiceImpl implements RatingsService {
         rating.setEmployee(employee);
         rating.setRatedBy(ratedBy);
         rating.setRatingRole(derivedRole);
-        rating.setRatingsCycle(ratingsRequestDto.getRatings_cycle());
+        // rating.setRatingsCycle();
         rating.setRatingStatus(RatingStatus.SUBMITTED);
         Ratings savedRating = ratingsRepo.save(rating);
 

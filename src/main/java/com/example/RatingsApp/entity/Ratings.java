@@ -36,13 +36,11 @@ public class Ratings {
     @Column(nullable = false)
     private int ratingValue;
 
-    @Column(nullable = false)
-    private String ratingsCycle;
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "cycle_id", nullable = false)
-//    private RatingsCycle ratingCycle;
-
-    // Getters and Setters
+//    @Column(nullable = false)
+//    private String ratingsCycle;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cycle_name", nullable = false)
+    private RatingsCycle ratingsCycle;
 
     public Long getId() {
         return id;
@@ -100,11 +98,11 @@ public class Ratings {
         this.ratingValue = ratingValue;
     }
 
-    public String getRatingsCycle() {
+    public RatingsCycle getRatingsCycle() {
         return ratingsCycle;
     }
 
-    public void setRatingsCycle(String ratingsCycle) {
+    public void setRatingsCycle(RatingsCycle ratingsCycle) {
         this.ratingsCycle = ratingsCycle;
     }
 }

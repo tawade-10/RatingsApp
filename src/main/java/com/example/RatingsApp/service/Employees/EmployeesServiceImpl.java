@@ -10,7 +10,12 @@ import com.example.RatingsApp.exception.ResourceNotFoundException;
 import com.example.RatingsApp.repository.EmployeesRepo;
 import com.example.RatingsApp.repository.RolesRepo;
 import com.example.RatingsApp.repository.TeamsRepo;
+import com.example.RatingsApp.service.Security.JwtService;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,10 +32,19 @@ public class EmployeesServiceImpl implements EmployeesService {
 
     private final TeamsRepo teamsRepo;
 
-    public EmployeesServiceImpl(EmployeesRepo employeesRepo, RolesRepo rolesRepo, TeamsRepo teamsRepo) {
+    private final PasswordEncoder passwordEncoder;
+
+    private final AuthenticationManager authenticationManager;
+
+    private final JwtService jwtService;
+
+    public EmployeesServiceImpl(EmployeesRepo employeesRepo, RolesRepo rolesRepo, TeamsRepo teamsRepo, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtService jwtService) {
         this.employeesRepo = employeesRepo;
         this.rolesRepo = rolesRepo;
         this.teamsRepo = teamsRepo;
+        this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
     }
 
     @Override
@@ -67,7 +81,7 @@ public class EmployeesServiceImpl implements EmployeesService {
         employee.setEmployeeId(employeesRequestDto.getEmployeeId());
         employee.setName(employeesRequestDto.getName());
         employee.setEmail(employeesRequestDto.getEmail());
-        employee.setPassword(employeesRequestDto.getPassword());
+        employee.setPassword(passwordEncoder.encode(employeesRequestDto.getPassword()));
         employee.setRole(role);
         employee.setTeam(team);
         Employees saveEmployee = employeesRepo.save(employee);
@@ -93,6 +107,16 @@ public class EmployeesServiceImpl implements EmployeesService {
         List<Employees> listEmployees = employeesRepo.findAll(Sort.by(Sort.Direction.ASC, "employeeId"));
         List<Employees> getEmployeesByName = listEmployees.stream().filter(emp -> emp.getName().equalsIgnoreCase(name)).collect(Collectors.toList());
         return getEmployeesByName.stream().map(EmployeesResponseDto::new).collect(Collectors.toList());
+    }
+
+    @Override
+    public String verify(EmployeesRequestDto employeesRequestDto) {
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(employeesRequestDto.getEmail(), employeesRequestDto.getPassword()));
+
+        if(authentication.isAuthenticated()){
+            return jwtService.generateToken(employeesRequestDto.getEmail());
+        }
+        return "Fail";
     }
 
     @Override

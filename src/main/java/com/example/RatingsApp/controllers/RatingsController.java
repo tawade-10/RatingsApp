@@ -38,6 +38,18 @@ public class RatingsController {
         return ResponseEntity.ok(getRatings);
     }
 
+    @GetMapping("/received/{employeeId}")
+    public ResponseEntity<List<RatingsResponseDto>> getReceivedRatings(@PathVariable String employeeId){
+        List<RatingsResponseDto> receivedRatings = ratingsFacade.getReceivedRatings(employeeId);
+        return ResponseEntity.ok(receivedRatings);
+    }
+
+    @GetMapping("/given/{ratedById}")
+    public ResponseEntity<List<RatingsResponseDto>> getGivenRatings(@PathVariable String ratedById){
+        List<RatingsResponseDto> givenRatings = ratingsFacade.getGivenRatings(ratedById);
+        return ResponseEntity.ok(givenRatings);
+    }
+
     @GetMapping("/ratingCycle/{ratingCycles}")
     public ResponseEntity<List<RatingsResponseDto>> getRatingsByCycles(@PathVariable String ratingCycles){
         List<RatingsResponseDto> getRatings = ratingsFacade.getRatingsByCycles(ratingCycles);
@@ -48,6 +60,18 @@ public class RatingsController {
     public ResponseEntity<RatingsResponseDto> updateRating(@PathVariable String ratingId, @RequestBody RatingsRequestDto ratingsRequestDto) {
         RatingsResponseDto updatedRating = ratingsFacade.updateRating(ratingId, ratingsRequestDto);
         return ResponseEntity.ok(updatedRating);
+    }
+
+    @PutMapping("/{ratingId}/approve")
+    public ResponseEntity<RatingsResponseDto> approveRating(@PathVariable String ratingId) {
+        RatingsResponseDto approvedRating = ratingsFacade.approveRating(ratingId);
+        return ResponseEntity.ok(approvedRating);
+    }
+
+    @PutMapping("{ratingId}/broadcast")
+    public ResponseEntity<RatingsResponseDto> broadcastRating(@PathVariable String ratingId) {
+        RatingsResponseDto broadcastedRating = ratingsFacade.broadcastRating(ratingId);
+        return ResponseEntity.ok(broadcastedRating);
     }
 
     @DeleteMapping("{ratingId}")

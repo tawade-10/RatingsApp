@@ -16,13 +16,11 @@ public interface EmployeesRepo extends JpaRepository<Employees,Long> {
 
     Optional<Employees> findByName(String name);
 
-    Optional<Employees> findByEmail(String email);
-
     List<Employees> findByTeam(Teams team);
 
     List<Employees> findByRole(Roles role);
 
     Optional<Employees> findByEmployeeIdIgnoreCase(String employeeId);
 
-    //Optional<UserDetails> findByUsername(String email);
+    Optional<Employees> findByEmail(String email);
 }

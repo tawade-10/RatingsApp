@@ -18,8 +18,8 @@ public class Teams {
     @Column(nullable = false, unique = true)
     private String teamName;
 
-    @OneToOne
-    @JoinColumn(name = "pm_id", referencedColumnName = "employeeId", unique = true)
+    @ManyToOne
+    @JoinColumn(name = "pm_id", referencedColumnName = "employeeId")
     private Employees pm;
 
     @OneToMany(mappedBy = "team")

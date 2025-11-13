@@ -25,8 +25,8 @@ public class EmployeesController {
     }
 
     @PostMapping
-    public ResponseEntity<EmployeesResponseDto> createEmployee(@Valid @RequestBody EmployeesRequestDto employeesRequestDto) {
-        EmployeesResponseDto savedEmployee = employeesFacade.createEmployee(employeesRequestDto);
+    public ResponseEntity<EmployeesResponseDto> createEmployee(@Valid @RequestBody EmployeesRequestDto employeesRequestDto, String roleId) {
+        EmployeesResponseDto savedEmployee = employeesFacade.createEmployee(employeesRequestDto, roleId);
         return new ResponseEntity<>(savedEmployee, HttpStatus.CREATED);
     }
 

@@ -11,12 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component("PM_TO_EMPLOYEE")
-public class PmToEmployeeRating implements RatingStrategy {
+public class PmToIndividualRating implements RatingStrategy {
 
     private final EmployeesRepo employeesRepo;
 
     @Autowired
-    public PmToEmployeeRating(EmployeesRepo employeesRepo) {
+    public PmToIndividualRating(EmployeesRepo employeesRepo) {
         this.employeesRepo = employeesRepo;
     }
 
@@ -39,7 +39,7 @@ public class PmToEmployeeRating implements RatingStrategy {
         Employees employee = employeesRepo.findByEmployeeIdIgnoreCase(employeeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + employeeId));
 
-        if(employee.getRole() == null || !"R104".equalsIgnoreCase(pm.getRole().getRoleId())){
+        if(employee.getRole() == null || !"R103".equalsIgnoreCase(employee.getRole().getRoleId())){
             throw new APIException("Only Employee can receive this rating.");
         }
 
@@ -53,8 +53,7 @@ public class PmToEmployeeRating implements RatingStrategy {
 
         Ratings rating = new Ratings();
         rating.setRatingValue(ratingsRequestDto.getRating_value());
-        rating.setRatingRole(ratingsRequestDto.getRating_role());
-        rating.setRatingStatus(ratingsRequestDto.getRating_status());
+       // rating.setRatingRole(ratingsRequestDto.getRating_role());
 
         return rating;
     }

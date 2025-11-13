@@ -3,6 +3,7 @@ package com.example.RatingsApp.service.Teams;
 import com.example.RatingsApp.dto.TeamsDto.TeamsRequestDto;
 import com.example.RatingsApp.dto.TeamsDto.TeamsResponseDto;
 import com.example.RatingsApp.entity.Employees;
+import com.example.RatingsApp.entity.Roles;
 import com.example.RatingsApp.entity.Teams;
 import com.example.RatingsApp.exception.APIException;
 import com.example.RatingsApp.exception.ResourceNotFoundException;
@@ -29,8 +30,12 @@ public class TeamsServiceImpl implements TeamsService {
     }
 
     @Override
-    public TeamsResponseDto createTeam(TeamsRequestDto teamsRequestDto) {
+    public TeamsResponseDto createTeam(TeamsRequestDto teamsRequestDto, String roleId) {
         Teams team = new Teams();
+
+//        if (!"R100".equalsIgnoreCase(roleId)) {
+//            throw new APIException("Only ADMIN can create Teams!");
+//        }
 
         Optional<Teams> existingTeam = teamsRepo.findByTeamNameIgnoreCase(teamsRequestDto.getTeamName());
         if(existingTeam.isPresent()) {
@@ -45,13 +50,9 @@ public class TeamsServiceImpl implements TeamsService {
                 .orElseThrow(() -> new ResourceNotFoundException("Employee found with ID: " + teamsRequestDto.getPmId() + " is not a PM"));
 
         // Ensure the employee has role ID = 1 (PM role)
-//        if (pm.getRole().getRoleId() != 1L) {
-//            throw new APIException("The employee (ID: " + pm.getEmployeeId() + ") is not a PM (roleId must be 1).");
-//        }
-
-        // Check if this PM is already managing another team
-        if (pm.getManagedTeam() != null) {
-            throw new IllegalArgumentException("The PM '" + pm.getName() + "' is already managing another team.");
+        Roles role = pm.getRole();
+        if (role == null || !"R101".equalsIgnoreCase(role.getRoleId())) {
+            throw new APIException("The employee (ID: " + pm.getEmployeeId() + ") is not a PM. Only employees with roleId = R101 can be assigned as PM.");
         }
 
         team.setTeamId(teamsRequestDto.getTeamId());

@@ -1,8 +1,7 @@
 package com.example.RatingsApp.dto.RatingsDto;
 
 import com.example.RatingsApp.entity.Ratings;
-import com.example.RatingsApp.entity.enums.RatingCycles;
-import com.example.RatingsApp.entity.enums.RatingRoles;
+// import com.example.RatingsApp.entity.RatingsCycle;
 import com.example.RatingsApp.entity.enums.RatingStatus;
 
 public class RatingsResponseDto {
@@ -19,26 +18,22 @@ public class RatingsResponseDto {
 
     private String ratedByName;
 
-    private RatingRoles ratingRole;
-
     private RatingStatus ratingStatus;
 
     private int ratingValue;
 
-    private RatingCycles ratingCycles;
-
+    private String ratings_cycle;
 
     public RatingsResponseDto(Ratings rating) {
-        this.id = rating.getRatedBy().getId();
+        this.id = rating.getId();
         this.ratingId = rating.getRatingId();
         this.employeeId = rating.getEmployee().getEmployeeId();
         this.employeeName = rating.getEmployee().getName();
         this.ratedById = rating.getRatedBy().getEmployeeId();
         this.ratedByName = rating.getRatedBy().getName();
-        this.ratingRole = rating.getRatingRole();
         this.ratingStatus = rating.getRatingStatus();
         this.ratingValue = rating.getRatingValue();
-        this.ratingCycles = rating.getRatingCycles();
+        this.ratings_cycle = rating.getRatingsCycle();
     }
 
     public Long getId() {
@@ -89,14 +84,6 @@ public class RatingsResponseDto {
         this.ratedByName = ratedByName;
     }
 
-    public RatingRoles getRatingRole() {
-        return ratingRole;
-    }
-
-    public void setRatingRole(RatingRoles ratingRole) {
-        this.ratingRole = ratingRole;
-    }
-
     public RatingStatus getRatingStatus() {
         return ratingStatus;
     }
@@ -113,11 +100,11 @@ public class RatingsResponseDto {
         this.ratingValue = ratingValue;
     }
 
-    public RatingCycles getRatingCycles() {
-        return ratingCycles;
+    public String getRatings_cycle() {
+        return ratings_cycle;
     }
 
-    public void setRatingCycles(RatingCycles ratingCycles) {
-        this.ratingCycles = ratingCycles;
+    public void setRatings_cycle(String ratings_cycle) {
+        this.ratings_cycle = ratings_cycle;
     }
 }

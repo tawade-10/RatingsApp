@@ -44,4 +44,24 @@ public class RatingsFacadeImpl implements RatingsFacade {
     public List<RatingsResponseDto> getRatingsByCycles(String ratingCycles) {
         return ratingsService.getRatingsByCycles(ratingCycles);
     }
+
+    @Override
+    public RatingsResponseDto approveRating(String ratingId) {
+        return ratingsService.approveRating(ratingId);
+    }
+
+    @Override
+    public RatingsResponseDto broadcastRating(String ratingId) {
+        return ratingsService.broadcastRating(ratingId);
+    }
+
+    @Override
+    public List<RatingsResponseDto> getReceivedRatings(String employeeId) {
+        return ratingsService.getReceivedRatings(employeeId);
+    }
+
+    @Override
+    public List<RatingsResponseDto> getGivenRatings(String ratedById) {
+        return ratingsService.getGivenRatings(ratedById);
+    }
 }

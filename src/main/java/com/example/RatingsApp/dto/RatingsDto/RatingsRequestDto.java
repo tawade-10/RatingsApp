@@ -1,14 +1,14 @@
 package com.example.RatingsApp.dto.RatingsDto;
 
-import com.example.RatingsApp.entity.enums.RatingCycles;
-import com.example.RatingsApp.entity.enums.RatingRoles;
+
+// import com.example.RatingsApp.entity.RatingsCycle;
 import com.example.RatingsApp.entity.enums.RatingStatus;
 
 public class RatingsRequestDto {
 
     private String ratingId;
 
-    private RatingRoles rating_role;
+  //  private RatingRoles rating_role;
 
     private String employee_id;
 
@@ -16,18 +16,18 @@ public class RatingsRequestDto {
 
     private int rating_value;
 
-    private RatingStatus rating_status;
+  //  private RatingStatus rating_status;
 
-    private RatingCycles rating_cycles;
+    private String ratings_cycle;
 
-    public RatingsRequestDto(String ratingId, RatingRoles rating_role, String employee_id, String rated_by_id, int rating_value, RatingStatus rating_status, RatingCycles rating_cycles) {
+    public RatingsRequestDto(String ratingId, String employee_id, String rated_by_id, int rating_value, String ratings_cycle) {
         this.ratingId = ratingId;
-        this.rating_role = rating_role;
+    //    this.rating_role = rating_role;
         this.employee_id = employee_id;
         this.rated_by_id = rated_by_id;
         this.rating_value = rating_value;
-        this.rating_status = rating_status;
-        this.rating_cycles = rating_cycles;
+       // this.rating_status = rating_status;
+        this.ratings_cycle = ratings_cycle;
     }
 
     public String getRatingId() {
@@ -38,13 +38,13 @@ public class RatingsRequestDto {
         this.ratingId = ratingId;
     }
 
-    public RatingRoles getRating_role() {
-        return rating_role;
-    }
-
-    public void setRating_role(RatingRoles rating_role) {
-        this.rating_role = rating_role;
-    }
+//    public RatingRoles getRating_role() {
+//        return rating_role;
+//    }
+//
+//    public void setRating_role(RatingRoles rating_role) {
+//        this.rating_role = rating_role;
+//    }
 
     public String getEmployee_id() {
         return employee_id;
@@ -70,19 +70,20 @@ public class RatingsRequestDto {
         this.rating_value = rating_value;
     }
 
-    public RatingStatus getRating_status() {
-        return rating_status;
+//    public RatingStatus getRating_status() {
+//        return rating_status;
+//    }
+//
+//    public void setRating_status(RatingStatus rating_status) {
+//        this.rating_status = rating_status;
+//    }
+
+
+    public String getRatings_cycle() {
+        return ratings_cycle;
     }
 
-    public void setRating_status(RatingStatus rating_status) {
-        this.rating_status = rating_status;
-    }
-
-    public RatingCycles getRating_cycles() {
-        return rating_cycles;
-    }
-
-    public void setRating_cycles(RatingCycles rating_cycles) {
-        this.rating_cycles = rating_cycles;
+    public void setRatings_cycle(String ratings_cycle) {
+        this.ratings_cycle = ratings_cycle;
     }
 }

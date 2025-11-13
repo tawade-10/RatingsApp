@@ -22,8 +22,8 @@ public class TeamsController {
     }
 
     @PostMapping
-    public ResponseEntity<TeamsResponseDto> createTeam(@RequestBody TeamsRequestDto teamsRequestDto){
-        TeamsResponseDto savedTeam = teamsService.createTeam(teamsRequestDto);
+    public ResponseEntity<TeamsResponseDto> createTeam(@RequestBody TeamsRequestDto teamsRequestDto, String roleId){
+        TeamsResponseDto savedTeam = teamsService.createTeam(teamsRequestDto, roleId);
         return new ResponseEntity<>(savedTeam, HttpStatus.CREATED);
     }   
 

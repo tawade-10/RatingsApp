@@ -6,7 +6,7 @@ import com.example.RatingsApp.dto.TeamsDto.TeamsResponseDto;
 import java.util.List;
 
 public interface TeamsService {
-    TeamsResponseDto createTeam(TeamsRequestDto teamsRequestDto);
+    TeamsResponseDto createTeam(TeamsRequestDto teamsRequestDto, String roleId);
 
     TeamsResponseDto assignPm(String teamId, TeamsRequestDto teamsRequestDto);
     TeamsResponseDto getTeamById(String teamId);

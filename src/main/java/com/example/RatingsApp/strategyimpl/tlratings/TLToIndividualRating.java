@@ -10,11 +10,11 @@ import com.example.RatingsApp.strategy.RatingStrategy;
 import org.springframework.stereotype.Component;
 
 @Component("TL_TO_EMPLOYEE")
-public class TLToEmployeeRating implements RatingStrategy {
+public class TLToIndividualRating implements RatingStrategy {
 
     private final EmployeesRepo employeesRepo;
 
-    public TLToEmployeeRating(EmployeesRepo employeesRepo) {
+    public TLToIndividualRating(EmployeesRepo employeesRepo) {
         this.employeesRepo = employeesRepo;
     }
 
@@ -31,23 +31,21 @@ public class TLToEmployeeRating implements RatingStrategy {
         Employees tl = employeesRepo.findByEmployeeIdIgnoreCase(tlId)
                 .orElseThrow(() -> new ResourceNotFoundException("TL not found with ID: " + tlId));
 
-        if(tl.getRole() == null || !"R103".equalsIgnoreCase(tl.getRole().getRoleId())){
+        if(tl.getRole() == null || !"R102".equalsIgnoreCase(tl.getRole().getRoleId())){
             throw new APIException("Only TL can give this rating.");
         }
 
         Employees emp = employeesRepo.findByEmployeeIdIgnoreCase(empId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + empId));
 
-        if(emp.getRole() == null || !"R104".equalsIgnoreCase(emp.getRole().getRoleId())){
+        if(emp.getRole() == null || !"R103".equalsIgnoreCase(emp.getRole().getRoleId())){
             throw new APIException("Only Employee can receive this rating.");
         }
 
-        Ratings ratings = new Ratings();
+        Ratings rating = new Ratings();
+       // rating.setRatingRole(ratingsRequestDto.getRating_role());
+        rating.setRatingValue(ratingsRequestDto.getRating_value());
 
-        ratings.setRatingRole(ratingsRequestDto.getRating_role());
-        ratings.setRatingValue(ratingsRequestDto.getRating_value());
-        ratings.setRatingStatus(ratingsRequestDto.getRating_status());
-
-        return ratings;
+        return rating;
     }
 }

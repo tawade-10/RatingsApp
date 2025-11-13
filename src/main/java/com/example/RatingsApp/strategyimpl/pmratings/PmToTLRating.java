@@ -37,7 +37,7 @@ public class PmToTLRating implements RatingStrategy {
         Employees employee = employeesRepo.findByEmployeeIdIgnoreCase(employeeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + employeeId));
 
-        if(employee.getRole() == null || !"R103".equalsIgnoreCase(pm.getRole().getRoleId())){
+        if(employee.getRole() == null || !"R102".equalsIgnoreCase(employee.getRole().getRoleId())){
             throw new APIException("Only TL can receive this rating.");
         }
 
@@ -47,8 +47,7 @@ public class PmToTLRating implements RatingStrategy {
 
         Ratings rating = new Ratings();
         rating.setRatingValue(ratingsRequestDto.getRating_value());
-        rating.setRatingRole(ratingsRequestDto.getRating_role());
-        rating.setRatingStatus(ratingsRequestDto.getRating_status());
+        //rating.setRatingRole(ratingsRequestDto.getRating_role());
 
         return rating;
     }

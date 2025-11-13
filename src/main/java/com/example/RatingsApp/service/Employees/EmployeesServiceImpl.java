@@ -37,6 +37,10 @@ public class EmployeesServiceImpl implements EmployeesService {
     public EmployeesResponseDto createEmployee(EmployeesRequestDto employeesRequestDto) {
         Employees employee = new Employees();
 
+//        if (!"R100".equalsIgnoreCase(roleId)) {
+//            throw new APIException("Only ADMIN can create employees!");
+//        }
+
         Optional<Employees> existingEmployeeByName = employeesRepo.findByName(employeesRequestDto.getName());
         if (existingEmployeeByName.isPresent()) {
             throw new APIException("Employee with name '" + employeesRequestDto.getName() + "' already exists!");
@@ -93,13 +97,14 @@ public class EmployeesServiceImpl implements EmployeesService {
 
     @Override
     public EmployeesResponseDto updateEmployee(String employeeId, EmployeesRequestDto employeesRequestDto) {
+
         Employees employee = employeesRepo.findByEmployeeIdIgnoreCase(employeeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + employeeId));
 
         Roles role = rolesRepo.findByRoleIdIgnoreCase(employeesRequestDto.getRoleId())
                         .orElseThrow(() -> new ResourceNotFoundException("Role not found with ID: " + employeesRequestDto.getRoleId()));
 
-        Teams team = teamsRepo.findByTeamNameIgnoreCase(employeesRequestDto.getTeamId())
+        Teams team = teamsRepo.findByTeamIdIgnoreCase(employeesRequestDto.getTeamId())
                         .orElseThrow(() -> new ResourceNotFoundException("Team not found with ID: " + employeesRequestDto.getTeamId()));
 
         employee.setEmployeeId(employeesRequestDto.getEmployeeId());

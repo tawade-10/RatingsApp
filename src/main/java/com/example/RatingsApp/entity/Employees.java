@@ -1,13 +1,19 @@
 package com.example.RatingsApp.entity;
 
 import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
 //lombok @Getter @Setter
 @Entity
 @Table(name = "employee")
-public class Employees {
+public class Employees implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,8 +45,8 @@ public class Employees {
     @OneToMany(mappedBy = "employee")
     private List<Ratings> ratingsReceived;
 
-    @OneToOne(mappedBy = "pm")
-    private Teams managedTeam;
+    @OneToMany(mappedBy = "pm")
+    private List<Teams> managedTeams = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -74,8 +80,38 @@ public class Employees {
         this.email = email;
     }
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.getRoleId()));
+    }
+
     public String getPassword() {
         return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return UserDetails.super.isAccountNonExpired();
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return UserDetails.super.isAccountNonLocked();
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return UserDetails.super.isCredentialsNonExpired();
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return UserDetails.super.isEnabled();
     }
 
     public void setPassword(String password) {
@@ -114,12 +150,12 @@ public class Employees {
         this.ratingsReceived = ratingsReceived;
     }
 
-    public Teams getManagedTeam() {
-        return managedTeam;
+    public List<Teams> getManagedTeams() {
+        return managedTeams;
     }
 
-    public void setManagedTeam(Teams managedTeam) {
-        this.managedTeam = managedTeam;
+    public void setManagedTeams(List<Teams> managedTeams) {
+        this.managedTeams = managedTeams;
     }
 }
 

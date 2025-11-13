@@ -17,4 +17,12 @@ public interface RatingsFacade {
     void deleteRating(String ratingId);
 
     List<RatingsResponseDto> getRatingsByCycles(String ratingCycles);
+
+    RatingsResponseDto approveRating(String ratingId);
+
+    RatingsResponseDto broadcastRating(String ratingId);
+
+    List<RatingsResponseDto> getReceivedRatings(String employeeId);
+
+    List<RatingsResponseDto> getGivenRatings(String ratedById);
 }

@@ -36,8 +36,6 @@ public class Ratings {
     @Column(nullable = false)
     private int ratingValue;
 
-//    @Column(nullable = false)
-//    private String ratingsCycle;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cycle_name", nullable = false)
     private RatingsCycle ratingsCycle;

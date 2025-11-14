@@ -50,9 +50,9 @@ public class RatingsController {
         return ResponseEntity.ok(givenRatings);
     }
 
-    @GetMapping("/ratingCycle/{ratingCycles}")
-    public ResponseEntity<List<RatingsResponseDto>> getRatingsByCycles(@PathVariable String ratingCycles){
-        List<RatingsResponseDto> getRatings = ratingsFacade.getRatingsByCycles(ratingCycles);
+    @GetMapping("/ratingCycle/{ratingsCycle}")
+    public ResponseEntity<List<RatingsResponseDto>> getRatingsByCycles(@PathVariable String ratingsCycle){
+        List<RatingsResponseDto> getRatings = ratingsFacade.getRatingsByCycles(ratingsCycle);
         return ResponseEntity.ok(getRatings);
     }
 

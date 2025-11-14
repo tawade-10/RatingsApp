@@ -1,9 +1,6 @@
 package com.example.RatingsApp.dto.RatingsCycleDto;
 
 import com.example.RatingsApp.entity.enums.CycleStatus;
-import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 
 import java.time.LocalDate;
 

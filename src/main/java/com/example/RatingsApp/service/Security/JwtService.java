@@ -32,7 +32,7 @@ public class JwtService {
         }
     }
 
-    public String generateToken(String email) {
+    public String generateToken(String email, String roleId) {
 
         Map<String,Object> claims = new HashMap<>();
 
@@ -43,7 +43,6 @@ public class JwtService {
                 .setExpiration(new Date(System.currentTimeMillis() * 60 * 60 *30))
                 .signWith(getKey())
                 .compact();
-
     }
 
     private Key getKey() {

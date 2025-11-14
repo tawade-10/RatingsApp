@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class AuthController {
 
-//    private final JwtUtils jwtUtils;
-
     private final EmployeesFacade employeesFacade;
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);

@@ -32,10 +32,16 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login,/register").permitAll()
+                        .requestMatchers("/login", "/register").permitAll()
+                        .requestMatchers("/api/employees/**").hasAuthority("R100")
+                        .requestMatchers("/api/teams/**").hasAnyAuthority("R100", "R101")
+                        .requestMatchers("/api/ratings").hasAnyAuthority("R100", "R101")
+                        .requestMatchers("/api/ratings/{ratingId}/approve").hasAnyAuthority("R102","R101")
+                        .requestMatchers("/api/ratings/{ratingId}/broadcast").hasAnyAuthority("R101","R100")
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults())
@@ -62,4 +68,3 @@ public class SecurityConfig {
     }
 
 }
-

@@ -51,9 +51,8 @@ public class EmployeesServiceImpl implements EmployeesService {
     public EmployeesResponseDto createEmployee(EmployeesRequestDto employeesRequestDto) {
         Employees employee = new Employees();
 
-//        if (!"R100".equalsIgnoreCase(roleId)) {
-//            throw new APIException("Only ADMIN can create employees!");
-//        }
+        Roles role = rolesRepo.findByRoleIdIgnoreCase(employeesRequestDto.getRoleId())
+                .orElseThrow(() -> new ResourceNotFoundException("Role not found with ID: " + employeesRequestDto.getRoleId()));
 
         Optional<Employees> existingEmployeeByName = employeesRepo.findByName(employeesRequestDto.getName());
         if (existingEmployeeByName.isPresent()) {
@@ -64,9 +63,6 @@ public class EmployeesServiceImpl implements EmployeesService {
         if (existingEmployeeByEmail.isPresent()) {
             throw new APIException("Employee with email '" + employeesRequestDto.getEmail() + "' already exists!");
         }
-
-        Roles role = rolesRepo.findByRoleIdIgnoreCase(employeesRequestDto.getRoleId())
-                .orElseThrow(() -> new ResourceNotFoundException("Role not found with ID: " + employeesRequestDto.getRoleId()));
 
         Teams team = null;
 
@@ -111,10 +107,16 @@ public class EmployeesServiceImpl implements EmployeesService {
 
     @Override
     public String verify(EmployeesRequestDto employeesRequestDto) {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(employeesRequestDto.getEmail(), employeesRequestDto.getPassword()));
 
-        if(authentication.isAuthenticated()){
-            return jwtService.generateToken(employeesRequestDto.getEmail());
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        employeesRequestDto.getEmail(),
+                        employeesRequestDto.getPassword())
+        );
+        if (authentication.isAuthenticated()) {
+            Employees user = employeesRepo.findByEmail(employeesRequestDto.getEmail())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            return jwtService.generateToken(employeesRequestDto.getEmail(), employeesRequestDto.getRoleId());
         }
         return "Fail";
     }
@@ -191,3 +193,5 @@ public class EmployeesServiceImpl implements EmployeesService {
         return getPmList.stream().map(EmployeesResponseDto::new).collect(Collectors.toList());
     }
 }
+
+//currently i am having this login implementation which after logging in will give jwt token, i want that when a specific user is logging in for eg if Admin is logging in, then with his login jwt token he will have access to certain api's like create employee etc, how will we do that

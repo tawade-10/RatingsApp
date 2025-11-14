@@ -5,12 +5,15 @@ import com.example.RatingsApp.dto.RatingsDto.RatingsRequestDto;
 import com.example.RatingsApp.dto.RatingsDto.RatingsResponseDto;
 import com.example.RatingsApp.entity.Employees;
 import com.example.RatingsApp.entity.Ratings;
+import com.example.RatingsApp.entity.RatingsCycle;
+import com.example.RatingsApp.entity.enums.CycleStatus;
 import com.example.RatingsApp.entity.enums.RatingRoles;
 import com.example.RatingsApp.entity.enums.RatingStatus;
 import com.example.RatingsApp.exception.APIException;
 import com.example.RatingsApp.exception.ResourceNotFoundException;
 import com.example.RatingsApp.repository.EmployeesRepo;
 // import com.example.RatingsApp.repository.RatingsCycleRepo;
+import com.example.RatingsApp.repository.RatingsCycleRepo;
 import com.example.RatingsApp.repository.RatingsRepo;
 import com.example.RatingsApp.strategy.RatingStrategy;
 import org.springframework.data.domain.Sort;
@@ -30,47 +33,57 @@ public class RatingsServiceImpl implements RatingsService {
 
     private final RatingFactory ratingFactory;
 
-   // private final RatingsCycleRepo ratingsCycleRepo;
+    private final RatingsCycleRepo ratingsCycleRepo;
 
-    public RatingsServiceImpl(EmployeesRepo employeesRepo, RatingsRepo ratingsRepo, RatingFactory ratingFactory) {
+    public RatingsServiceImpl(EmployeesRepo employeesRepo, RatingsRepo ratingsRepo, RatingFactory ratingFactory, RatingsCycleRepo ratingsCycleRepo) {
         this.employeesRepo = employeesRepo;
         this.ratingsRepo = ratingsRepo;
         this.ratingFactory = ratingFactory;
-       // this.ratingsCycleRepo = ratingsCycleRepo;
+        this.ratingsCycleRepo = ratingsCycleRepo;
     }
 
     @Override
     public RatingsResponseDto createRating(RatingsRequestDto ratingsRequestDto) {
 
-        // Fetch the two employees
+        // Fetch Employees
         Employees employee = employeesRepo.findByEmployeeIdIgnoreCase(ratingsRequestDto.getEmployee_id())
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+
         Employees ratedBy = employeesRepo.findByEmployeeIdIgnoreCase(ratingsRequestDto.getRated_by_id())
                 .orElseThrow(() -> new ResourceNotFoundException("RatedBy employee not found"));
 
-        if(ratingsRequestDto.getRatingId() == null || Objects.equals(ratingsRequestDto.getRatingId(), ""))
+        if (ratingsRequestDto.getRatingId() == null || ratingsRequestDto.getRatingId().isBlank())
             throw new IllegalArgumentException("Rating Id cannot be null or empty");
 
-        Optional<Ratings> existingRatingId = ratingsRepo.findByRatingId(ratingsRequestDto.getRatingId());
-        if(existingRatingId.isPresent()) {
+        if (ratingsRepo.findByRatingId(ratingsRequestDto.getRatingId()).isPresent()) {
             throw new APIException("Rating with ID : '" + ratingsRequestDto.getRatingId() + "' already exists!");
         }
 
-        //Get roles by instantiating the RatingRoles ENUM
+        // Fetch Cycle
+        RatingsCycle cycle = ratingsCycleRepo.findByCycleNameIgnoreCase(ratingsRequestDto.getRatings_cycle())
+                .orElseThrow(() -> new ResourceNotFoundException("Ratings Cycle not found"));
+
+        if (cycle.getStatus() != CycleStatus.ACTIVE) {
+            throw new APIException("Ratings can only be created when cycle is ACTIVE.");
+        }
+
+        // Derive Role
         RatingRoles derivedRole = deriveRatingRole(ratedBy, employee);
 
-        //The fetched role will be taken by getStrategy method
+        // Fetching Rating Strategy
         RatingStrategy strategy = ratingFactory.getStrategy(String.valueOf(derivedRole));
 
-        //For fetching the logic for that particular rating
+        // Fetching Strategy Logic
         Ratings rating = strategy.giveRating(ratingsRequestDto);
 
+        // Set remaining fields
         rating.setRatingId(ratingsRequestDto.getRatingId());
         rating.setEmployee(employee);
         rating.setRatedBy(ratedBy);
         rating.setRatingRole(derivedRole);
-        // rating.setRatingsCycle();
+        rating.setRatingsCycle(cycle);
         rating.setRatingStatus(RatingStatus.SUBMITTED);
+
         Ratings savedRating = ratingsRepo.save(rating);
 
         return new RatingsResponseDto(savedRating);
@@ -99,12 +112,12 @@ public class RatingsServiceImpl implements RatingsService {
         Employees ratedBy = employeesRepo.findByEmployeeIdIgnoreCase(ratingsRequestDto.getRated_by_id())
                 .orElseThrow(() -> new ResourceNotFoundException("Rated By Employee not found"));
 
-//        RatingsCycle ratingsCycle = ratingsCycleRepo.findByCycleName(ratingsRequestDto.getCycle_name())
-//                .orElseThrow(() -> new ResourceNotFoundException("Cycle not found"));
-//        rating.setRatingCycle(ratingsCycle);
+        RatingsCycle cycle = ratingsCycleRepo.findByCycleNameIgnoreCase(ratingsRequestDto.getRatings_cycle())
+                .orElseThrow(() -> new ResourceNotFoundException("Ratings Cycle not found"));
+
 
         rating.setRatingStatus(RatingStatus.SUBMITTED);
-        rating.setRatingsCycle(ratingsRequestDto.getRatings_cycle());
+        rating.setRatingsCycle(cycle);
         rating.setRatingValue(ratingsRequestDto.getRating_value());
 
         return new RatingsResponseDto(rating);
@@ -119,8 +132,8 @@ public class RatingsServiceImpl implements RatingsService {
     }
 
     @Override
-    public List<RatingsResponseDto> getRatingsByCycles(String ratingCycles) {
-        List<Ratings> ratings = ratingsRepo.findAll(Sort.by(Sort.Direction.ASC, "ratingCycles"));
+    public List<RatingsResponseDto> getRatingsByCycles(String ratingsCycle) {
+        List<Ratings> ratings = ratingsRepo.findByRatingsCycle_CycleNameIgnoreCase(ratingsCycle);
         return ratings.stream().map(RatingsResponseDto::new).collect(Collectors.toList());
     }
 
@@ -161,7 +174,6 @@ public class RatingsServiceImpl implements RatingsService {
         return new RatingsResponseDto(rating);
     }
 
-
     @Override
     public RatingsResponseDto broadcastRating(String ratingId) {
         Ratings rating = ratingsRepo.findByRatingId(ratingId)
@@ -182,16 +194,16 @@ public class RatingsServiceImpl implements RatingsService {
             throw new IllegalArgumentException("Broadcaster and approved employee must belong to the same team");
         }
 
-        if ("R102".equalsIgnoreCase(approvedRole)) {
-            if (!"R101".equalsIgnoreCase(broadcasterRole)) {
-                throw new IllegalArgumentException("Only a PM can approve an TL’s rating");
+        if ("R103".equalsIgnoreCase(approvedRole)) {
+            if (!"R102".equalsIgnoreCase(broadcasterRole)) {
+                throw new IllegalArgumentException("Only a PM can broadcast Ratings");
             }
         }
-//        else if ("R102".equalsIgnoreCase(ratedRole)) {
-//            if (!"R101".equalsIgnoreCase(approverRole)) {
-//                throw new IllegalArgumentException("Only a PM can approve a Team Lead’s self rating");
-//            }
-//        }
+        if ("R102".equalsIgnoreCase(approvedRole)) {
+            if (!"R101".equalsIgnoreCase(broadcasterRole)) {
+                throw new IllegalArgumentException("Only a PM can broadcast Ratings");
+            }
+        }
 
         rating.setRatingStatus(RatingStatus.BROADCASTED);
         Ratings savedRating = ratingsRepo.save(rating);
@@ -220,7 +232,6 @@ public class RatingsServiceImpl implements RatingsService {
         return ratingsList.stream().map(RatingsResponseDto::new).toList();
     }
 
-
     private RatingRoles deriveRatingRole(Employees ratedBy, Employees employee) {
         String ratedByRole = ratedBy.getRole().getRoleId();
         String employeeRole = employee.getRole().getRoleId();
@@ -240,3 +251,4 @@ public class RatingsServiceImpl implements RatingsService {
     }
 }
 
+// i have approve and broadcast implementations, in this i want R103 individuals will get approved by R102, and R102 by R101

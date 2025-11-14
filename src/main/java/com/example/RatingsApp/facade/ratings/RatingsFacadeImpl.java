@@ -41,8 +41,8 @@ public class RatingsFacadeImpl implements RatingsFacade {
     }
 
     @Override
-    public List<RatingsResponseDto> getRatingsByCycles(String ratingCycles) {
-        return ratingsService.getRatingsByCycles(ratingCycles);
+    public List<RatingsResponseDto> getRatingsByCycles(String ratingsCycle) {
+        return ratingsService.getRatingsByCycles(ratingsCycle);
     }
 
     @Override

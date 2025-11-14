@@ -16,7 +16,7 @@ public interface RatingsFacade {
 
     void deleteRating(String ratingId);
 
-    List<RatingsResponseDto> getRatingsByCycles(String ratingCycles);
+    List<RatingsResponseDto> getRatingsByCycles(String ratingsCycle);
 
     RatingsResponseDto approveRating(String ratingId);
 

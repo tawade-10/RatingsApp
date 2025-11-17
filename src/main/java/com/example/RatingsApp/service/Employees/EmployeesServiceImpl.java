@@ -193,5 +193,3 @@ public class EmployeesServiceImpl implements EmployeesService {
         return getPmList.stream().map(EmployeesResponseDto::new).collect(Collectors.toList());
     }
 }
-
-//currently i am having this login implementation which after logging in will give jwt token, i want that when a specific user is logging in for eg if Admin is logging in, then with his login jwt token he will have access to certain api's like create employee etc, how will we do that

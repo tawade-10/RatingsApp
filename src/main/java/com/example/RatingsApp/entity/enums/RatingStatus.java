@@ -1,5 +1,5 @@
 package com.example.RatingsApp.entity.enums;
 
 public enum RatingStatus {
-    SUBMITTED, APPROVED, BROADCASTED
+    SUBMITTED, APPROVED_BY_TL, APPROVED_BY_PM, BROADCASTED
 }

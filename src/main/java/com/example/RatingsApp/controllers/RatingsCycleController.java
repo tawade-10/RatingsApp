@@ -34,4 +34,9 @@ public class RatingsCycleController {
         return ResponseEntity.ok(listCycles);
     }
 
+    @DeleteMapping("{ratingsCycleId}")
+    public ResponseEntity<String> deleteRatingsCycle(@PathVariable String ratingsCycleId) {
+        ratingsCycleService.deleteRatingsCycle(ratingsCycleId);
+        return ResponseEntity.ok("Ratings Cycle Deleted!");
+    }
 }

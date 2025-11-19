@@ -17,7 +17,7 @@ public class AdminUserInitializer {
         return args -> {
             // Check if an Admin user already exists
             if (employeesRepo.findByEmail("admin123@gmail.com").isEmpty()) {
-                Roles pmRole = rolesRepo.findByRoleIdIgnoreCase("R100")
+                Roles adminRole = rolesRepo.findByRoleIdIgnoreCase("R100")
                         .orElseGet(() -> {
                             Roles role = new Roles();
                             role.setRoleId("R100");
@@ -29,7 +29,7 @@ public class AdminUserInitializer {
                 admin.setName("Admin User");
                 admin.setEmail("admin123@gmail.com");
                 admin.setPassword(passwordEncoder.encode("admin123"));
-                admin.setRole(pmRole);
+                admin.setRole(adminRole);
                 admin.setTeam(null);
 
                 employeesRepo.save(admin);

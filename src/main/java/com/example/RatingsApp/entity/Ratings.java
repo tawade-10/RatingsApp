@@ -17,12 +17,12 @@ public class Ratings {
 
     // The employee being rated
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "employee_id", nullable = false)
+    @JoinColumn(name = "employee_id",referencedColumnName = "employeeId", nullable = false)
     private Employees employee;
 
     // The person who gives the rating
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "rated_by_id", nullable = false)
+    @JoinColumn(name = "rated_by_id",referencedColumnName = "employeeId", nullable = false)
     private Employees ratedBy;
 
     @Enumerated(EnumType.STRING)
@@ -37,7 +37,7 @@ public class Ratings {
     private int ratingValue;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cycle_name", nullable = false)
+    @JoinColumn(name = "cycle_name",referencedColumnName = "cycleName" ,nullable = false)
     private RatingsCycle ratingsCycle;
 
     public Long getId() {

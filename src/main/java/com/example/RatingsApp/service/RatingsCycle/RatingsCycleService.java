@@ -9,4 +9,6 @@ public interface RatingsCycleService {
     RatingsCycleResponseDto createRatingsCycle(RatingsCycleRequestDto ratingsCycleRequestDto);
 
     List<RatingsCycleResponseDto> getAllCycles();
+
+    RatingsCycleResponseDto deleteRatingsCycle(String ratingsCycleId);
 }

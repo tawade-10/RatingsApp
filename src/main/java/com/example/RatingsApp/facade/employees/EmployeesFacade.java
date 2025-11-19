@@ -28,4 +28,6 @@ public interface EmployeesFacade {
     EmployeesResponseDto deleteEmployee(String employeeId);
 
     String verify(EmployeesRequestDto employeesRequestDto);
+
+    EmployeesResponseDto addEmployeeToTeam(EmployeesRequestDto employeesRequestDto, String teamId);
 }

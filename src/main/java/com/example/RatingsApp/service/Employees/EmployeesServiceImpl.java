@@ -49,6 +49,7 @@ public class EmployeesServiceImpl implements EmployeesService {
 
     @Override
     public EmployeesResponseDto createEmployee(EmployeesRequestDto employeesRequestDto) {
+
         Employees employee = new Employees();
 
         Roles role = rolesRepo.findByRoleIdIgnoreCase(employeesRequestDto.getRoleId())
@@ -64,22 +65,12 @@ public class EmployeesServiceImpl implements EmployeesService {
             throw new APIException("Employee with email '" + employeesRequestDto.getEmail() + "' already exists!");
         }
 
-        Teams team = null;
-
-        if (!"R101".equalsIgnoreCase(role.getRoleId())) {
-            if (employeesRequestDto.getTeamId() == null) {
-                throw new APIException("Team ID must be provided for non-PM employees.");
-            }
-            team = teamsRepo.findByTeamIdIgnoreCase(employeesRequestDto.getTeamId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Team not found with ID: " + employeesRequestDto.getTeamId()));
-        }
-
         employee.setEmployeeId(employeesRequestDto.getEmployeeId());
         employee.setName(employeesRequestDto.getName());
         employee.setEmail(employeesRequestDto.getEmail());
         employee.setPassword(passwordEncoder.encode(employeesRequestDto.getPassword()));
         employee.setRole(role);
-        employee.setTeam(team);
+        employee.setTeam(null);
         Employees saveEmployee = employeesRepo.save(employee);
 
         return new EmployeesResponseDto(saveEmployee);
@@ -122,18 +113,35 @@ public class EmployeesServiceImpl implements EmployeesService {
     }
 
     @Override
+    public EmployeesResponseDto addEmployeeToTeam(EmployeesRequestDto employeesRequestDto, String teamId) {
+
+        Employees employee = employeesRepo.findByEmployeeIdIgnoreCase(employeesRequestDto.getEmployeeId())
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + employeesRequestDto.getEmployeeId()));
+
+        Teams team = teamsRepo.findByTeamIdIgnoreCase(teamId)
+                .orElseThrow(() -> new ResourceNotFoundException("Team not found with ID: " + teamId));
+
+        if (employee.getTeam() != null) {
+            throw new APIException("Employee with ID '" + employeesRequestDto.getEmployeeId() + "' is already assigned to a team.");
+        }
+
+        employee.setTeam(team);
+        Employees saveUpdatedEmployee =  employeesRepo.save(employee);
+        return new EmployeesResponseDto(saveUpdatedEmployee);
+    }
+
+    @Override
     public EmployeesResponseDto updateEmployee(String employeeId, EmployeesRequestDto employeesRequestDto) {
 
         Employees employee = employeesRepo.findByEmployeeIdIgnoreCase(employeeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + employeeId));
 
         Roles role = rolesRepo.findByRoleIdIgnoreCase(employeesRequestDto.getRoleId())
-                        .orElseThrow(() -> new ResourceNotFoundException("Role not found with ID: " + employeesRequestDto.getRoleId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Role not found with ID: " + employeesRequestDto.getRoleId()));
 
         Teams team = teamsRepo.findByTeamIdIgnoreCase(employeesRequestDto.getTeamId())
-                        .orElseThrow(() -> new ResourceNotFoundException("Team not found with ID: " + employeesRequestDto.getTeamId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Team not found with ID: " + employeesRequestDto.getTeamId()));
 
-        employee.setEmployeeId(employeesRequestDto.getEmployeeId());
         employee.setName(employeesRequestDto.getName());
         employee.setEmail(employeesRequestDto.getEmail());
         employee.setPassword(employeesRequestDto.getPassword());
@@ -173,7 +181,7 @@ public class EmployeesServiceImpl implements EmployeesService {
 
     @Override
     public EmployeesResponseDto getPmByTeam(String teamId) {
-        Teams team = teamsRepo.findByTeamNameIgnoreCase(teamId)
+        Teams team = teamsRepo.findByTeamIdIgnoreCase(teamId)
                 .orElseThrow(() -> new ResourceNotFoundException("Team not found with ID: " + teamId));
 
         String pmId = team.getPm().getEmployeeId();
@@ -193,5 +201,3 @@ public class EmployeesServiceImpl implements EmployeesService {
         return getPmList.stream().map(EmployeesResponseDto::new).collect(Collectors.toList());
     }
 }
-
-//currently i am having this login implementation which after logging in will give jwt token, i want that when a specific user is logging in for eg if Admin is logging in, then with his login jwt token he will have access to certain api's like create employee etc, how will we do that

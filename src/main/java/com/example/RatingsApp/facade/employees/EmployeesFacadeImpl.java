@@ -70,4 +70,9 @@ public class EmployeesFacadeImpl implements EmployeesFacade{
     public String verify(EmployeesRequestDto employeesRequestDto) {
         return employeesService.verify(employeesRequestDto);
     }
+
+    @Override
+    public EmployeesResponseDto addEmployeeToTeam(EmployeesRequestDto employeesRequestDto, String teamId) {
+        return employeesService.addEmployeeToTeam(employeesRequestDto,teamId);
+    }
 }

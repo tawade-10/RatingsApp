@@ -16,7 +16,7 @@ public class RatingsCycle {
     @Column(nullable = false, unique = true)
     private String cycleId;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = false)
     private String cycleName;
 
     @Enumerated(EnumType.STRING)

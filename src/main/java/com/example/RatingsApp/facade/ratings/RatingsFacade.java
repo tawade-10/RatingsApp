@@ -18,7 +18,7 @@ public interface RatingsFacade {
 
     List<RatingsResponseDto> getRatingsByCycles(String ratingsCycle);
 
-    RatingsResponseDto approveRating(String ratingId);
+    RatingsResponseDto approveRating(String ratingId,RatingsRequestDto ratingsRequestDto);
 
     RatingsResponseDto broadcastRating(String ratingId);
 

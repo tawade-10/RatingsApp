@@ -53,6 +53,7 @@ public class RolesServiceImpl implements RolesService {
 
     @Override
     public RolesResponseDto getRoleById(String roleId){
+
         if(roleId == null){
             throw new IllegalArgumentException("Role id must not be null");
         }
@@ -78,7 +79,6 @@ public class RolesServiceImpl implements RolesService {
         Roles updatedRole = rolesRepo.save(existingRole);
         return new RolesResponseDto(updatedRole);
     }
-
 
     @Override
     public RolesResponseDto deleteRole(String roleId) {

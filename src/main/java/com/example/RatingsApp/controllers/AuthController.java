@@ -30,6 +30,11 @@ public class AuthController {
         return new ResponseEntity<>(registeredEmployee, HttpStatus.CREATED);
     }
 
+    @PostMapping("/login")
+    public String login(@RequestBody EmployeesRequestDto employeesRequestDto){
+        return employeesFacade.verify(employeesRequestDto);
+    }
+
 //    @PostMapping("/login")
 //    public ResponseEntity<Map<String, Object>> login(@RequestBody Map<String, String> loginRequest) {
 //        String email = loginRequest.get("email");
@@ -53,9 +58,4 @@ public class AuthController {
 //
 //        return ResponseEntity.ok(response);
 //    }
-
-    @PostMapping("/login")
-    public String login(@RequestBody EmployeesRequestDto employeesRequestDto){
-        return employeesFacade.verify(employeesRequestDto);
-    }
 }

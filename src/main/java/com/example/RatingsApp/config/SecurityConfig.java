@@ -36,11 +36,14 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/register").permitAll()
+                        .requestMatchers("/login").permitAll()
+                        .requestMatchers("/register").hasAuthority("R100")
+                        .requestMatchers("/api/roles/**").hasAuthority("R100")
                         .requestMatchers("/api/employees/**").hasAuthority("R100")
+                        .requestMatchers("/api/ratingsCycle").hasAnyAuthority("R100")
                         .requestMatchers("/api/teams/**").hasAnyAuthority("R100", "R101")
                         .requestMatchers("/api/ratings").hasAnyAuthority("R100", "R101")
-                        .requestMatchers("/api/ratings/{ratingId}/approve").hasAnyAuthority("R102","R101")
+                        .requestMatchers("/api/ratings/{ratingId}/approve").hasAnyAuthority("R102","R101","R100")
                         .requestMatchers("/api/ratings/{ratingId}/broadcast").hasAnyAuthority("R101","R100")
                         .anyRequest().authenticated()
                 )
@@ -66,5 +69,4 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception{
         return config.getAuthenticationManager();
     }
-
 }

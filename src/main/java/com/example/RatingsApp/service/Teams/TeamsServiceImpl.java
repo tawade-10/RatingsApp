@@ -31,39 +31,33 @@ public class TeamsServiceImpl implements TeamsService {
 
     @Override
     public TeamsResponseDto createTeam(TeamsRequestDto teamsRequestDto, String roleId) {
-        Teams team = new Teams();
-
-//        if (!"R100".equalsIgnoreCase(roleId)) {
-//            throw new APIException("Only ADMIN can create Teams!");
-//        }
 
         Optional<Teams> existingTeam = teamsRepo.findByTeamNameIgnoreCase(teamsRequestDto.getTeamName());
         if(existingTeam.isPresent()) {
             throw new APIException("Team name '" + teamsRequestDto.getTeamName() + "' already exists!");
         }
 
-        if (teamsRequestDto.getPmId() == null || Objects.equals(teamsRequestDto.getPmId(), "")) {
-            throw new IllegalArgumentException("Role name cannot be null or empty");
-        }
+//        if (teamsRequestDto.getPmId() == null || Objects.equals(teamsRequestDto.getPmId(), "")) {
+//            throw new IllegalArgumentException("Role name cannot be null or empty");
+//        }
 
-        Employees pm = employeesRepo.findByEmployeeIdIgnoreCase(teamsRequestDto.getPmId())
-                .orElseThrow(() -> new ResourceNotFoundException("Employee found with ID: " + teamsRequestDto.getPmId() + " is not a PM"));
+//        Employees pm = employeesRepo.findByEmployeeIdIgnoreCase(teamsRequestDto.getPmId())
+//                .orElseThrow(() -> new ResourceNotFoundException("Employee found with ID: " + teamsRequestDto.getPmId() + " is not a PM"));
+//
+//        Roles role = pm.getRole();
+//        if (role == null || !"R101".equalsIgnoreCase(role.getRoleId())) {
+//            throw new APIException("The employee (ID: " + pm.getEmployeeId() + ") is not a PM. Only employees with roleId = R101 can be assigned as PM.");
+//        }
 
-        // Ensure the employee has role ID = 1 (PM role)
-        Roles role = pm.getRole();
-        if (role == null || !"R101".equalsIgnoreCase(role.getRoleId())) {
-            throw new APIException("The employee (ID: " + pm.getEmployeeId() + ") is not a PM. Only employees with roleId = R101 can be assigned as PM.");
-        }
-
+        Teams team = new Teams();
         team.setTeamId(teamsRequestDto.getTeamId());
         team.setTeamName(teamsRequestDto.getTeamName());
-        team.setPm(pm);
+        //  team.setPm(pm);
 
         Teams savedTeam = teamsRepo.save(team);
 
-        // Update PM to point to this team
-        pm.setTeam(savedTeam);
-        employeesRepo.save(pm);
+        //  pm.setTeam(savedTeam);
+        //  employeesRepo.save(pm);
 
         return new TeamsResponseDto(savedTeam);
     }
@@ -75,14 +69,15 @@ public class TeamsServiceImpl implements TeamsService {
         );
         String pmId = teamsRequestDto.getPmId();
         if (pmId == null) {
-            throw new IllegalArgumentException("PM ID must be provided in the request body.");
+            throw new IllegalArgumentException("PM ID must be provided.");
         }
         Employees pm = employeesRepo.findByEmployeeIdIgnoreCase(pmId).orElseThrow(
                 () -> new ResourceNotFoundException("Employee (PM) not found with ID: " + pmId)
         );
-//        if(pm.getRole().getRoleId() != 1L){
-//            throw new APIException("The employee should have role id 1 for being PM");
-//        }
+
+        if(!Objects.equals(pm.getRole().getRoleId(), "R101")){
+            throw new APIException("The employee should have role id R101 for being PM");
+        }
 
         team.setPm(pm);
         teamsRepo.save(team);
@@ -119,14 +114,21 @@ public class TeamsServiceImpl implements TeamsService {
     public TeamsResponseDto updateTeam(String teamId, TeamsRequestDto teamsRequestDto) {
         Teams team = teamsRepo.findByTeamIdIgnoreCase(teamId)
                 .orElseThrow(() -> new ResourceNotFoundException("Team not found with ID: " + teamId));
+
         String pmId = teamsRequestDto.getPmId();
+
         if (pmId == null) {
             throw new IllegalArgumentException("PM ID must be provided in the request body.");
         }
         Employees pm = employeesRepo.findByEmployeeIdIgnoreCase(pmId).orElseThrow(
                 () -> new ResourceNotFoundException("Employee (PM) not found with ID: " + pmId)
         );
-        team.setTeamId(teamsRequestDto.getTeamId());
+
+        if(!Objects.equals(pm.getRole().getRoleId(), "R101")){
+            throw new APIException("The employee should have role id R101 for being PM");
+        }
+
+//        team.setTeamId(teamsRequestDto.getTeamId());
         team.setTeamName(teamsRequestDto.getTeamName());
         team.setPm(pm);
         Teams updatedTeam = teamsRepo.save(team);

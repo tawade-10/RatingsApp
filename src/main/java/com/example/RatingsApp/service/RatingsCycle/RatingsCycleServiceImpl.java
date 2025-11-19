@@ -1,18 +1,17 @@
 package com.example.RatingsApp.service.RatingsCycle;
 
-import com.example.RatingsApp.dto.EmployeesDto.EmployeesResponseDto;
 import com.example.RatingsApp.dto.RatingsCycleDto.RatingsCycleRequestDto;
 import com.example.RatingsApp.dto.RatingsCycleDto.RatingsCycleResponseDto;
-import com.example.RatingsApp.dto.RatingsDto.RatingsResponseDto;
-import com.example.RatingsApp.entity.Employees;
-import com.example.RatingsApp.entity.Ratings;
 import com.example.RatingsApp.entity.RatingsCycle;
+import com.example.RatingsApp.entity.enums.CycleStatus;
 import com.example.RatingsApp.exception.APIException;
 import com.example.RatingsApp.exception.ResourceNotFoundException;
 import com.example.RatingsApp.repository.RatingsCycleRepo;
+import jakarta.validation.constraints.Null;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -31,19 +30,53 @@ public class RatingsCycleServiceImpl implements RatingsCycleService{
 
         RatingsCycle ratingsCycle = new RatingsCycle();
 
-        Optional<RatingsCycle> existingRatingsCycle = ratingsCycleRepo.findByCycleNameIgnoreCase(ratingsCycleRequestDto.getCycleName());
-        if (existingRatingsCycle.isPresent()) {
-            throw new APIException(" Ratings Cycle '" + ratingsCycleRequestDto.getCycleName() + "' already exists!");
+        LocalDate startDate = ratingsCycleRequestDto.getStartDate();
+        LocalDate endDate = ratingsCycleRequestDto.getEndDate();
+
+        if (startDate.isAfter(endDate)) {
+            throw new APIException("Start date cannot be after end date!");
+        }
+
+        if(endDate.isBefore(startDate)){
+            throw new APIException("End date cannot be before start date!");
+        }
+
+        if (startDate.getYear() != endDate.getYear()) {
+            throw new APIException("Start date and end date must be in the same year!");
+        }
+
+        String cycle = getRatingsCycle(startDate, endDate);
+
+        Optional<RatingsCycle> existingCycleStartDate = ratingsCycleRepo.findByStartDate(ratingsCycleRequestDto.getStartDate());
+             if(existingCycleStartDate.isPresent()) {
+                 throw new APIException("Cycle with start date '" + ratingsCycleRequestDto.getStartDate() + "' already exists!");
+             };
+
+             Optional<RatingsCycle> existingCycleEndDate = ratingsCycleRepo.findByEndDate(ratingsCycleRequestDto.getEndDate());
+                  if(existingCycleEndDate.isPresent()) {
+                      throw new APIException("Cycle with end date '" + ratingsCycleRequestDto.getEndDate() + "' already exists!");
+                  };
+
+        LocalDate currentDate = LocalDate.now();
+        CycleStatus status;
+        if ((currentDate.isEqual(startDate) || currentDate.isAfter(startDate))
+                && (currentDate.isEqual(endDate) || currentDate.isBefore(endDate))) {
+           status = CycleStatus.ACTIVE;
+        } else if (currentDate.isBefore(startDate)) {
+            status = CycleStatus.UPCOMING;
+        } else {
+            status = CycleStatus.CLOSED;
         }
 
         ratingsCycle.setCycleId(ratingsCycleRequestDto.getCycleId());
-        ratingsCycle.setCycleName(ratingsCycleRequestDto.getCycleName());
-        ratingsCycle.setStartDate(ratingsCycleRequestDto.getStartDate());
-        ratingsCycle.setEndDate(ratingsCycleRequestDto.getEndDate());
-        ratingsCycle.setStatus(ratingsCycleRequestDto.getStatus());
+        ratingsCycle.setCycleName(cycle);
+        ratingsCycle.setStartDate(startDate);
+        ratingsCycle.setEndDate(endDate);
+        ratingsCycle.setStatus(status);
 
-        RatingsCycle savedRating = ratingsCycleRepo.save(ratingsCycle);
-        return new RatingsCycleResponseDto(savedRating);
+        RatingsCycle saved = ratingsCycleRepo.save(ratingsCycle);
+
+        return new RatingsCycleResponseDto(saved);
     }
 
     @Override
@@ -52,8 +85,45 @@ public class RatingsCycleServiceImpl implements RatingsCycleService{
         return listRatings.stream().map(RatingsCycleResponseDto::new).collect(Collectors.toList());
     }
 
+    @Override
+    public RatingsCycleResponseDto deleteRatingsCycle(String ratingsCycleId) {
+        RatingsCycle ratingsCycle = ratingsCycleRepo.findByCycleId(ratingsCycleId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ratings Cycle not found with ID: " + ratingsCycleId));
+        ratingsCycleRepo.delete(ratingsCycle);
+        return null;
+    }
 
+    public String getRatingsCycle(LocalDate startDate, LocalDate endDate){
 
+        int year = startDate.getYear();
+
+        LocalDate startQ1 = LocalDate.of(year , 1, 1);
+        LocalDate endQ1 = LocalDate.of(year,3,31);
+
+        LocalDate startQ2 = LocalDate.of(year,4,1);
+        LocalDate endQ2 = LocalDate.of(year, 6,30);
+
+        LocalDate startQ3 = LocalDate.of(year,7,1);
+        LocalDate endQ3 = LocalDate.of(year,9,30);
+
+        LocalDate startQ4 = LocalDate.of(year, 10,1);
+        LocalDate endQ4 = LocalDate.of(year, 12,31);
+
+        if (!startDate.isBefore(startQ1) && !endDate.isAfter(endQ1)){
+            return "Q1";
+        }
+        if (!startDate.isBefore(startQ2) && !endDate.isAfter(endQ2)){
+            return "Q2";
+        }
+        if (!startDate.isBefore(startQ3) && !endDate.isAfter(endQ3)){
+            return "Q3";
+        }
+        if (!startDate.isBefore(startQ4) && !endDate.isAfter(endQ4)){
+            return "Q4";
+        }
+        return "Invalid Cycle";
+    }
 }
+
 
 

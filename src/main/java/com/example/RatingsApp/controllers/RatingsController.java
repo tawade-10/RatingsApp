@@ -62,13 +62,13 @@ public class RatingsController {
         return ResponseEntity.ok(updatedRating);
     }
 
-    @PutMapping("/{ratingId}/approve")
-    public ResponseEntity<RatingsResponseDto> approveRating(@PathVariable String ratingId) {
-        RatingsResponseDto approvedRating = ratingsFacade.approveRating(ratingId);
+    @PutMapping("/approve/{ratingId}")
+    public ResponseEntity<RatingsResponseDto> approveRating(@PathVariable String ratingId,@RequestBody RatingsRequestDto ratingsRequestDto) {
+        RatingsResponseDto approvedRating = ratingsFacade.approveRating(ratingId,ratingsRequestDto);
         return ResponseEntity.ok(approvedRating);
     }
 
-    @PutMapping("{ratingId}/broadcast")
+    @PutMapping("/broadcast/{ratingId}")
     public ResponseEntity<RatingsResponseDto> broadcastRating(@PathVariable String ratingId) {
         RatingsResponseDto broadcastedRating = ratingsFacade.broadcastRating(ratingId);
         return ResponseEntity.ok(broadcastedRating);

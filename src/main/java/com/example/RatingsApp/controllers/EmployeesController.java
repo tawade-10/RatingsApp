@@ -30,6 +30,12 @@ public class EmployeesController {
         return new ResponseEntity<>(savedEmployee, HttpStatus.CREATED);
     }
 
+    @PutMapping("/team/{teamId}")
+    public ResponseEntity<EmployeesResponseDto> addEmployeeToTeam(@PathVariable String teamId, @RequestBody EmployeesRequestDto employeesRequestDto){
+        EmployeesResponseDto addedEmployee = employeesFacade.addEmployeeToTeam(employeesRequestDto,teamId);
+        return new ResponseEntity<>(addedEmployee,HttpStatus.OK);
+    }
+
     @GetMapping("{employeeId}")
     public ResponseEntity<EmployeesResponseDto> getEmployeeById(@PathVariable String employeeId){
         EmployeesResponseDto getEmployee = employeesFacade.getEmployeeById(employeeId);
@@ -48,19 +54,19 @@ public class EmployeesController {
         return ResponseEntity.ok(listEmployeesByName);
     }
 
-    @GetMapping("/{teamId}/employees_by_team")
+    @GetMapping("/employees_by_team/{teamId}")
     public ResponseEntity<List<EmployeesResponseDto>> getEmployeesByTeam(@PathVariable String teamId){
         List<EmployeesResponseDto> listEmployeesByTeam = employeesFacade.getEmployeeByTeam(teamId);
         return ResponseEntity.ok(listEmployeesByTeam);
     }
 
-    @GetMapping("/{roleId}/employees_by_role")
+    @GetMapping("/employees_by_role/{roleId}")
     public ResponseEntity<List<EmployeesResponseDto>> getEmployeesByRole(@PathVariable String roleId){
         List<EmployeesResponseDto> listEmployeesByRole = employeesFacade.getEmployeesByRole(roleId);
         return ResponseEntity.ok(listEmployeesByRole);
     }
 
-    @GetMapping("/{teamId}/pm")
+    @GetMapping("/pm/{teamId}")
     public ResponseEntity<EmployeesResponseDto> getPmByTeam(@PathVariable String teamId){
         EmployeesResponseDto PmByTeam = employeesFacade.getPmByTeam(teamId);
         return ResponseEntity.ok(PmByTeam);

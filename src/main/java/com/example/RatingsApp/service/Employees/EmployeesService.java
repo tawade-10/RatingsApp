@@ -27,4 +27,6 @@ public interface EmployeesService {
     List<EmployeesResponseDto> getEmployeeByName(String name);
 
     String verify(EmployeesRequestDto employeesRequestDto);
+
+    EmployeesResponseDto addEmployeeToTeam(EmployeesRequestDto employeesRequestDto, String teamId);
 }

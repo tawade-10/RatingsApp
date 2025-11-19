@@ -8,17 +8,14 @@ public class RatingsCycleRequestDto {
 
     private String cycleId;
 
-    private String cycleName;
-
     private CycleStatus status;
 
     private LocalDate startDate;
 
     private LocalDate endDate;
 
-    public RatingsCycleRequestDto(String cycleId, String cycleName, CycleStatus status, LocalDate startDate, LocalDate endDate) {
+    public RatingsCycleRequestDto(String cycleId, CycleStatus status, LocalDate startDate, LocalDate endDate) {
         this.cycleId = cycleId;
-        this.cycleName = cycleName;
         this.status = status;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -30,14 +27,6 @@ public class RatingsCycleRequestDto {
 
     public void setCycleId(String cycleId) {
         this.cycleId = cycleId;
-    }
-
-    public String getCycleName() {
-        return cycleName;
-    }
-
-    public void setCycleName(String cycleName) {
-        this.cycleName = cycleName;
     }
 
     public CycleStatus getStatus() {

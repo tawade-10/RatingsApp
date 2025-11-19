@@ -46,8 +46,8 @@ public class RatingsFacadeImpl implements RatingsFacade {
     }
 
     @Override
-    public RatingsResponseDto approveRating(String ratingId) {
-        return ratingsService.approveRating(ratingId);
+    public RatingsResponseDto approveRating(String ratingId,RatingsRequestDto ratingsRequestDto) {
+        return ratingsService.approveRating(ratingId,ratingsRequestDto);
     }
 
     @Override

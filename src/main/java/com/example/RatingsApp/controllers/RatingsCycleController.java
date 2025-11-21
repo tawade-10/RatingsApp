@@ -34,6 +34,18 @@ public class RatingsCycleController {
         return ResponseEntity.ok(listCycles);
     }
 
+    @GetMapping("{ratingsCycleId}")
+    public ResponseEntity<RatingsCycleResponseDto> getCycleById(@PathVariable String ratingsCycleId) {
+        RatingsCycleResponseDto getCycle = ratingsCycleService.getCycleById(ratingsCycleId);
+        return ResponseEntity.ok(getCycle);
+    }
+
+    @PutMapping("{ratingsCycleId}")
+    public ResponseEntity<RatingsCycleResponseDto> updateRatings(@PathVariable String ratingsCycleId){
+        RatingsCycleResponseDto updatedRatings = ratingsCycleService.updateRatings(ratingsCycleId);
+        return ResponseEntity.ok(updatedRatings);
+    }
+
     @DeleteMapping("{ratingsCycleId}")
     public ResponseEntity<String> deleteRatingsCycle(@PathVariable String ratingsCycleId) {
         ratingsCycleService.deleteRatingsCycle(ratingsCycleId);

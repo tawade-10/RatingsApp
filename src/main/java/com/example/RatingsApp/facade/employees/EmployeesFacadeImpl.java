@@ -75,4 +75,14 @@ public class EmployeesFacadeImpl implements EmployeesFacade{
     public EmployeesResponseDto addEmployeeToTeam(EmployeesRequestDto employeesRequestDto, String teamId) {
         return employeesService.addEmployeeToTeam(employeesRequestDto,teamId);
     }
+
+    @Override
+    public EmployeesResponseDto changeTeam(EmployeesRequestDto employeesRequestDto) {
+        return employeesService.changeTeam(employeesRequestDto);
+    }
+
+    @Override
+    public EmployeesResponseDto changeRole(EmployeesRequestDto employeesRequestDto) {
+        return employeesService.changeRole(employeesRequestDto);
+    }
 }

@@ -2,6 +2,7 @@ package com.example.RatingsApp.dto.RatingsDto;
 
 import com.example.RatingsApp.entity.Ratings;
 // import com.example.RatingsApp.entity.RatingsCycle;
+import com.example.RatingsApp.entity.enums.RatingDescription;
 import com.example.RatingsApp.entity.enums.RatingStatus;
 
 public class RatingsResponseDto {
@@ -22,6 +23,8 @@ public class RatingsResponseDto {
 
     private int ratingValue;
 
+    private RatingDescription ratingDescription;
+
     private String ratings_cycle;
 
     public RatingsResponseDto(Ratings rating) {
@@ -33,6 +36,7 @@ public class RatingsResponseDto {
         this.ratedByName = rating.getRatedBy().getName();
         this.ratingStatus = rating.getRatingStatus();
         this.ratingValue = rating.getRatingValue();
+        this.ratingDescription = rating.getRatingDescription();
         this.ratings_cycle = (rating.getRatingsCycle() != null) ? rating.getRatingsCycle().getCycleName() : null;
     }
 
@@ -98,6 +102,14 @@ public class RatingsResponseDto {
 
     public void setRatingValue(int ratingValue) {
         this.ratingValue = ratingValue;
+    }
+
+    public RatingDescription getRatingDescription() {
+        return ratingDescription;
+    }
+
+    public void setRatingDescription(RatingDescription ratingDescription) {
+        this.ratingDescription = ratingDescription;
     }
 
     public String getRatings_cycle() {

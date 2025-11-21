@@ -84,6 +84,18 @@ public class EmployeesController {
         return new ResponseEntity<>(updatedEmployee, HttpStatus.OK);
     }
 
+    @PutMapping("/change-team")
+    public ResponseEntity<EmployeesResponseDto> changeTeam(@RequestBody EmployeesRequestDto employeesRequestDto){
+        EmployeesResponseDto updatedTeam = employeesFacade.changeTeam(employeesRequestDto);
+        return new ResponseEntity<>(updatedTeam,HttpStatus.OK);
+    }
+
+    @PutMapping("/change-role")
+    public ResponseEntity<EmployeesResponseDto> changeRole(@RequestBody EmployeesRequestDto employeesRequestDto){
+        EmployeesResponseDto updatedRole = employeesFacade.changeRole(employeesRequestDto);
+        return new ResponseEntity<>(updatedRole,HttpStatus.OK);
+    }
+
     @DeleteMapping("{employeeId}")
     public ResponseEntity<String> deleteEmployee(@PathVariable String employeeId){
         EmployeesResponseDto deletedEmployee = employeesFacade.deleteEmployee(employeeId);

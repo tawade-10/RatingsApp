@@ -6,22 +6,24 @@ import com.example.RatingsApp.dto.RatingsDto.RatingsResponseDto;
 import com.example.RatingsApp.entity.Employees;
 import com.example.RatingsApp.entity.Ratings;
 import com.example.RatingsApp.entity.RatingsCycle;
+import com.example.RatingsApp.entity.Teams;
 import com.example.RatingsApp.entity.enums.CycleStatus;
+import com.example.RatingsApp.entity.enums.RatingDescription;
 import com.example.RatingsApp.entity.enums.RatingRoles;
 import com.example.RatingsApp.entity.enums.RatingStatus;
 import com.example.RatingsApp.exception.APIException;
 import com.example.RatingsApp.exception.ResourceNotFoundException;
 import com.example.RatingsApp.repository.EmployeesRepo;
-// import com.example.RatingsApp.repository.RatingsCycleRepo;
 import com.example.RatingsApp.repository.RatingsCycleRepo;
 import com.example.RatingsApp.repository.RatingsRepo;
+import com.example.RatingsApp.repository.TeamsRepo;
 import com.example.RatingsApp.strategy.RatingStrategy;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.OptionalDouble;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,12 +35,15 @@ public class RatingsServiceImpl implements RatingsService {
 
     private final RatingFactory ratingFactory;
 
+    private final TeamsRepo teamsRepo;
+
     private final RatingsCycleRepo ratingsCycleRepo;
 
-    public RatingsServiceImpl(EmployeesRepo employeesRepo, RatingsRepo ratingsRepo, RatingFactory ratingFactory, RatingsCycleRepo ratingsCycleRepo) {
+    public RatingsServiceImpl(EmployeesRepo employeesRepo, RatingsRepo ratingsRepo, RatingFactory ratingFactory, TeamsRepo teamsRepo, RatingsCycleRepo ratingsCycleRepo) {
         this.employeesRepo = employeesRepo;
         this.ratingsRepo = ratingsRepo;
         this.ratingFactory = ratingFactory;
+        this.teamsRepo = teamsRepo;
         this.ratingsCycleRepo = ratingsCycleRepo;
     }
 
@@ -51,6 +56,10 @@ public class RatingsServiceImpl implements RatingsService {
 
         Employees ratedBy = employeesRepo.findByEmployeeIdIgnoreCase(ratingsRequestDto.getRated_by_id())
                 .orElseThrow(() -> new ResourceNotFoundException("RatedBy employee not found"));
+
+//        if("R101".equalsIgnoreCase(ratedByRole) && "R103".equalsIgnoreCase(employeeRole)){
+//            throw new IllegalArgumentException("PM cannot rate Individual");
+//        }
 
         if (ratingsRequestDto.getRatingId() == null || ratingsRequestDto.getRatingId().isBlank())
             throw new IllegalArgumentException("Rating Id cannot be null or empty");
@@ -76,12 +85,15 @@ public class RatingsServiceImpl implements RatingsService {
         // Fetching Strategy Logic
         Ratings rating = strategy.giveRating(ratingsRequestDto);
 
+        RatingDescription ratingDescription = ratingDescription(rating);
+
         // Set remaining fields
         rating.setRatingId(ratingsRequestDto.getRatingId());
         rating.setEmployee(employee);
         rating.setRatedBy(ratedBy);
         rating.setRatingRole(derivedRole);
         rating.setRatingsCycle(cycle);
+        rating.setRatingDescription(ratingDescription);
         rating.setRatingStatus(RatingStatus.SUBMITTED);
 
         Ratings savedRating = ratingsRepo.save(rating);
@@ -107,6 +119,10 @@ public class RatingsServiceImpl implements RatingsService {
         Ratings rating = ratingsRepo.findByRatingId(ratingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Rating not found with ID: " + ratingId));
 
+        if (rating.getRatingStatus() == RatingStatus.APPROVED_BY_PM || rating.getRatingStatus() == RatingStatus.BROADCASTED) {
+            throw new APIException("Rating is locked and cannot be modified after approval/broadcast.");
+        }
+
         Employees employee = employeesRepo.findByEmployeeIdIgnoreCase(ratingsRequestDto.getEmployee_id())
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
         Employees ratedBy = employeesRepo.findByEmployeeIdIgnoreCase(ratingsRequestDto.getRated_by_id())
@@ -115,10 +131,13 @@ public class RatingsServiceImpl implements RatingsService {
         RatingsCycle cycle = ratingsCycleRepo.findByCycleNameIgnoreCase(ratingsRequestDto.getRatings_cycle())
                 .orElseThrow(() -> new ResourceNotFoundException("Ratings Cycle not found"));
 
-
         rating.setRatingStatus(RatingStatus.SUBMITTED);
         rating.setRatingsCycle(cycle);
         rating.setRatingValue(ratingsRequestDto.getRating_value());
+
+        RatingDescription ratingDescription = ratingDescription(rating);
+        rating.setRatingDescription(ratingDescription);
+        ratingsRepo.save(rating);
 
         return new RatingsResponseDto(rating);
     }
@@ -138,79 +157,107 @@ public class RatingsServiceImpl implements RatingsService {
     }
 
     @Override
-    public RatingsResponseDto approveRating(String ratingId) {
+    public RatingsResponseDto approveRating(String ratingId, RatingsRequestDto ratingsRequestDto) {
+
         Ratings rating = ratingsRepo.findByRatingId(ratingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Rating not found with ID: " + ratingId));
 
-        if (rating.getRatingStatus() == null || rating.getRatingStatus() != RatingStatus.SUBMITTED) {
-            throw new IllegalArgumentException("Only SUBMITTED ratings can be approved");
+        if (rating.getRatingStatus() == RatingStatus.APPROVED_BY_PM || rating.getRatingStatus() == RatingStatus.BROADCASTED) {
+            throw new APIException("Rating cannot be modified after final approval/broadcast.");
         }
 
-        Employees approver = rating.getRatedBy();
-        Employees ratedEmployee = rating.getEmployee();
+        if (rating.getRatingStatus() == null || !(rating.getRatingStatus() == RatingStatus.SUBMITTED ||
+                        rating.getRatingStatus() == RatingStatus.APPROVED_BY_TL ||
+                        rating.getRatingStatus() == RatingStatus.APPROVED_BY_TTL)) {
+            throw new IllegalArgumentException("Only SUBMITTED / APPROVED_BY_TL / APPROVED_BY_TTL ratings can be approved.");
+        }
 
-        String approverRole = approver.getRole().getRoleId();
+        Employees ratedEmployee = employeesRepo.findByEmployeeIdIgnoreCase(ratingsRequestDto.getEmployee_id())
+                .orElseThrow(() -> new ResourceNotFoundException("Rated Employee not found"));
+
+        Employees approver = employeesRepo.findByEmployeeIdIgnoreCase(ratingsRequestDto.getRated_by_id())
+                .orElseThrow(() -> new ResourceNotFoundException("Approver not found"));
+
         String ratedRole = ratedEmployee.getRole().getRoleId();
+        String approverRole = approver.getRole().getRoleId();
 
-        if (approver.getTeam() == null || ratedEmployee.getTeam() == null ||
-                !approver.getTeam().getTeamId().equals(ratedEmployee.getTeam().getTeamId())) {
-            throw new IllegalArgumentException("Approver and rated employee must belong to the same team");
+        if (approver.getTeam() == null || ratedEmployee.getTeam() == null || !approver.getTeam().getTeamId().equals(ratedEmployee.getTeam().getTeamId())) {
+            throw new IllegalArgumentException("Approver and Rated employee must belong to same team.");
         }
 
-        if ("R103".equalsIgnoreCase(ratedRole)) {
-            if (!"R102".equalsIgnoreCase(approverRole)) {
-                throw new IllegalArgumentException("Only a TL can approve an Individual’s rating");
+        if ("R104".equalsIgnoreCase(ratedRole)) {
+            if ("R103".equalsIgnoreCase(approverRole)) {
+                rating.setRatingStatus(RatingStatus.APPROVED_BY_TL);
+            }
+            else if ("R102".equalsIgnoreCase(approverRole)) {
+                if (rating.getRatingStatus() != RatingStatus.APPROVED_BY_TL){
+                    throw new IllegalArgumentException("Individual rating must be TL-approved before TTL approval.");
+                }else {
+                    rating.setRatingStatus(RatingStatus.APPROVED_BY_TTL);
+                }
+            }
+            else if ("R101".equalsIgnoreCase(approverRole)) {
+                if (rating.getRatingStatus() != RatingStatus.APPROVED_BY_TTL){
+                    throw new IllegalArgumentException("Individual rating must be TTL-approved before PM approval.");
+                }else{
+                    rating.setRatingStatus(RatingStatus.APPROVED_BY_PM);
+                }
+            }
+            else {
+                throw new IllegalArgumentException("Invalid approver for Individual rating.");
+            }
+        }
+        else if ("R103".equalsIgnoreCase(ratedRole)) {
+            if ("R102".equalsIgnoreCase(approverRole)) {
+                rating.setRatingStatus(RatingStatus.APPROVED_BY_TTL);
+            }
+            else if ("R101".equalsIgnoreCase(approverRole)) {
+                if (rating.getRatingStatus() != RatingStatus.APPROVED_BY_TTL){
+                    throw new IllegalArgumentException("TL rating must be TTL-approved before PM approval.");
+                }else{
+                    rating.setRatingStatus(RatingStatus.APPROVED_BY_PM);
+                }
+            }
+            else {
+                throw new IllegalArgumentException("Invalid approver for TL rating.");
             }
         }
         else if ("R102".equalsIgnoreCase(ratedRole)) {
-            if (!"R101".equalsIgnoreCase(approverRole)) {
-                throw new IllegalArgumentException("Only a PM can approve a Team Lead’s self rating");
+            if ("R101".equalsIgnoreCase(approverRole)) {
+                rating.setRatingStatus(RatingStatus.APPROVED_BY_PM);
+            }
+            else {
+                throw new IllegalArgumentException("Only PM can approve TTL ratings.");
             }
         }
-
-        rating.setRatingStatus(RatingStatus.APPROVED);
         ratingsRepo.save(rating);
-
         return new RatingsResponseDto(rating);
     }
 
     @Override
-    public RatingsResponseDto broadcastRating(String ratingId) {
+    public RatingsResponseDto broadcastRating(String ratingId, RatingsRequestDto ratingsRequestDto) {
+
         Ratings rating = ratingsRepo.findByRatingId(ratingId)
-                .orElseThrow(() -> new ResourceNotFoundException("Rating not found with ID: " + ratingId));
+                .orElseThrow(() -> new ResourceNotFoundException("Rating not found"));
 
-        if (rating.getRatingStatus() == null || rating.getRatingStatus() != RatingStatus.APPROVED) {
-            throw new IllegalArgumentException("Only APPROVED ratings can be broadcasted");
-        }
+        Employees broadcaster = employeesRepo.findByEmployeeIdIgnoreCase(ratingsRequestDto.getRated_by_id())
+                .orElseThrow(() -> new ResourceNotFoundException("Broadcaster not found"));
 
-        Employees broadcaster = rating.getRatedBy();
         Employees approvedEmployee = rating.getEmployee();
 
-        String broadcasterRole = broadcaster.getRole().getRoleId();
-        String approvedRole = approvedEmployee.getRole().getRoleId();
-
-        if (broadcaster.getTeam() == null || approvedEmployee.getTeam() == null ||
-                !broadcaster.getTeam().getTeamId().equals(approvedEmployee.getTeam().getTeamId())) {
+        if (!broadcaster.getTeam().getTeamId().equals(approvedEmployee.getTeam().getTeamId())) {
             throw new IllegalArgumentException("Broadcaster and approved employee must belong to the same team");
         }
-
-        if ("R103".equalsIgnoreCase(approvedRole)) {
-            if (!"R102".equalsIgnoreCase(broadcasterRole)) {
-                throw new IllegalArgumentException("Only a PM can broadcast Ratings");
-            }
-        }
-        if ("R102".equalsIgnoreCase(approvedRole)) {
-            if (!"R101".equalsIgnoreCase(broadcasterRole)) {
-                throw new IllegalArgumentException("Only a PM can broadcast Ratings");
-            }
+        if (!"R101".equalsIgnoreCase(broadcaster.getRole().getRoleId())) {
+            throw new IllegalArgumentException("Only PM can broadcast ratings");
         }
 
         rating.setRatingStatus(RatingStatus.BROADCASTED);
-        Ratings savedRating = ratingsRepo.save(rating);
+        ratingsRepo.save(rating);
 
-        return new RatingsResponseDto(savedRating);
+        return new RatingsResponseDto(rating);
     }
-
+    
     @Override
     public List<RatingsResponseDto> getReceivedRatings(String employeeId) {
         Employees employee = employeesRepo.findByEmployeeIdIgnoreCase(employeeId)
@@ -232,6 +279,35 @@ public class RatingsServiceImpl implements RatingsService {
         return ratingsList.stream().map(RatingsResponseDto::new).toList();
     }
 
+    @Override
+    public OptionalDouble getAverageByCycle(String cycleName) {
+
+        RatingsCycle cycle = ratingsCycleRepo.findByCycleNameIgnoreCase(cycleName)
+                .orElseThrow(() -> new ResourceNotFoundException("Ratings Cycle not found with name: " + cycleName));
+
+        List<Ratings> ratingsList = ratingsRepo.findByRatingsCycle_CycleNameIgnoreCase(cycleName);
+
+        return ratingsList.stream().mapToInt(Ratings::getRatingValue).average();
+    }
+
+    @Override
+    public OptionalDouble getAverageByTeam(String teamId) {
+
+        Teams team = teamsRepo.findByTeamIdIgnoreCase(teamId)
+                .orElseThrow(() -> new ResourceNotFoundException("Team not found with ID: " + teamId));
+
+        List<Employees> employees = employeesRepo.findByTeam(team);
+
+        List<Ratings> ratingsList = employees.stream()
+                .flatMap(emp -> ratingsRepo.findByEmployee(emp).stream())
+                .toList();
+
+        return ratingsList.stream()
+                .mapToInt(Ratings::getRatingValue)
+                .average();
+    }
+
+
     private RatingRoles deriveRatingRole(Employees ratedBy, Employees employee) {
         String ratedByRole = ratedBy.getRole().getRoleId();
         String employeeRole = employee.getRole().getRoleId();
@@ -239,16 +315,37 @@ public class RatingsServiceImpl implements RatingsService {
         if (ratedBy.getEmployeeId().equalsIgnoreCase(employee.getEmployeeId())) {
             return RatingRoles.SELF;
         }
-        if ("R101".equalsIgnoreCase(ratedByRole) && "R103".equalsIgnoreCase(employeeRole))
-            return RatingRoles.PM_TO_EMPLOYEE;
         if ("R101".equalsIgnoreCase(ratedByRole) && "R102".equalsIgnoreCase(employeeRole))
-            return RatingRoles.PM_TO_TL;
+            return RatingRoles.PM_TO_TTL;
         if ("R102".equalsIgnoreCase(ratedByRole) && "R103".equalsIgnoreCase(employeeRole))
+            return RatingRoles.TTL_TO_TL;
+        if ("R103".equalsIgnoreCase(ratedByRole) && "R104".equalsIgnoreCase(employeeRole))
             return RatingRoles.TL_TO_EMPLOYEE;
         throw new APIException("Rating combination is Invalid between " +
                 ratedBy.getName() + " (" + ratedByRole + ") and " +
                 employee.getName() + " (" + employeeRole + ")");
     }
-}
 
-// i have approve and broadcast implementations, in this i want R103 individuals will get approved by R102, and R102 by R101
+    private RatingDescription ratingDescription(Ratings ratings) {
+        int ratingValue = ratings.getRatingValue();
+
+        if (ratingValue >= 9 && ratingValue <= 10) {
+            return RatingDescription.OUTSTANDING;
+        }
+        else if (ratingValue >= 7 && ratingValue <= 8) {
+            return RatingDescription.GOOD;
+        }
+        else if (ratingValue >= 5 && ratingValue <= 6) {
+            return RatingDescription.AVERAGE;
+        }
+        else if (ratingValue >= 3 && ratingValue <= 4) {
+            return RatingDescription.BELOW_AVERAGE;
+        }
+        else if (ratingValue >= 1 && ratingValue <= 2) {
+            return RatingDescription.POOR;
+        }
+        else {
+            throw new IllegalArgumentException("Invalid rating value: " + ratingValue);
+        }
+    }
+}

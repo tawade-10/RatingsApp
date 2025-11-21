@@ -18,12 +18,8 @@ public class SelfRating implements RatingStrategy {
 
         Ratings ratings = new Ratings();
 
-       // ratings.setRatingRole(ratingsRequestDto.getRating_role());
-       // ratings.setRatingStatus(ratingsRequestDto.getRating_status());
         ratings.setRatingValue(ratingsRequestDto.getRating_value());
 
         return ratings;
     }
 }
-
-//Rating cycle

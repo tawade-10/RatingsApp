@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.OptionalDouble;
 
 @RestController
 @RequestMapping("/api/ratings")
@@ -56,6 +57,18 @@ public class RatingsController {
         return ResponseEntity.ok(getRatings);
     }
 
+    @GetMapping("/average/ratingCycle/{cycleName}")
+    public ResponseEntity<OptionalDouble> getAverageByCycle(@PathVariable String cycleName){
+        OptionalDouble average = ratingsFacade.getAverageByCycle(cycleName);
+        return ResponseEntity.ok(average);
+    }
+
+    @GetMapping("/average/team/{teamId}")
+    public ResponseEntity<OptionalDouble> getAverageByTeam(@PathVariable String teamId){
+        OptionalDouble average = ratingsFacade.getAverageByTeam(teamId);
+        return ResponseEntity.ok(average);
+    }
+
     @PutMapping("{ratingId}")
     public ResponseEntity<RatingsResponseDto> updateRating(@PathVariable String ratingId, @RequestBody RatingsRequestDto ratingsRequestDto) {
         RatingsResponseDto updatedRating = ratingsFacade.updateRating(ratingId, ratingsRequestDto);
@@ -69,8 +82,8 @@ public class RatingsController {
     }
 
     @PutMapping("/broadcast/{ratingId}")
-    public ResponseEntity<RatingsResponseDto> broadcastRating(@PathVariable String ratingId) {
-        RatingsResponseDto broadcastedRating = ratingsFacade.broadcastRating(ratingId);
+    public ResponseEntity<RatingsResponseDto> broadcastRating(@PathVariable String ratingId,@RequestBody RatingsRequestDto ratingsRequestDto) {
+        RatingsResponseDto broadcastedRating = ratingsFacade.broadcastRating(ratingId,ratingsRequestDto);
         return ResponseEntity.ok(broadcastedRating);
     }
 

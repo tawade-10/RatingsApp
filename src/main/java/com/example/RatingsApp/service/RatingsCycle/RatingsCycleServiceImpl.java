@@ -2,8 +2,11 @@ package com.example.RatingsApp.service.RatingsCycle;
 
 import com.example.RatingsApp.dto.RatingsCycleDto.RatingsCycleRequestDto;
 import com.example.RatingsApp.dto.RatingsCycleDto.RatingsCycleResponseDto;
+import com.example.RatingsApp.dto.RatingsDto.RatingsResponseDto;
+import com.example.RatingsApp.entity.Ratings;
 import com.example.RatingsApp.entity.RatingsCycle;
 import com.example.RatingsApp.entity.enums.CycleStatus;
+import com.example.RatingsApp.entity.enums.RatingStatus;
 import com.example.RatingsApp.exception.APIException;
 import com.example.RatingsApp.exception.ResourceNotFoundException;
 import com.example.RatingsApp.repository.RatingsCycleRepo;
@@ -12,8 +15,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalDouble;
 import java.util.stream.Collectors;
 
 @Service
@@ -93,6 +98,34 @@ public class RatingsCycleServiceImpl implements RatingsCycleService{
         return null;
     }
 
+    @Override
+    public RatingsCycleResponseDto getCycleById(String ratingsCycleId) {
+        RatingsCycle cycle = ratingsCycleRepo.findByCycleId(ratingsCycleId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ratings Cycle not found with ID: " + ratingsCycleId));
+        return new RatingsCycleResponseDto(cycle);
+    }
+
+    @Override
+    public RatingsCycleResponseDto updateRatings(String ratingsCycleId) {
+
+        RatingsCycle cycle = ratingsCycleRepo.findByCycleId(ratingsCycleId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ratings Cycle not found with ID: " + ratingsCycleId));
+
+        LocalDate today = LocalDate.now();
+
+        if (cycle.getStatus() == CycleStatus.ACTIVE && today.isAfter(cycle.getEndDate())) {
+            cycle.setStatus(CycleStatus.CLOSED);
+            ratingsCycleRepo.save(cycle);
+
+            RatingsCycle nextCycle = ratingsCycleRepo.findFirstByStartDateAfterOrderByStartDateAsc(cycle.getEndDate());
+
+            nextCycle.setStatus(CycleStatus.ACTIVE);
+            ratingsCycleRepo.save(nextCycle);
+            return new RatingsCycleResponseDto(cycle);
+        }
+        return new RatingsCycleResponseDto(cycle);
+    }
+
     public String getRatingsCycle(LocalDate startDate, LocalDate endDate){
 
         int year = startDate.getYear();
@@ -110,16 +143,16 @@ public class RatingsCycleServiceImpl implements RatingsCycleService{
         LocalDate endQ4 = LocalDate.of(year, 12,31);
 
         if (!startDate.isBefore(startQ1) && !endDate.isAfter(endQ1)){
-            return "Q1";
+            return "Q1-" + year;
         }
         if (!startDate.isBefore(startQ2) && !endDate.isAfter(endQ2)){
-            return "Q2";
+            return "Q2-" + year;
         }
         if (!startDate.isBefore(startQ3) && !endDate.isAfter(endQ3)){
-            return "Q3";
+            return "Q3-" + year;
         }
         if (!startDate.isBefore(startQ4) && !endDate.isAfter(endQ4)){
-            return "Q4";
+            return "Q4-" + year;
         }
         return "Invalid Cycle";
     }

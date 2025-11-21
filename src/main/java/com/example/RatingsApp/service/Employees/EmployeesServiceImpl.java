@@ -131,22 +131,52 @@ public class EmployeesServiceImpl implements EmployeesService {
     }
 
     @Override
+    public EmployeesResponseDto changeTeam(EmployeesRequestDto employeesRequestDto) {
+
+        String teamId = employeesRequestDto.getTeamId();
+
+        Employees employee = employeesRepo.findByEmployeeIdIgnoreCase(employeesRequestDto.getEmployeeId())
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + employeesRequestDto.getEmployeeId()));
+
+        Teams newTeam = teamsRepo.findByTeamIdIgnoreCase(teamId)
+                .orElseThrow(() -> new ResourceNotFoundException("Team not found with ID: " + teamId));
+
+        if (employee.getTeam() != null && employee.getTeam().getTeamId().equalsIgnoreCase(teamId)) {
+            throw new APIException("Employee is already assigned to this team.");
+        }
+
+        employee.setTeam(newTeam);
+        Employees updatedEmployee = employeesRepo.save(employee);
+
+        return new EmployeesResponseDto(updatedEmployee);
+    }
+
+    @Override
+    public EmployeesResponseDto changeRole(EmployeesRequestDto employeesRequestDto) {
+
+        String roleId = employeesRequestDto.getRoleId();
+
+        Employees employee = employeesRepo.findByEmployeeIdIgnoreCase(employeesRequestDto.getEmployeeId())
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + employeesRequestDto.getEmployeeId()));
+
+        Roles newRole = rolesRepo.findByRoleIdIgnoreCase(roleId)
+                .orElseThrow(() -> new ResourceNotFoundException("Role not found with ID: " + roleId));
+
+        employee.setRole(newRole);
+        Employees updatedEmployee = employeesRepo.save(employee);
+
+        return new EmployeesResponseDto(updatedEmployee);
+    }
+
+    @Override
     public EmployeesResponseDto updateEmployee(String employeeId, EmployeesRequestDto employeesRequestDto) {
 
         Employees employee = employeesRepo.findByEmployeeIdIgnoreCase(employeeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + employeeId));
 
-        Roles role = rolesRepo.findByRoleIdIgnoreCase(employeesRequestDto.getRoleId())
-                .orElseThrow(() -> new ResourceNotFoundException("Role not found with ID: " + employeesRequestDto.getRoleId()));
-
-        Teams team = teamsRepo.findByTeamIdIgnoreCase(employeesRequestDto.getTeamId())
-                .orElseThrow(() -> new ResourceNotFoundException("Team not found with ID: " + employeesRequestDto.getTeamId()));
-
         employee.setName(employeesRequestDto.getName());
         employee.setEmail(employeesRequestDto.getEmail());
         employee.setPassword(employeesRequestDto.getPassword());
-        employee.setRole(role);
-        employee.setTeam(team);
         Employees saveUpdatedEmployee = employeesRepo.save(employee);
         return new EmployeesResponseDto(saveUpdatedEmployee);
     }

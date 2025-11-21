@@ -11,4 +11,8 @@ public interface RatingsCycleService {
     List<RatingsCycleResponseDto> getAllCycles();
 
     RatingsCycleResponseDto deleteRatingsCycle(String ratingsCycleId);
+
+    RatingsCycleResponseDto getCycleById(String ratingsCycleId);
+
+    RatingsCycleResponseDto updateRatings(String ratingsCycleId);
 }

@@ -5,6 +5,7 @@ import com.example.RatingsApp.dto.RatingsDto.RatingsResponseDto;
 import com.example.RatingsApp.service.Ratings.RatingsService;
 import org.springframework.stereotype.Component;
 import java.util.List;
+import java.util.OptionalDouble;
 
 @Component
 public class RatingsFacadeImpl implements RatingsFacade {
@@ -51,8 +52,8 @@ public class RatingsFacadeImpl implements RatingsFacade {
     }
 
     @Override
-    public RatingsResponseDto broadcastRating(String ratingId) {
-        return ratingsService.broadcastRating(ratingId);
+    public RatingsResponseDto broadcastRating(String ratingId,RatingsRequestDto ratingsRequestDto) {
+        return ratingsService.broadcastRating(ratingId,ratingsRequestDto);
     }
 
     @Override
@@ -63,5 +64,15 @@ public class RatingsFacadeImpl implements RatingsFacade {
     @Override
     public List<RatingsResponseDto> getGivenRatings(String ratedById) {
         return ratingsService.getGivenRatings(ratedById);
+    }
+
+    @Override
+    public OptionalDouble getAverageByCycle(String cycleName) {
+        return ratingsService.getAverageByCycle(cycleName);
+    }
+
+    @Override
+    public OptionalDouble getAverageByTeam(String teamId) {
+        return ratingsService.getAverageByTeam(teamId);
     }
 }

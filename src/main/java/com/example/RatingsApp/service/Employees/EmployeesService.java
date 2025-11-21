@@ -29,4 +29,8 @@ public interface EmployeesService {
     String verify(EmployeesRequestDto employeesRequestDto);
 
     EmployeesResponseDto addEmployeeToTeam(EmployeesRequestDto employeesRequestDto, String teamId);
+
+    EmployeesResponseDto changeTeam(EmployeesRequestDto employeesRequestDto);
+
+    EmployeesResponseDto changeRole(EmployeesRequestDto employeesRequestDto);
 }

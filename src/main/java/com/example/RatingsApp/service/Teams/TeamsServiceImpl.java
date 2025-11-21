@@ -112,25 +112,25 @@ public class TeamsServiceImpl implements TeamsService {
 
     @Override
     public TeamsResponseDto updateTeam(String teamId, TeamsRequestDto teamsRequestDto) {
+
         Teams team = teamsRepo.findByTeamIdIgnoreCase(teamId)
                 .orElseThrow(() -> new ResourceNotFoundException("Team not found with ID: " + teamId));
 
-        String pmId = teamsRequestDto.getPmId();
+//        String pmId = teamsRequestDto.getPmId();
+//
+//        if (pmId == null) {
+//            throw new IllegalArgumentException("PM ID must be provided in the request body.");
+//        }
+//        Employees pm = employeesRepo.findByEmployeeIdIgnoreCase(pmId).orElseThrow(
+//                () -> new ResourceNotFoundException("Employee (PM) not found with ID: " + pmId)
+//        );
+//
+//        if(!Objects.equals(pm.getRole().getRoleId(), "R101")){
+//            throw new APIException("The employee should have role id R101 for being PM");
+//        }
 
-        if (pmId == null) {
-            throw new IllegalArgumentException("PM ID must be provided in the request body.");
-        }
-        Employees pm = employeesRepo.findByEmployeeIdIgnoreCase(pmId).orElseThrow(
-                () -> new ResourceNotFoundException("Employee (PM) not found with ID: " + pmId)
-        );
-
-        if(!Objects.equals(pm.getRole().getRoleId(), "R101")){
-            throw new APIException("The employee should have role id R101 for being PM");
-        }
-
-//        team.setTeamId(teamsRequestDto.getTeamId());
         team.setTeamName(teamsRequestDto.getTeamName());
-        team.setPm(pm);
+//        team.setPm(pm);
         Teams updatedTeam = teamsRepo.save(team);
         return new TeamsResponseDto(updatedTeam);
     }

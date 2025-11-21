@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.OptionalDouble;
 
 public interface RatingsCycleRepo extends JpaRepository<RatingsCycle, Long> {
     Optional<RatingsCycle> findByCycleNameIgnoreCase(String ratingsCycle);
@@ -15,4 +16,5 @@ public interface RatingsCycleRepo extends JpaRepository<RatingsCycle, Long> {
 
     Optional<RatingsCycle> findByCycleId(String cycleId);
 
+    RatingsCycle findFirstByStartDateAfterOrderByStartDateAsc(LocalDate endDate);
 }

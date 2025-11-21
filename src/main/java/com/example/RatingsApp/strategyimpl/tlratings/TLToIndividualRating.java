@@ -42,10 +42,10 @@ public class TLToIndividualRating implements RatingStrategy {
             throw new APIException("Only Employee can receive this rating.");
         }
 
-        Ratings rating = new Ratings();
-       // rating.setRatingRole(ratingsRequestDto.getRating_role());
-        rating.setRatingValue(ratingsRequestDto.getRating_value());
+        Ratings ratings = new Ratings();
 
-        return rating;
+        ratings.setRatingValue(ratingsRequestDto.getRating_value());
+
+        return ratings;
     }
 }

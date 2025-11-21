@@ -53,7 +53,7 @@ public class TeamsController {
         return ResponseEntity.ok(listTeams);
     }
 
-    @PutMapping("/update_team/{teamId}")
+    @PutMapping("/update-team/{teamId}")
     public ResponseEntity<TeamsResponseDto> updateTeam(@PathVariable String teamId, @RequestBody TeamsRequestDto teamsRequestDto) {
         TeamsResponseDto savedUpdatedTeam = teamsService.updateTeam(teamId, teamsRequestDto);
         return new ResponseEntity<>(savedUpdatedTeam, HttpStatus.OK);

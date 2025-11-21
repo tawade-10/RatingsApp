@@ -1,5 +1,6 @@
 package com.example.RatingsApp.entity;
 
+import com.example.RatingsApp.entity.enums.RatingDescription;
 import com.example.RatingsApp.entity.enums.RatingRoles;
 import com.example.RatingsApp.entity.enums.RatingStatus;
 import jakarta.persistence.*;
@@ -35,6 +36,9 @@ public class Ratings {
 
     @Column(nullable = false)
     private int ratingValue;
+
+    @Column(nullable = false)
+    private RatingDescription ratingDescription;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cycle_name",referencedColumnName = "cycleName" ,nullable = false)
@@ -94,6 +98,14 @@ public class Ratings {
 
     public void setRatingValue(int ratingValue) {
         this.ratingValue = ratingValue;
+    }
+
+    public RatingDescription getRatingDescription() {
+        return ratingDescription;
+    }
+
+    public void setRatingDescription(RatingDescription ratingDescription) {
+        this.ratingDescription = ratingDescription;
     }
 
     public RatingsCycle getRatingsCycle() {

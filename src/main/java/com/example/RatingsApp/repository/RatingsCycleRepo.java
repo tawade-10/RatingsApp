@@ -14,7 +14,5 @@ public interface RatingsCycleRepo extends JpaRepository<RatingsCycle, Long> {
 
     Optional<RatingsCycle> findByEndDate(LocalDate endDate);
 
-    Optional<RatingsCycle> findByCycleId(String cycleId);
-
     RatingsCycle findFirstByStartDateAfterOrderByStartDateAsc(LocalDate endDate);
 }

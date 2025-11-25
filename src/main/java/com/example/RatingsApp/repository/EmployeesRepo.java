@@ -3,6 +3,8 @@ package com.example.RatingsApp.repository;
 import com.example.RatingsApp.entity.Employees;
 import com.example.RatingsApp.entity.Roles;
 import com.example.RatingsApp.entity.Teams;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 //import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Repository;
@@ -16,11 +18,13 @@ public interface EmployeesRepo extends JpaRepository<Employees,Long> {
 
     Optional<Employees> findByName(String name);
 
+    Page<Employees> findByName(String name, Pageable pageable);
+
     List<Employees> findByTeam(Teams team);
 
     List<Employees> findByRole(Roles role);
 
-    Optional<Employees> findByEmployeeIdIgnoreCase(String employeeId);
+//    Optional<Employees> findByEmployeeIdIgnoreCase(String employeeId);
 
     Optional<Employees> findByEmail(String email);
 }

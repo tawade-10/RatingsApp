@@ -6,16 +6,16 @@ import com.example.RatingsApp.dto.TeamsDto.TeamsResponseDto;
 import java.util.List;
 
 public interface TeamsService {
-    TeamsResponseDto createTeam(TeamsRequestDto teamsRequestDto, String roleId);
+    TeamsResponseDto createTeam(TeamsRequestDto teamsRequestDto, Long roleId);
 
-    TeamsResponseDto assignPm(String teamId, TeamsRequestDto teamsRequestDto);
-    TeamsResponseDto getTeamById(String teamId);
+    TeamsResponseDto assignPm(Long teamId, TeamsRequestDto teamsRequestDto);
+    TeamsResponseDto getTeamById(Long teamId);
 
     TeamsResponseDto getTeamByName(String teamName);
 
     List<TeamsResponseDto> getAllTeams();
 
-    TeamsResponseDto updateTeam(String teamId, TeamsRequestDto teamsRequestDto);
+    TeamsResponseDto updateTeam(Long teamId, TeamsRequestDto teamsRequestDto);
 
-    TeamsResponseDto deleteTeam(String teamId);
+    TeamsResponseDto deleteTeam(Long teamId);
 }

@@ -2,6 +2,8 @@ package com.example.RatingsApp.entity;
 
 import com.example.RatingsApp.entity.enums.CycleStatus;
 import jakarta.persistence.*;
+import org.hibernate.annotations.GenericGenerator;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -9,12 +11,12 @@ import java.util.List;
 @Table(name = "ratings_cycle")
 public class RatingsCycle {
 
+//    @Id
+//    @GenericGenerator(name = "custom-id", type = com.example.RatingsApp.config.CustomIdGenerator.class)
+//    @GeneratedValue(generator = "custom-id")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false, unique = true)
-    private String cycleId;
+    private Long cycleId;
 
     @Column(nullable = false, unique = false)
     private String cycleName;
@@ -30,19 +32,11 @@ public class RatingsCycle {
     @OneToMany(mappedBy = "ratingsCycle",fetch = FetchType.LAZY)
     private List<Ratings> ratings;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getCycleId() {
+    public Long getCycleId() {
         return cycleId;
     }
 
-    public void setCycleId(String cycleId) {
+    public void setCycleId(Long cycleId) {
         this.cycleId = cycleId;
     }
 

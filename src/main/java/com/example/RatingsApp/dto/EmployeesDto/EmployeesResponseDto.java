@@ -6,17 +6,17 @@ import java.util.UUID;
 
 public class EmployeesResponseDto {
 
-    private String employeeId;
+    private Long employeeId;
 
     private String name;
 
     private String email;
 
-    private String roleId;
+    private Long roleId;
 
     private String roleName;
 
-    private String teamId;
+    private Long teamId;
 
     private String teamName;
 
@@ -30,11 +30,11 @@ public class EmployeesResponseDto {
         this.teamName = (employees.getTeam() != null) ? employees.getTeam().getTeamName() : null;
     }
 
-    public String getEmployeeId() {
+    public Long getEmployeeId() {
         return employeeId;
     }
 
-    public void setEmployeeId(String employeeId) {
+    public void setEmployeeId(Long employeeId) {
         this.employeeId = employeeId;
     }
 
@@ -54,19 +54,19 @@ public class EmployeesResponseDto {
         this.email = email;
     }
 
-    public String getRoleId() {
+    public Long getRoleId() {
         return roleId;
     }
 
-    public void setRoleId(String roleId) {
+    public void setRoleId(Long roleId) {
         this.roleId = roleId;
     }
 
-    public String getTeamId() {
+    public Long getTeamId() {
         return teamId;
     }
 
-    public void setTeamId(String teamId) {
+    public void setTeamId(Long teamId) {
         this.teamId = teamId;
     }
 

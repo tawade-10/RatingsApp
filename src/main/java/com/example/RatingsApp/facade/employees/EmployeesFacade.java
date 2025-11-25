@@ -3,35 +3,36 @@ package com.example.RatingsApp.facade.employees;
 import com.example.RatingsApp.dto.EmployeesDto.EmployeesRequestDto;
 import com.example.RatingsApp.dto.EmployeesDto.EmployeesResponseDto;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 public interface EmployeesFacade {
     EmployeesResponseDto createEmployee(@Valid EmployeesRequestDto employeesRequestDto);
 
-    EmployeesResponseDto getEmployeeById(String employeeId);
+    EmployeesResponseDto getEmployeeById(Long employeeId);
 
-    List<EmployeesResponseDto> getAllEmployees();
+    Page<EmployeesResponseDto> getAllEmployees(int page, int size);
 
-    List<EmployeesResponseDto> getEmployeeByName(String name);
+    Page<EmployeesResponseDto> getEmployeeByName(int page, int size, String name);
 
-    List<EmployeesResponseDto> getEmployeeByTeam(String teamId);
+    List<EmployeesResponseDto> getEmployeeByTeam(Long teamId);
 
-    List<EmployeesResponseDto> getEmployeesByRole(String roleId);
+    List<EmployeesResponseDto> getEmployeesByRole(Long roleId);
 
-    EmployeesResponseDto getPmByTeam(String teamId);
+    EmployeesResponseDto getPmByTeam(Long teamId);
 
     List<EmployeesResponseDto> getAllPm();
 
-    EmployeesResponseDto updateEmployee(String employeeId, EmployeesRequestDto employeesRequestDto);
+    EmployeesResponseDto updateEmployee(Long employeeId, EmployeesRequestDto employeesRequestDto);
 
-    EmployeesResponseDto deleteEmployee(String employeeId);
+    EmployeesResponseDto deleteEmployee(Long employeeId);
 
     String verify(EmployeesRequestDto employeesRequestDto);
 
-    EmployeesResponseDto addEmployeeToTeam(EmployeesRequestDto employeesRequestDto, String teamId);
+    EmployeesResponseDto addEmployeeToTeam(EmployeesRequestDto employeesRequestDto, Long teamId);
 
-    EmployeesResponseDto changeTeam(EmployeesRequestDto employeesRequestDto);
+    EmployeesResponseDto changeTeam(EmployeesRequestDto employeesRequestDto, Long employeeId);
 
-    EmployeesResponseDto changeRole(EmployeesRequestDto employeesRequestDto);
+    EmployeesResponseDto changeRole(EmployeesRequestDto employeesRequestDto, Long employeeId, Long roleId);
 }

@@ -10,7 +10,7 @@ import java.time.LocalDate;
 
 public class RatingsCycleResponseDto {
 
-    private String cycleId;
+    private Long cycleId;
 
     private String cycleName;
 
@@ -28,11 +28,11 @@ public class RatingsCycleResponseDto {
         this.endDate = ratingsCycle.getEndDate();
     }
 
-    public String getCycleId() {
+    public Long getCycleId() {
         return cycleId;
     }
 
-    public void setCycleId(String cycleId) {
+    public void setCycleId(Long cycleId) {
         this.cycleId = cycleId;
     }
 

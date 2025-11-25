@@ -6,11 +6,11 @@ import java.util.UUID;
 
 public class TeamsResponseDto {
 
-    private String teamId;
+    private Long teamId;
 
     private String teamName;
 
-    private String pmId;
+    private Long pmId;
 
     public TeamsResponseDto(Teams teams) {
         this.teamId = teams.getTeamId();
@@ -18,11 +18,11 @@ public class TeamsResponseDto {
         this.pmId = (teams.getPm() != null) ? teams.getPm().getEmployeeId() : null;
     }
 
-    public String getTeamId() {
+    public Long getTeamId() {
         return teamId;
     }
 
-    public void setTeamId(String teamId) {
+    public void setTeamId(Long teamId) {
         this.teamId = teamId;
     }
 
@@ -34,11 +34,11 @@ public class TeamsResponseDto {
         this.teamName = teamName;
     }
 
-    public String getPmId() {
+    public Long getPmId() {
         return pmId;
     }
 
-    public void setPm(String pmId) {
+    public void setPm(Long pmId) {
         this.pmId = pmId;
     }
 }

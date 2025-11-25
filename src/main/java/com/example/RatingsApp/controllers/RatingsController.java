@@ -6,6 +6,7 @@ import com.example.RatingsApp.facade.ratings.RatingsFacade;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,19 +35,19 @@ public class RatingsController {
     }
 
     @GetMapping("{ratingId}")
-    public ResponseEntity<RatingsResponseDto> getRatingById(@PathVariable String ratingId) {
+    public ResponseEntity<RatingsResponseDto> getRatingById(@PathVariable Long ratingId) {
         RatingsResponseDto getRatings = ratingsFacade.getRatingById(ratingId);
         return ResponseEntity.ok(getRatings);
     }
 
     @GetMapping("/received/{employeeId}")
-    public ResponseEntity<List<RatingsResponseDto>> getReceivedRatings(@PathVariable String employeeId){
+    public ResponseEntity<List<RatingsResponseDto>> getReceivedRatings(@PathVariable Long employeeId){
         List<RatingsResponseDto> receivedRatings = ratingsFacade.getReceivedRatings(employeeId);
         return ResponseEntity.ok(receivedRatings);
     }
 
     @GetMapping("/given/{ratedById}")
-    public ResponseEntity<List<RatingsResponseDto>> getGivenRatings(@PathVariable String ratedById){
+    public ResponseEntity<List<RatingsResponseDto>> getGivenRatings(@PathVariable Long ratedById){
         List<RatingsResponseDto> givenRatings = ratingsFacade.getGivenRatings(ratedById);
         return ResponseEntity.ok(givenRatings);
     }
@@ -64,31 +65,31 @@ public class RatingsController {
     }
 
     @GetMapping("/average/team/{teamId}")
-    public ResponseEntity<OptionalDouble> getAverageByTeam(@PathVariable String teamId){
+    public ResponseEntity<OptionalDouble> getAverageByTeam(@PathVariable Long teamId){
         OptionalDouble average = ratingsFacade.getAverageByTeam(teamId);
         return ResponseEntity.ok(average);
     }
 
     @PutMapping("{ratingId}")
-    public ResponseEntity<RatingsResponseDto> updateRating(@PathVariable String ratingId, @RequestBody RatingsRequestDto ratingsRequestDto) {
+    public ResponseEntity<RatingsResponseDto> updateRating(@PathVariable Long ratingId, @RequestBody RatingsRequestDto ratingsRequestDto) {
         RatingsResponseDto updatedRating = ratingsFacade.updateRating(ratingId, ratingsRequestDto);
         return ResponseEntity.ok(updatedRating);
     }
 
-    @PutMapping("/approve/{ratingId}")
-    public ResponseEntity<RatingsResponseDto> approveRating(@PathVariable String ratingId,@RequestBody RatingsRequestDto ratingsRequestDto) {
-        RatingsResponseDto approvedRating = ratingsFacade.approveRating(ratingId,ratingsRequestDto);
-        return ResponseEntity.ok(approvedRating);
-    }
+//    @PutMapping("/approve/{ratingId}")
+//    public ResponseEntity<RatingsResponseDto> approveRating(@PathVariable String ratingId,@RequestBody RatingsRequestDto ratingsRequestDto) {
+//        RatingsResponseDto approvedRating = ratingsFacade.approveRating(ratingId,ratingsRequestDto);
+//        return ResponseEntity.ok(approvedRating);
+//    }
 
     @PutMapping("/broadcast/{ratingId}")
-    public ResponseEntity<RatingsResponseDto> broadcastRating(@PathVariable String ratingId,@RequestBody RatingsRequestDto ratingsRequestDto) {
+    public ResponseEntity<RatingsResponseDto> broadcastRating(@PathVariable Long ratingId,@RequestBody RatingsRequestDto ratingsRequestDto) {
         RatingsResponseDto broadcastedRating = ratingsFacade.broadcastRating(ratingId,ratingsRequestDto);
         return ResponseEntity.ok(broadcastedRating);
     }
 
     @DeleteMapping("{ratingId}")
-    public ResponseEntity<String> deleteRating(@PathVariable String ratingId) {
+    public ResponseEntity<String> deleteRating(@PathVariable Long ratingId) {
         ratingsFacade.deleteRating(ratingId);
         return ResponseEntity.ok("Rating Deleted!");
     }

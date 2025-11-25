@@ -13,9 +13,9 @@ import java.util.Optional;
 @Repository
 public interface RatingsRepo extends JpaRepository<Ratings,Long> {
 
-    Optional<Ratings> findByRatingId(String ratingId);
+//    Optional<Ratings> findByRatingId(String ratingId);
 
-    List<Ratings> findByEmployee_EmployeeIdIgnoreCase(String employeeId);
+    List<Ratings> findByEmployee_EmployeeId(Long employeeId);
 
     List<Ratings> findByEmployee(Employees employee);
 

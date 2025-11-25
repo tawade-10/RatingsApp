@@ -13,19 +13,16 @@ import org.springframework.stereotype.Component;
 public class AdminUserInitializer {
 
     @Bean
-    public CommandLineRunner createAdminUser(RolesRepo rolesRepo,EmployeesRepo employeesRepo, PasswordEncoder passwordEncoder){
+    public CommandLineRunner createAdminUser(RolesRepo rolesRepo, EmployeesRepo employeesRepo, PasswordEncoder passwordEncoder) {
         return args -> {
-            // Check if an Admin user already exists
             if (employeesRepo.findByEmail("admin123@gmail.com").isEmpty()) {
-                Roles adminRole = rolesRepo.findByRoleIdIgnoreCase("R100")
+                Roles adminRole = rolesRepo.findByRoleNameIgnoreCase("Admin")
                         .orElseGet(() -> {
                             Roles role = new Roles();
-                            role.setRoleId("R100");
                             role.setRoleName("Admin");
                             return rolesRepo.save(role);
                         });
                 Employees admin = new Employees();
-                admin.setEmployeeId("EMP001");
                 admin.setName("Admin User");
                 admin.setEmail("admin123@gmail.com");
                 admin.setPassword(passwordEncoder.encode("admin123"));
@@ -33,6 +30,7 @@ public class AdminUserInitializer {
                 admin.setTeam(null);
 
                 employeesRepo.save(admin);
+
             } else {
                 System.out.println("Admin user already exists.");
             }

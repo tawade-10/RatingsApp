@@ -11,23 +11,23 @@ public interface RatingsFacade {
 
     List<RatingsResponseDto> getAllRatings();
 
-    RatingsResponseDto getRatingById(String ratingId);
+    RatingsResponseDto getRatingById(Long ratingId);
 
-    RatingsResponseDto updateRating(String ratingId, RatingsRequestDto ratingsRequestDto);
+    RatingsResponseDto updateRating(Long ratingId, RatingsRequestDto ratingsRequestDto);
 
-    void deleteRating(String ratingId);
+    void deleteRating(Long ratingId);
 
     List<RatingsResponseDto> getRatingsByCycles(String ratingsCycle);
 
-    RatingsResponseDto approveRating(String ratingId,RatingsRequestDto ratingsRequestDto);
+  //  RatingsResponseDto approveRating(String ratingId,RatingsRequestDto ratingsRequestDto);
 
-    RatingsResponseDto broadcastRating(String ratingId, RatingsRequestDto ratingsRequestDto);
+    RatingsResponseDto broadcastRating(Long ratingId, RatingsRequestDto ratingsRequestDto);
 
-    List<RatingsResponseDto> getReceivedRatings(String employeeId);
+    List<RatingsResponseDto> getReceivedRatings(Long employeeId);
 
-    List<RatingsResponseDto> getGivenRatings(String ratedById);
+    List<RatingsResponseDto> getGivenRatings(Long ratedById);
 
     OptionalDouble getAverageByCycle(String cycleName);
 
-    OptionalDouble getAverageByTeam(String teamId);
+    OptionalDouble getAverageByTeam(Long teamId);
 }

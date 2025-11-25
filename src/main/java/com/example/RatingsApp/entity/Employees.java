@@ -1,6 +1,7 @@
 package com.example.RatingsApp.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,12 +16,12 @@ import java.util.UUID;
 @Table(name = "employee")
 public class Employees implements UserDetails {
 
+//    @Id
+//    @GenericGenerator(name = "custom-id", type = com.example.RatingsApp.config.CustomIdGenerator.class)
+//    @GeneratedValue(generator = "custom-id")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false, unique = true)
-    private String employeeId;
+    private Long employeeId;
 
     @Column(nullable = false)
     private String name;
@@ -31,7 +32,7 @@ public class Employees implements UserDetails {
     @Column(nullable = false)
     private String password;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", referencedColumnName = "roleId", nullable = false)
     private Roles role;
 
@@ -48,19 +49,11 @@ public class Employees implements UserDetails {
     @OneToMany(mappedBy = "pm")
     private List<Teams> managedTeams = new ArrayList<>();
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getEmployeeId() {
+    public Long getEmployeeId() {
         return employeeId;
     }
 
-    public void setEmployeeId(String employeeId) {
+    public void setEmployeeId(Long employeeId) {
         this.employeeId = employeeId;
     }
 
@@ -82,7 +75,7 @@ public class Employees implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.getRoleId()));
+        return List.of(new SimpleGrantedAuthority(role.getRoleName()));
     }
 
     public String getPassword() {

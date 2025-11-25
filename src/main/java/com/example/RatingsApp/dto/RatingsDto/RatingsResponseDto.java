@@ -7,15 +7,13 @@ import com.example.RatingsApp.entity.enums.RatingStatus;
 
 public class RatingsResponseDto {
 
-    private Long id;
+    private Long ratingId;
 
-    private String ratingId;
-
-    private String employeeId;
+    private Long employeeId;
 
     private String employeeName;
 
-    private String ratedById;
+    private Long ratedById;
 
     private String ratedByName;
 
@@ -28,7 +26,6 @@ public class RatingsResponseDto {
     private String ratings_cycle;
 
     public RatingsResponseDto(Ratings rating) {
-        this.id = rating.getId();
         this.ratingId = rating.getRatingId();
         this.employeeId = rating.getEmployee().getEmployeeId();
         this.employeeName = rating.getEmployee().getName();
@@ -40,27 +37,19 @@ public class RatingsResponseDto {
         this.ratings_cycle = (rating.getRatingsCycle() != null) ? rating.getRatingsCycle().getCycleName() : null;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getRatingId() {
+    public Long getRatingId() {
         return ratingId;
     }
 
-    public void setRatingId(String ratingId) {
+    public void setRatingId(Long ratingId) {
         this.ratingId = ratingId;
     }
 
-    public String getEmployeeId() {
+    public Long getEmployeeId() {
         return employeeId;
     }
 
-    public void setEmployeeId(String employeeId) {
+    public void setEmployeeId(Long employeeId) {
         this.employeeId = employeeId;
     }
 
@@ -72,11 +61,11 @@ public class RatingsResponseDto {
         this.employeeName = employeeName;
     }
 
-    public String getRatedById() {
+    public Long getRatedById() {
         return ratedById;
     }
 
-    public void setRatedById(String ratedById) {
+    public void setRatedById(Long ratedById) {
         this.ratedById = ratedById;
     }
 

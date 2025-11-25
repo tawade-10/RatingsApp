@@ -6,7 +6,7 @@ import java.time.LocalDate;
 
 public class RatingsCycleRequestDto {
 
-    private String cycleId;
+//    private String cycleId;
 
     private CycleStatus status;
 
@@ -14,20 +14,20 @@ public class RatingsCycleRequestDto {
 
     private LocalDate endDate;
 
-    public RatingsCycleRequestDto(String cycleId, CycleStatus status, LocalDate startDate, LocalDate endDate) {
-        this.cycleId = cycleId;
+    public RatingsCycleRequestDto(CycleStatus status, LocalDate startDate, LocalDate endDate) {
+//        this.cycleId = cycleId;
         this.status = status;
         this.startDate = startDate;
         this.endDate = endDate;
     }
 
-    public String getCycleId() {
-        return cycleId;
-    }
-
-    public void setCycleId(String cycleId) {
-        this.cycleId = cycleId;
-    }
+//    public String getCycleId() {
+//        return cycleId;
+//    }
+//
+//    public void setCycleId(String cycleId) {
+//        this.cycleId = cycleId;
+//    }
 
     public CycleStatus getStatus() {
         return status;

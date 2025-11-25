@@ -1,6 +1,7 @@
 package com.example.RatingsApp.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.util.List;
 
@@ -8,12 +9,12 @@ import java.util.List;
 @Table(name = "team")
 public class Teams {
 
+//    @Id
+//    @GenericGenerator(name = "custom-id", type = com.example.RatingsApp.config.CustomIdGenerator.class)
+//    @GeneratedValue(generator = "custom-id")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false, unique = true)
-    private String teamId;
+    private Long teamId;
 
     @Column(nullable = false, unique = true)
     private String teamName;
@@ -25,19 +26,11 @@ public class Teams {
     @OneToMany(mappedBy = "team")
     private List<Employees> members;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getTeamId() {
+    public Long getTeamId() {
         return teamId;
     }
 
-    public void setTeamId(String teamId) {
+    public void setTeamId(Long teamId) {
         this.teamId = teamId;
     }
 

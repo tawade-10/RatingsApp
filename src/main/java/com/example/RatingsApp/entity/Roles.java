@@ -3,6 +3,7 @@ package com.example.RatingsApp.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.util.List;
 
@@ -10,13 +11,12 @@ import java.util.List;
 @Table(name="roles")
 public class Roles {
 
+//    @Id
+//    @GenericGenerator(name = "custom-id", type = com.example.RatingsApp.config.CustomIdGenerator.class)
+//    @GeneratedValue(generator = "custom-id")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @NotNull
-    @Column(nullable = false, unique = true)
-    private String roleId;
+    private Long roleId;
 
     @NotNull
     @Column(nullable = false, unique = true)
@@ -26,19 +26,11 @@ public class Roles {
     @JsonIgnore
     private List<Employees> employees;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getRoleId() {
+    public Long getRoleId() {
         return roleId;
     }
 
-    public void setRoleId(String roleId) {
+    public void setRoleId(Long roleId) {
         this.roleId = roleId;
     }
 

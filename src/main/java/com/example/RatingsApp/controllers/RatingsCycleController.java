@@ -35,19 +35,19 @@ public class RatingsCycleController {
     }
 
     @GetMapping("{ratingsCycleId}")
-    public ResponseEntity<RatingsCycleResponseDto> getCycleById(@PathVariable String ratingsCycleId) {
+    public ResponseEntity<RatingsCycleResponseDto> getCycleById(@PathVariable Long ratingsCycleId) {
         RatingsCycleResponseDto getCycle = ratingsCycleService.getCycleById(ratingsCycleId);
         return ResponseEntity.ok(getCycle);
     }
 
     @PutMapping("{ratingsCycleId}")
-    public ResponseEntity<RatingsCycleResponseDto> updateRatings(@PathVariable String ratingsCycleId){
+    public ResponseEntity<RatingsCycleResponseDto> updateRatings(@PathVariable Long ratingsCycleId){
         RatingsCycleResponseDto updatedRatings = ratingsCycleService.updateRatings(ratingsCycleId);
         return ResponseEntity.ok(updatedRatings);
     }
 
     @DeleteMapping("{ratingsCycleId}")
-    public ResponseEntity<String> deleteRatingsCycle(@PathVariable String ratingsCycleId) {
+    public ResponseEntity<String> deleteRatingsCycle(@PathVariable Long ratingsCycleId) {
         ratingsCycleService.deleteRatingsCycle(ratingsCycleId);
         return ResponseEntity.ok("Ratings Cycle Deleted!");
     }

@@ -10,11 +10,11 @@ import java.util.Optional;
 public interface RolesService {
     RolesResponseDto createRole(RolesRequestDto roleRequestDto);
 
-    RolesResponseDto getRoleById(String roleId);
+    RolesResponseDto getRoleById(Long roleId);
 
     List<RolesResponseDto> getAllRoles();
 
-    RolesResponseDto updateRole(String roleId, RolesRequestDto updatedRole);
+    RolesResponseDto updateRole(Long roleId, RolesRequestDto updatedRole);
 
-    RolesResponseDto deleteRole(String roleId);
+    RolesResponseDto deleteRole(Long roleId);
 }

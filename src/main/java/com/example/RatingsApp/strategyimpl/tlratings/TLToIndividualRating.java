@@ -3,9 +3,11 @@ package com.example.RatingsApp.strategyimpl.tlratings;
 import com.example.RatingsApp.dto.RatingsDto.RatingsRequestDto;
 import com.example.RatingsApp.entity.Employees;
 import com.example.RatingsApp.entity.Ratings;
+import com.example.RatingsApp.entity.enums.RatingStatus;
 import com.example.RatingsApp.exception.APIException;
 import com.example.RatingsApp.exception.ResourceNotFoundException;
 import com.example.RatingsApp.repository.EmployeesRepo;
+import com.example.RatingsApp.repository.RolesRepo;
 import com.example.RatingsApp.strategy.RatingStrategy;
 import org.springframework.stereotype.Component;
 
@@ -14,36 +16,52 @@ public class TLToIndividualRating implements RatingStrategy {
 
     private final EmployeesRepo employeesRepo;
 
-    public TLToIndividualRating(EmployeesRepo employeesRepo) {
+    private final RolesRepo rolesRepo;
+
+    public TLToIndividualRating(EmployeesRepo employeesRepo, RolesRepo rolesRepo) {
         this.employeesRepo = employeesRepo;
+        this.rolesRepo = rolesRepo;
     }
 
     @Override
     public Ratings giveRating(RatingsRequestDto ratingsRequestDto) {
 
-        String tlId = ratingsRequestDto.getRated_by_id();
-        String empId = ratingsRequestDto.getEmployee_id();
+        Long ratedById = ratingsRequestDto.getRated_by_id();
+        Long employeeId = ratingsRequestDto.getEmployee_id();
 
-        if(tlId == null || empId == null){
-            throw new ResourceNotFoundException("Both TL ID and Employee ID should be provided!");
+        if (ratedById == null || employeeId == null) {
+            throw new APIException("Both RatedBy ID and Employee ID must be provided.");
         }
 
-        Employees tl = employeesRepo.findByEmployeeIdIgnoreCase(tlId)
-                .orElseThrow(() -> new ResourceNotFoundException("TL not found with ID: " + tlId));
+        Employees ratedBy = employeesRepo.findById(ratedById)
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + ratedById));
 
-        if(tl.getRole() == null || !"R102".equalsIgnoreCase(tl.getRole().getRoleId())){
+        Employees employee = employeesRepo.findById(employeeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + employeeId));
+
+        Long TL = rolesRepo.findById(3L)
+                .orElseThrow(() -> new ResourceNotFoundException("TL role not found"))
+                .getRoleId();
+
+        Long INDIVIDUAL = rolesRepo.findById(4L)
+                .orElseThrow(() -> new ResourceNotFoundException("INDIVIDUAL role not found"))
+                .getRoleId();
+
+        if (!ratedBy.getRole().getRoleId().equals(TL)) {
             throw new APIException("Only TL can give this rating.");
         }
 
-        Employees emp = employeesRepo.findByEmployeeIdIgnoreCase(empId)
-                .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + empId));
+        if (!employee.getRole().getRoleId().equals(INDIVIDUAL)) {
+            throw new APIException("Only INDIVIDUAL can receive this rating.");
+        }
 
-        if(emp.getRole() == null || !"R103".equalsIgnoreCase(emp.getRole().getRoleId())){
-            throw new APIException("Only Employee can receive this rating.");
+        if (!ratedBy.getTeam().getTeamId().equals(employee.getTeam().getTeamId())) {
+            throw new APIException("TL can only rate INDIVIDUAL's of their own team.");
         }
 
         Ratings ratings = new Ratings();
 
+        ratings.setRatingStatus(RatingStatus.SUBMITTED_BY_TL);
         ratings.setRatingValue(ratingsRequestDto.getRating_value());
 
         return ratings;

@@ -10,9 +10,9 @@ public interface RatingsCycleService {
 
     List<RatingsCycleResponseDto> getAllCycles();
 
-    RatingsCycleResponseDto deleteRatingsCycle(String ratingsCycleId);
+    RatingsCycleResponseDto deleteRatingsCycle(Long ratingsCycleId);
 
-    RatingsCycleResponseDto getCycleById(String ratingsCycleId);
+    RatingsCycleResponseDto getCycleById(Long ratingsCycleId);
 
-    RatingsCycleResponseDto updateRatings(String ratingsCycleId);
+    RatingsCycleResponseDto updateRatings(Long ratingsCycleId);
 }

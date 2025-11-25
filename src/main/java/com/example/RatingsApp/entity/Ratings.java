@@ -4,17 +4,18 @@ import com.example.RatingsApp.entity.enums.RatingDescription;
 import com.example.RatingsApp.entity.enums.RatingRoles;
 import com.example.RatingsApp.entity.enums.RatingStatus;
 import jakarta.persistence.*;
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "ratings")
 public class Ratings {
 
+//    @Id
+//    @GenericGenerator(name = "custom-id", type = com.example.RatingsApp.config.CustomIdGenerator.class)
+//    @GeneratedValue(generator = "custom-id")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false, unique = true)
-    private String ratingId;
+    private Long ratingId;
 
     // The employee being rated
     @ManyToOne(fetch = FetchType.LAZY)
@@ -44,19 +45,11 @@ public class Ratings {
     @JoinColumn(name = "cycle_name",referencedColumnName = "cycleName" ,nullable = false)
     private RatingsCycle ratingsCycle;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getRatingId() {
+    public Long getRatingId() {
         return ratingId;
     }
 
-    public void setRatingId(String ratingId) {
+    public void setRatingId(Long ratingId) {
         this.ratingId = ratingId;
     }
 

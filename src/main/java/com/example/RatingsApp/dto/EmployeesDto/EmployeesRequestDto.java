@@ -2,7 +2,7 @@ package com.example.RatingsApp.dto.EmployeesDto;
 
 public class EmployeesRequestDto {
 
-    private String employeeId;
+    private Long employeeId;
 
     private String name;
 
@@ -10,11 +10,11 @@ public class EmployeesRequestDto {
 
     private String password;
 
-    private String roleId;
+    private Long roleId;
 
-    private String teamId;
+    private Long teamId;
 
-    public EmployeesRequestDto(String employeeId, String name, String email, String password, String roleId, String teamId) {
+    public EmployeesRequestDto(Long employeeId, String name, String email, String password, Long roleId, Long teamId) {
         this.employeeId = employeeId;
         this.name = name;
         this.email = email;
@@ -27,11 +27,11 @@ public class EmployeesRequestDto {
 
     }
 
-    public String getEmployeeId() {
+    public Long getEmployeeId() {
         return employeeId;
     }
 
-    public void setEmployeeId(String employeeId) {
+    public void setEmployeeId(Long employeeId) {
         this.employeeId = employeeId;
     }
 
@@ -59,19 +59,19 @@ public class EmployeesRequestDto {
         this.password = password;
     }
 
-    public String getRoleId() {
+    public Long getRoleId() {
         return roleId;
     }
 
-    public void setRoleId(String roleId) {
+    public void setRoleId(Long roleId) {
         this.roleId = roleId;
     }
 
-    public String getTeamId() {
+    public Long getTeamId() {
         return teamId;
     }
 
-    public void setTeamId(String teamId) {
+    public void setTeamId(Long teamId) {
         this.teamId = teamId;
     }
 }

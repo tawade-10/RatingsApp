@@ -31,7 +31,7 @@ public class RolesController {
     }
 
     @GetMapping("{roleId}")
-    public ResponseEntity<RolesResponseDto> getRoleById(@PathVariable("roleId") String roleId){
+    public ResponseEntity<RolesResponseDto> getRoleById(@PathVariable("roleId") Long roleId){
         RolesResponseDto rolesResponseDto = rolesService.getRoleById(roleId);
         return ResponseEntity.ok(rolesResponseDto);
     }
@@ -43,13 +43,13 @@ public class RolesController {
     }
 
     @PutMapping("{roleId}")
-    public ResponseEntity<RolesResponseDto> updateRole(@PathVariable("roleId") String roleId, @RequestBody RolesRequestDto updatedRole){
+    public ResponseEntity<RolesResponseDto> updateRole(@PathVariable("roleId") Long roleId, @RequestBody RolesRequestDto updatedRole){
         RolesResponseDto rolesResponseDto = rolesService.updateRole(roleId,updatedRole);
         return ResponseEntity.ok(rolesResponseDto);
     }
 
     @DeleteMapping("{roleId}")
-    public ResponseEntity<String> deleteRole(@PathVariable("roleId") String roleId){
+    public ResponseEntity<String> deleteRole(@PathVariable("roleId") Long roleId){
         RolesResponseDto rolesResponseDto = rolesService.deleteRole(roleId);
         return ResponseEntity.ok("Role deleted successfully!");
     }

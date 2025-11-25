@@ -2,23 +2,19 @@ package com.example.RatingsApp.service.RatingsCycle;
 
 import com.example.RatingsApp.dto.RatingsCycleDto.RatingsCycleRequestDto;
 import com.example.RatingsApp.dto.RatingsCycleDto.RatingsCycleResponseDto;
-import com.example.RatingsApp.dto.RatingsDto.RatingsResponseDto;
-import com.example.RatingsApp.entity.Ratings;
+import com.example.RatingsApp.dto.TeamsDto.TeamsResponseDto;
 import com.example.RatingsApp.entity.RatingsCycle;
+import com.example.RatingsApp.entity.Teams;
 import com.example.RatingsApp.entity.enums.CycleStatus;
-import com.example.RatingsApp.entity.enums.RatingStatus;
 import com.example.RatingsApp.exception.APIException;
 import com.example.RatingsApp.exception.ResourceNotFoundException;
 import com.example.RatingsApp.repository.RatingsCycleRepo;
-import jakarta.validation.constraints.Null;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.OptionalDouble;
 import java.util.stream.Collectors;
 
 @Service
@@ -73,7 +69,12 @@ public class RatingsCycleServiceImpl implements RatingsCycleService{
             status = CycleStatus.CLOSED;
         }
 
-        ratingsCycle.setCycleId(ratingsCycleRequestDto.getCycleId());
+//        Optional<RatingsCycle> existingCycle = ratingsCycleRepo.findByCycleNameIgnoreCase(ratingsCycleRequestDto.);
+//        if (existingTeam.isPresent()) {
+//            return new TeamsResponseDto(existingTeam.get());
+//        }
+
+//        ratingsCycle.setCycleId(ratingsCycleRequestDto.getCycleId());
         ratingsCycle.setCycleName(cycle);
         ratingsCycle.setStartDate(startDate);
         ratingsCycle.setEndDate(endDate);
@@ -91,24 +92,24 @@ public class RatingsCycleServiceImpl implements RatingsCycleService{
     }
 
     @Override
-    public RatingsCycleResponseDto deleteRatingsCycle(String ratingsCycleId) {
-        RatingsCycle ratingsCycle = ratingsCycleRepo.findByCycleId(ratingsCycleId)
+    public RatingsCycleResponseDto deleteRatingsCycle(Long ratingsCycleId) {
+        RatingsCycle ratingsCycle = ratingsCycleRepo.findById(ratingsCycleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Ratings Cycle not found with ID: " + ratingsCycleId));
         ratingsCycleRepo.delete(ratingsCycle);
         return null;
     }
 
     @Override
-    public RatingsCycleResponseDto getCycleById(String ratingsCycleId) {
-        RatingsCycle cycle = ratingsCycleRepo.findByCycleId(ratingsCycleId)
+    public RatingsCycleResponseDto getCycleById(Long ratingsCycleId) {
+        RatingsCycle cycle = ratingsCycleRepo.findById(ratingsCycleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Ratings Cycle not found with ID: " + ratingsCycleId));
         return new RatingsCycleResponseDto(cycle);
     }
 
     @Override
-    public RatingsCycleResponseDto updateRatings(String ratingsCycleId) {
+    public RatingsCycleResponseDto updateRatings(Long ratingsCycleId) {
 
-        RatingsCycle cycle = ratingsCycleRepo.findByCycleId(ratingsCycleId)
+        RatingsCycle cycle = ratingsCycleRepo.findById(ratingsCycleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Ratings Cycle not found with ID: " + ratingsCycleId));
 
         LocalDate today = LocalDate.now();

@@ -2,6 +2,7 @@ package com.example.RatingsApp.strategyimpl;
 
 import com.example.RatingsApp.dto.RatingsDto.RatingsRequestDto;
 import com.example.RatingsApp.entity.Ratings;
+import com.example.RatingsApp.entity.enums.RatingStatus;
 import com.example.RatingsApp.exception.APIException;
 import com.example.RatingsApp.strategy.RatingStrategy;
 import org.springframework.stereotype.Component;
@@ -18,6 +19,7 @@ public class SelfRating implements RatingStrategy {
 
         Ratings ratings = new Ratings();
 
+        ratings.setRatingStatus(RatingStatus.SUBMITTED);
         ratings.setRatingValue(ratingsRequestDto.getRating_value());
 
         return ratings;

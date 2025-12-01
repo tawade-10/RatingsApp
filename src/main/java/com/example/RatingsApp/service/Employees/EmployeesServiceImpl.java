@@ -58,19 +58,24 @@ public class EmployeesServiceImpl implements EmployeesService {
         Roles role = rolesRepo.findById(employeesRequestDto.getRoleId())
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found with ID: " + employeesRequestDto.getRoleId()));
 
+//        Optional<Employees> existingEmployeeByName = employeesRepo.findByName(employeesRequestDto.getName());
+//        if (existingEmployeeByName.isPresent()) {
+//            throw new APIException("Employee with name '" + employeesRequestDto.getName() + "' already exists!");
+//        }
+//
+//        Optional<Employees> existingEmployeeByEmail = employeesRepo.findByEmail(employeesRequestDto.getEmail());
+//        if (existingEmployeeByEmail.isPresent()) {
+//            throw new APIException("Employee with email '" + employeesRequestDto.getEmail() + "' already exists!");
+//        }
+
         Optional<Employees> existingEmployeeByName = employeesRepo.findByName(employeesRequestDto.getName());
         if (existingEmployeeByName.isPresent()) {
-            throw new APIException("Employee with name '" + employeesRequestDto.getName() + "' already exists!");
+            return new EmployeesResponseDto(existingEmployeeByName.get());
         }
 
         Optional<Employees> existingEmployeeByEmail = employeesRepo.findByEmail(employeesRequestDto.getEmail());
         if (existingEmployeeByEmail.isPresent()) {
-            throw new APIException("Employee with email '" + employeesRequestDto.getEmail() + "' already exists!");
-        }
-
-        Optional<Employees> existingEmployee = employeesRepo.findByName(employeesRequestDto.getName());
-        if (existingEmployee.isPresent()) {
-            return new EmployeesResponseDto(existingEmployee.get());
+            return new EmployeesResponseDto(existingEmployeeByEmail.get());
         }
 
 //      employee.setEmployeeId(employeesRequestDto.getEmployeeId());
@@ -119,15 +124,19 @@ public class EmployeesServiceImpl implements EmployeesService {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         employeesRequestDto.getEmail(),
-                        employeesRequestDto.getPassword())
+                        employeesRequestDto.getPassword()
+                )
         );
-        if (authentication.isAuthenticated()) {
-            Employees user = employeesRepo.findByEmail(employeesRequestDto.getEmail())
-                    .orElseThrow(() -> new RuntimeException("User not found"));
-            return jwtService.generateToken(employeesRequestDto.getEmail(), employeesRequestDto.getRoleId());
+
+        if (!authentication.isAuthenticated()) {
+            return "Invalid Credentials!";
         }
-        return "Fail";
+
+        Employees user = (Employees) authentication.getPrincipal();
+
+        return jwtService.generateToken(user);
     }
+
 
     @Override
     public EmployeesResponseDto addEmployeeToTeam(EmployeesRequestDto employeesRequestDto, Long teamId) {

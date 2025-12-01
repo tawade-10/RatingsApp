@@ -16,10 +16,10 @@ public class RatingsFacadeImpl implements RatingsFacade {
         this.ratingsService = ratingsService;
     }
 
-    @Override
-    public RatingsResponseDto createRating(RatingsRequestDto ratingsRequestDto) {
-        return ratingsService.createRating(ratingsRequestDto);
-    }
+//    @Override
+//    public RatingsResponseDto createRating(RatingsRequestDto ratingsRequestDto) {
+//        return ratingsService.createRating(ratingsRequestDto);
+//    }
 
     @Override
     public List<RatingsResponseDto> getAllRatings() {
@@ -74,5 +74,25 @@ public class RatingsFacadeImpl implements RatingsFacade {
     @Override
     public OptionalDouble getAverageByTeam(Long teamId) {
         return ratingsService.getAverageByTeam(teamId);
+    }
+
+    @Override
+    public RatingsResponseDto createSelfRating(RatingsRequestDto ratingsRequestDto) {
+        return ratingsService.createSelfRating(ratingsRequestDto);
+    }
+
+    @Override
+    public RatingsResponseDto createTlToIndividualRating(RatingsRequestDto ratingsRequestDto) {
+        return ratingsService.createTlToIndividualRating(ratingsRequestDto);
+    }
+
+    @Override
+    public RatingsResponseDto createPmToIndividualRating(RatingsRequestDto ratingsRequestDto) {
+        return ratingsService.createPmToIndividualRating(ratingsRequestDto);
+    }
+
+    @Override
+    public RatingsResponseDto createPmToTlRating(RatingsRequestDto ratingsRequestDto) {
+        return ratingsService.createPmToTlRating(ratingsRequestDto);
     }
 }

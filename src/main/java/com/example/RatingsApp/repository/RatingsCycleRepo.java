@@ -1,6 +1,7 @@
 package com.example.RatingsApp.repository;
 
 import com.example.RatingsApp.entity.RatingsCycle;
+import com.example.RatingsApp.entity.enums.CycleStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;
@@ -15,4 +16,6 @@ public interface RatingsCycleRepo extends JpaRepository<RatingsCycle, Long> {
     Optional<RatingsCycle> findByEndDate(LocalDate endDate);
 
     RatingsCycle findFirstByStartDateAfterOrderByStartDateAsc(LocalDate endDate);
+
+    Optional<RatingsCycle> findByStatus(CycleStatus cycleStatus);
 }

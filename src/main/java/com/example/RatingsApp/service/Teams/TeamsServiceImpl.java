@@ -76,8 +76,8 @@ public class TeamsServiceImpl implements TeamsService {
                 () -> new ResourceNotFoundException("Employee (PM) not found with ID: " + pmId)
         );
 
-        if(!Objects.equals(pm.getRole().getRoleId(), "R101")){
-            throw new APIException("The employee should have role id R101 for being PM");
+        if(!(pm.getRole().getRoleId() == 2L)){
+            throw new APIException("The employee role id doesn't match for being PM");
         }
 
         team.setPm(pm);

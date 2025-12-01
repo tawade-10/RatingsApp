@@ -1,5 +1,6 @@
 package com.example.RatingsApp.service.Security;
 
+import com.example.RatingsApp.entity.Employees;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -32,18 +33,23 @@ public class JwtService {
         }
     }
 
-    public String generateToken(String email, Long roleId) {
+    public String generateToken(Employees user) {
 
-        Map<String,Object> claims = new HashMap<>();
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("employeeId", user.getEmployeeId());
+        claims.put("role", user.getRole().getRoleName());
+
+        long expirationMillis = System.currentTimeMillis() + (1000L * 60 * 60 * 30);
 
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(email)
+                .setSubject(user.getEmail())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() * 60 * 60 *30))
+                .setExpiration(new Date(expirationMillis))
                 .signWith(getKey())
                 .compact();
     }
+
 
     private Key getKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);

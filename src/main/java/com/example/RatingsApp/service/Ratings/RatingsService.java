@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.OptionalDouble;
 
 public interface RatingsService {
-    RatingsResponseDto createRating(RatingsRequestDto ratingsRequestDto);
+   // RatingsResponseDto createRating(RatingsRequestDto ratingsRequestDto);
 
     List<RatingsResponseDto> getAllRatings();
 
@@ -30,4 +30,12 @@ public interface RatingsService {
     OptionalDouble getAverageByCycle(String cycleName);
 
     OptionalDouble getAverageByTeam(Long teamId);
+
+    RatingsResponseDto createSelfRating(RatingsRequestDto ratingsRequestDto);
+
+    RatingsResponseDto createTlToIndividualRating(RatingsRequestDto ratingsRequestDto);
+
+    RatingsResponseDto createPmToIndividualRating(RatingsRequestDto ratingsRequestDto);
+
+    RatingsResponseDto createPmToTlRating(RatingsRequestDto ratingsRequestDto);
 }

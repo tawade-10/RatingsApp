@@ -1,8 +1,10 @@
 package com.example.RatingsApp.service.RatingsCycle;
 
+import com.example.RatingsApp.dto.EmployeesDto.EmployeesResponseDto;
 import com.example.RatingsApp.dto.RatingsCycleDto.RatingsCycleRequestDto;
 import com.example.RatingsApp.dto.RatingsCycleDto.RatingsCycleResponseDto;
 import com.example.RatingsApp.dto.TeamsDto.TeamsResponseDto;
+import com.example.RatingsApp.entity.Employees;
 import com.example.RatingsApp.entity.RatingsCycle;
 import com.example.RatingsApp.entity.Teams;
 import com.example.RatingsApp.entity.enums.CycleStatus;
@@ -13,7 +15,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.Year;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -29,61 +33,42 @@ public class RatingsCycleServiceImpl implements RatingsCycleService{
     @Override
     public RatingsCycleResponseDto createRatingsCycle(RatingsCycleRequestDto ratingsCycleRequestDto) {
 
-        RatingsCycle ratingsCycle = new RatingsCycle();
-
-        LocalDate startDate = ratingsCycleRequestDto.getStartDate();
-        LocalDate endDate = ratingsCycleRequestDto.getEndDate();
-
-        if (startDate.isAfter(endDate)) {
-            throw new APIException("Start date cannot be after end date!");
+        if (ratingsCycleRequestDto.getCycleName() == null || Objects.equals(ratingsCycleRequestDto.getCycleName(), "")) {
+            throw new APIException("Cycle name is required!");
         }
 
-        if(endDate.isBefore(startDate)){
-            throw new APIException("End date cannot be before start date!");
+        String cycleName = ratingsCycleRequestDto.getCycleName();
+
+        Optional<RatingsCycle> existingCycle = ratingsCycleRepo.findByCycleNameIgnoreCase(cycleName);
+        if (existingCycle.isPresent()) {
+            return new RatingsCycleResponseDto(existingCycle.get());
         }
 
-        if (startDate.getYear() != endDate.getYear()) {
-            throw new APIException("Start date and end date must be in the same year!");
-        }
+        LocalDate[] dates = getCycleDates(cycleName);
+        LocalDate startDate = dates[0];
+        LocalDate endDate   = dates[1];
 
-        String cycle = getRatingsCycle(startDate, endDate);
-
-        Optional<RatingsCycle> existingCycleStartDate = ratingsCycleRepo.findByStartDate(ratingsCycleRequestDto.getStartDate());
-             if(existingCycleStartDate.isPresent()) {
-                 throw new APIException("Cycle with start date '" + ratingsCycleRequestDto.getStartDate() + "' already exists!");
-             };
-
-             Optional<RatingsCycle> existingCycleEndDate = ratingsCycleRepo.findByEndDate(ratingsCycleRequestDto.getEndDate());
-                  if(existingCycleEndDate.isPresent()) {
-                      throw new APIException("Cycle with end date '" + ratingsCycleRequestDto.getEndDate() + "' already exists!");
-                  };
-
-        LocalDate currentDate = LocalDate.now();
+        LocalDate today = LocalDate.now();
         CycleStatus status;
-        if ((currentDate.isEqual(startDate) || currentDate.isAfter(startDate))
-                && (currentDate.isEqual(endDate) || currentDate.isBefore(endDate))) {
-           status = CycleStatus.ACTIVE;
-        } else if (currentDate.isBefore(startDate)) {
+
+        if (!today.isBefore(startDate) && !today.isAfter(endDate)) {
+            status = CycleStatus.ACTIVE;
+        } else if (today.isBefore(startDate)) {
             status = CycleStatus.UPCOMING;
         } else {
             status = CycleStatus.CLOSED;
         }
 
-//        Optional<RatingsCycle> existingCycle = ratingsCycleRepo.findByCycleNameIgnoreCase(ratingsCycleRequestDto.);
-//        if (existingTeam.isPresent()) {
-//            return new TeamsResponseDto(existingTeam.get());
-//        }
+        RatingsCycle cycle = new RatingsCycle();
+        cycle.setCycleName(cycleName);
+        cycle.setStartDate(startDate);
+        cycle.setEndDate(endDate);
+        cycle.setStatus(status);
 
-//        ratingsCycle.setCycleId(ratingsCycleRequestDto.getCycleId());
-        ratingsCycle.setCycleName(cycle);
-        ratingsCycle.setStartDate(startDate);
-        ratingsCycle.setEndDate(endDate);
-        ratingsCycle.setStatus(status);
-
-        RatingsCycle saved = ratingsCycleRepo.save(ratingsCycle);
-
+        RatingsCycle saved = ratingsCycleRepo.save(cycle);
         return new RatingsCycleResponseDto(saved);
     }
+
 
     @Override
     public List<RatingsCycleResponseDto> getAllCycles() {
@@ -127,35 +112,55 @@ public class RatingsCycleServiceImpl implements RatingsCycleService{
         return new RatingsCycleResponseDto(cycle);
     }
 
-    public String getRatingsCycle(LocalDate startDate, LocalDate endDate){
+//    public String getRatingsCycle(LocalDate startDate, LocalDate endDate){
+//
+//        int year = startDate.getYear();
+//
+//        LocalDate startQ1 = LocalDate.of(year , 1, 1);
+//        LocalDate endQ1 = LocalDate.of(year,3,31);
+//
+//        LocalDate startQ2 = LocalDate.of(year,4,1);
+//        LocalDate endQ2 = LocalDate.of(year, 6,30);
+//
+//        LocalDate startQ3 = LocalDate.of(year,7,1);
+//        LocalDate endQ3 = LocalDate.of(year,9,30);
+//
+//        LocalDate startQ4 = LocalDate.of(year, 10,1);
+//        LocalDate endQ4 = LocalDate.of(year, 12,31);
+//
+//        if (!startDate.isBefore(startQ1) && !endDate.isAfter(endQ1)){
+//            return "Q1-" + year;
+//        }
+//        if (!startDate.isBefore(startQ2) && !endDate.isAfter(endQ2)){
+//            return "Q2-" + year;
+//        }
+//        if (!startDate.isBefore(startQ3) && !endDate.isAfter(endQ3)){
+//            return "Q3-" + year;
+//        }
+//        if (!startDate.isBefore(startQ4) && !endDate.isAfter(endQ4)){
+//            return "Q4-" + year;
+//        }
+//        return "Invalid Cycle";
+//    }
 
-        int year = startDate.getYear();
+    private LocalDate[] getCycleDates(String cycleName) {
+        String[] parts = cycleName.split("-");
 
-        LocalDate startQ1 = LocalDate.of(year , 1, 1);
-        LocalDate endQ1 = LocalDate.of(year,3,31);
-
-        LocalDate startQ2 = LocalDate.of(year,4,1);
-        LocalDate endQ2 = LocalDate.of(year, 6,30);
-
-        LocalDate startQ3 = LocalDate.of(year,7,1);
-        LocalDate endQ3 = LocalDate.of(year,9,30);
-
-        LocalDate startQ4 = LocalDate.of(year, 10,1);
-        LocalDate endQ4 = LocalDate.of(year, 12,31);
-
-        if (!startDate.isBefore(startQ1) && !endDate.isAfter(endQ1)){
-            return "Q1-" + year;
+        String quarters = parts[0].toUpperCase();
+        int year;
+        try {
+            year = Integer.parseInt(parts[1]);
+        } catch (NumberFormatException e) {
+            throw new APIException("Invalid year in cycle name: " + parts[1]);
         }
-        if (!startDate.isBefore(startQ2) && !endDate.isAfter(endQ2)){
-            return "Q2-" + year;
-        }
-        if (!startDate.isBefore(startQ3) && !endDate.isAfter(endQ3)){
-            return "Q3-" + year;
-        }
-        if (!startDate.isBefore(startQ4) && !endDate.isAfter(endQ4)){
-            return "Q4-" + year;
-        }
-        return "Invalid Cycle";
+
+        return switch (quarters) {
+            case "Q1" -> new LocalDate[]{LocalDate.of(year, 1, 1), LocalDate.of(year, 3, 31)};
+            case "Q2" -> new LocalDate[]{LocalDate.of(year, 4, 1), LocalDate.of(year, 6, 30)};
+            case "Q3" -> new LocalDate[]{LocalDate.of(year, 7, 1), LocalDate.of(year, 9, 30)};
+            case "Q4" -> new LocalDate[]{LocalDate.of(year, 10, 1), LocalDate.of(year, 12, 31)};
+            default -> throw new APIException("Invalid quarter in cycle name: " + quarters);
+        };
     }
 }
 

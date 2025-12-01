@@ -28,11 +28,11 @@ public class RatingFactory {
     public RatingStrategy getStrategy(String role) {
         if (role.equalsIgnoreCase("SELF")) {
             return selfRating;
-        }else if(role.equalsIgnoreCase("TL_TO_EMPLOYEE")){
+        }else if(role.equalsIgnoreCase("TL_TO_INDIVIDUAL")){
             return tlToIndividualRating;
         }else if(role.equalsIgnoreCase("PM_TO_TL")){
             return pmToTLRating;
-        }else if(role.equalsIgnoreCase("PM_TO_EMPLOYEE")){
+        }else if(role.equalsIgnoreCase("PM_TO_INDIVIDUAL")){
             return pmToIndividualRating;
         }
         throw new IllegalArgumentException("No rating strategy found for role: " + role);

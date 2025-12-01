@@ -38,6 +38,7 @@ public class Ratings {
     @Column(nullable = false)
     private int ratingValue;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private RatingDescription ratingDescription;
 

@@ -14,7 +14,7 @@ public class RatingsRequestDto {
 
     private int rating_value;
 
-    private String ratings_cycle;
+  //  private String ratings_cycle;
 
     public RatingsRequestDto(Ratings ratings) {
     //    this.ratingId = ratings.getRatingId();
@@ -22,7 +22,7 @@ public class RatingsRequestDto {
         this.employee_id = ratings.getEmployee().getEmployeeId();
         this.rated_by_id = ratings.getRatedBy().getEmployeeId();
         this.rating_value = ratings.getRatingValue();
-        this.ratings_cycle = ratings.getRatingsCycle().getCycleName();
+    //    this.ratings_cycle = ratings.getRatingsCycle().getCycleName();
     }
 
     public RatingsRequestDto() {
@@ -68,11 +68,11 @@ public class RatingsRequestDto {
         this.rating_value = rating_value;
     }
 
-    public String getRatings_cycle() {
-        return ratings_cycle;
-    }
-
-    public void setRatings_cycle(String ratings_cycle) {
-        this.ratings_cycle = ratings_cycle;
-    }
+//    public String getRatings_cycle() {
+//        return ratings_cycle;
+//    }
+//
+//    public void setRatings_cycle(String ratings_cycle) {
+//        this.ratings_cycle = ratings_cycle;
+//    }
 }

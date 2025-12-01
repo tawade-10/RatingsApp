@@ -14,7 +14,7 @@ public class SelfRating implements RatingStrategy {
     public Ratings giveRating(RatingsRequestDto ratingsRequestDto) {
 
         if (!ratingsRequestDto.getEmployee_id().equals(ratingsRequestDto.getRated_by_id())) {
-            throw new APIException("Self rating is allowed only for the same employee.");
+            throw new APIException("Invalid Self Rating for the user.");
         }
 
         Ratings ratings = new Ratings();

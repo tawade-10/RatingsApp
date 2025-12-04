@@ -30,16 +30,6 @@ public class RolesServiceImpl implements RolesService {
             throw new IllegalArgumentException("Role name cannot be null or empty");
         }
 
-//        Optional<Roles> existingRoleId = rolesRepo.findByRoleIdIgnoreCase(rolesRequestDto.getRoleId());
-//        if (existingRoleId.isPresent()) {
-//            throw new APIException("The given role ID '" + rolesRequestDto.getRoleId() + "' already exists!");
-//        }
-
-//        Optional<Roles> existingRoleName = rolesRepo.findByRoleNameIgnoreCase(rolesRequestDto.getRoleName());
-//        if (existingRoleName.isPresent()) {
-//            throw new APIException("The given role name '" + rolesRequestDto.getRoleName() + "' already exists!");
-//        }
-
         Optional<Roles> existingRole = rolesRepo.findByRoleNameIgnoreCase(rolesRequestDto.getRoleName());
 
         if (existingRole.isPresent()) {

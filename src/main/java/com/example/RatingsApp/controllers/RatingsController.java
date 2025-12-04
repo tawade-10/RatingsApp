@@ -21,36 +21,36 @@ public class RatingsController {
         this.ratingsFacade = ratingsFacade;
     }
 
-//    @PostMapping
-//    public ResponseEntity<RatingsResponseDto> createRating(@Valid @RequestBody RatingsRequestDto ratingsRequestDto) {
-//        RatingsResponseDto savedRating = ratingsFacade.createRating(ratingsRequestDto);
-//        return new ResponseEntity<>(savedRating, HttpStatus.CREATED);
+    @PostMapping
+    public ResponseEntity<RatingsResponseDto> createRating(@Valid @RequestBody RatingsRequestDto ratingsRequestDto) {
+        RatingsResponseDto savedRating = ratingsFacade.createRating(ratingsRequestDto);
+        return new ResponseEntity<>(savedRating, HttpStatus.CREATED);
+    }
+
+//    @PostMapping("/self")
+//    public ResponseEntity<RatingsResponseDto> createSelfRating(@Valid @RequestBody RatingsRequestDto ratingsRequestDto) {
+//        RatingsResponseDto selfRating = ratingsFacade.createSelfRating(ratingsRequestDto);
+//        return new ResponseEntity<>(selfRating, HttpStatus.CREATED);
 //    }
-
-    @PostMapping("/self")
-    public ResponseEntity<RatingsResponseDto> createSelfRating(@Valid @RequestBody RatingsRequestDto ratingsRequestDto) {
-        RatingsResponseDto selfRating = ratingsFacade.createSelfRating(ratingsRequestDto);
-        return new ResponseEntity<>(selfRating, HttpStatus.CREATED);
-    }
-
-    @PostMapping("/tl")
-    public ResponseEntity<RatingsResponseDto> createTlToIndividualRating(@Valid @RequestBody RatingsRequestDto ratingsRequestDto) {
-
-        RatingsResponseDto tlToEmployeeRating = ratingsFacade.createTlToIndividualRating(ratingsRequestDto);
-        return new ResponseEntity<>(tlToEmployeeRating, HttpStatus.CREATED);
-    }
-
-    @PostMapping("/pm/pm_to_individual")
-    public ResponseEntity<RatingsResponseDto> createPmToIndividualRating(@Valid @RequestBody RatingsRequestDto ratingsRequestDto) {
-        RatingsResponseDto pmToEmployeeRating = ratingsFacade.createPmToIndividualRating(ratingsRequestDto);
-        return new ResponseEntity<>(pmToEmployeeRating, HttpStatus.CREATED);
-    }
-
-    @PostMapping("/pm/pm_to_tl")
-    public ResponseEntity<RatingsResponseDto> createPmToTlRating(@Valid @RequestBody RatingsRequestDto ratingsRequestDto) {
-        RatingsResponseDto pmToTlRating = ratingsFacade.createPmToTlRating(ratingsRequestDto);
-        return new ResponseEntity<>(pmToTlRating, HttpStatus.CREATED);
-    }
+//
+//    @PostMapping("/tl")
+//    public ResponseEntity<RatingsResponseDto> createTlToIndividualRating(@Valid @RequestBody RatingsRequestDto ratingsRequestDto) {
+//
+//        RatingsResponseDto tlToEmployeeRating = ratingsFacade.createTlToIndividualRating(ratingsRequestDto);
+//        return new ResponseEntity<>(tlToEmployeeRating, HttpStatus.CREATED);
+//    }
+//
+//    @PostMapping("/pm/pm_to_individual")
+//    public ResponseEntity<RatingsResponseDto> createPmToIndividualRating(@Valid @RequestBody RatingsRequestDto ratingsRequestDto) {
+//        RatingsResponseDto pmToEmployeeRating = ratingsFacade.createPmToIndividualRating(ratingsRequestDto);
+//        return new ResponseEntity<>(pmToEmployeeRating, HttpStatus.CREATED);
+//    }
+//
+//    @PostMapping("/pm/pm_to_tl")
+//    public ResponseEntity<RatingsResponseDto> createPmToTlRating(@Valid @RequestBody RatingsRequestDto ratingsRequestDto) {
+//        RatingsResponseDto pmToTlRating = ratingsFacade.createPmToTlRating(ratingsRequestDto);
+//        return new ResponseEntity<>(pmToTlRating, HttpStatus.CREATED);
+//    }
 
     @GetMapping
     public ResponseEntity<List<RatingsResponseDto>> getAllRatings() {
@@ -92,6 +92,12 @@ public class RatingsController {
     public ResponseEntity<OptionalDouble> getAverageByTeam(@PathVariable Long teamId) {
         OptionalDouble average = ratingsFacade.getAverageByTeam(teamId);
         return ResponseEntity.ok(average);
+    }
+
+    @GetMapping("/pending/team/{teamId}")
+    public ResponseEntity<RatingsResponseDto> getPendingRatings(@PathVariable Long teamId){
+        RatingsResponseDto pendingRatings = ratingsFacade.getPendingRatings(teamId);
+        return ResponseEntity.ok(pendingRatings);
     }
 
     @PutMapping("{ratingId}")

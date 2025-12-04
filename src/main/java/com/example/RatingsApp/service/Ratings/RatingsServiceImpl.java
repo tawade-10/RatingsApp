@@ -1,15 +1,12 @@
 package com.example.RatingsApp.service.Ratings;
 
 import com.example.RatingsApp.Factory.RatingFactory;
-import com.example.RatingsApp.dto.EmployeesDto.EmployeesResponseDto;
-import com.example.RatingsApp.dto.RatingsCycleDto.RatingsCycleResponseDto;
 import com.example.RatingsApp.dto.RatingsDto.RatingsRequestDto;
 import com.example.RatingsApp.dto.RatingsDto.RatingsResponseDto;
-import com.example.RatingsApp.dto.RolesDto.RolesResponseDto;
 import com.example.RatingsApp.entity.*;
 import com.example.RatingsApp.entity.enums.CycleStatus;
 import com.example.RatingsApp.entity.enums.RatingDescription;
-import com.example.RatingsApp.entity.enums.RatingRoles;
+import com.example.RatingsApp.entity.enums.RatingTypes;
 import com.example.RatingsApp.entity.enums.RatingStatus;
 import com.example.RatingsApp.exception.APIException;
 import com.example.RatingsApp.exception.ResourceNotFoundException;
@@ -20,7 +17,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.stream.Collectors;
 
@@ -48,7 +44,7 @@ public class RatingsServiceImpl implements RatingsService {
         this.rolesRepo = rolesRepo;
     }
 
-    private Ratings buildRatingStrategy(RatingsRequestDto ratingsRequestDto, RatingRoles role) {
+    private Ratings buildRatingStrategy(RatingsRequestDto ratingsRequestDto, RatingTypes role) {
 
         Employees employee = employeesRepo.findById(ratingsRequestDto.getEmployee_id())
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
@@ -64,7 +60,7 @@ public class RatingsServiceImpl implements RatingsService {
 
         rating.setEmployee(employee);
         rating.setRatedBy(ratedBy);
-        rating.setRatingRole(role);
+        rating.setRatingTypes(role);
         rating.setRatingsCycle(cycle);
         rating.setRatingDescription(ratingDescription(rating));
 
@@ -72,7 +68,21 @@ public class RatingsServiceImpl implements RatingsService {
     }
 
     @Override
-    public RatingsResponseDto createSelfRating(RatingsRequestDto ratingsRequestDto) {
+    public RatingsResponseDto getPendingRatings(Long teamId) {
+
+        Teams team = teamsRepo.findById(teamId)
+                .orElseThrow(() -> new ResourceNotFoundException("Team not found"));
+
+        RatingsCycle cycle = ratingsCycleRepo.findByStatus(CycleStatus.ACTIVE)
+                .orElseThrow(() -> new APIException("No ACTIVE cycle"));
+
+        List<Employees> employees = employeesRepo.findByTeam(team);
+
+        return null;
+    }
+
+    @Override
+    public RatingsResponseDto createRating(RatingsRequestDto ratingsRequestDto) {
 
         String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getName();
 
@@ -81,68 +91,87 @@ public class RatingsServiceImpl implements RatingsService {
 
         ratingsRequestDto.setRated_by_id(loggedInEmployee.getEmployeeId());
 
-        Ratings rating = buildRatingStrategy(ratingsRequestDto, RatingRoles.SELF);
-        rating.setRatingStatus(RatingStatus.SUBMITTED);
+        RatingTypes role = ratingsRequestDto.getRating_types();
 
-        Ratings saved = ratingsRepo.save(rating);
+        RatingsCycle cycle = ratingsCycleRepo.findByStatus(CycleStatus.ACTIVE)
+                .orElseThrow(() -> new APIException("No ACTIVE ratings cycle found"));
 
-        return new RatingsResponseDto(saved);
-    }
+        Ratings ratings;
 
-    @Override
-    public RatingsResponseDto createTlToIndividualRating(RatingsRequestDto ratingsRequestDto) {
-
-        String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-
-        Employees loggedInEmployee = employeesRepo.findByEmail(loggedInEmail)
-                .orElseThrow(() -> new ResourceNotFoundException("Logged-in user not found"));
-
-        ratingsRequestDto.setRated_by_id(loggedInEmployee.getEmployeeId());
-
-        Ratings rating = buildRatingStrategy(ratingsRequestDto, RatingRoles.TL_TO_INDIVIDUAL);
-        rating.setRatingStatus(RatingStatus.SUBMITTED_BY_TL);
-
-        Ratings saved = ratingsRepo.save(rating);
-        return new RatingsResponseDto(saved);
-    }
-
-    @Override
-    public RatingsResponseDto createPmToTlRating(RatingsRequestDto ratingsRequestDto) {
-
-        String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-
-        Employees loggedInEmployee = employeesRepo.findByEmail(loggedInEmail)
-                .orElseThrow(() -> new ResourceNotFoundException("Logged-in user not found"));
-
-        Ratings rating = buildRatingStrategy(ratingsRequestDto, RatingRoles.PM_TO_TL);
-        rating.setRatingStatus(RatingStatus.SUBMITTED_BY_PM);
-
-        Ratings saved = ratingsRepo.save(rating);
-        return new RatingsResponseDto(saved);
-    }
-
-    @Override
-    public RatingsResponseDto createPmToIndividualRating(RatingsRequestDto ratingsRequestDto) {
-
-        String loggedInEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-
-        Employees loggedInEmployee = employeesRepo.findByEmail(loggedInEmail)
-                .orElseThrow(() -> new ResourceNotFoundException("Logged-in user not found"));
-
-        boolean isSubmittedByTl = ratingsRepo.isTlSubmitted(
-                ratingsRequestDto.getEmployee_id(),
-                RatingRoles.TL_TO_INDIVIDUAL
-        );
-
-        if (!isSubmittedByTl) {
-            throw new APIException("TL has not submitted rating for this individual. PM rating not allowed.");
+        switch (role) {
+            case SELF: {
+                Ratings existing = ratingsRepo.findExistingRating(loggedInEmployee.getEmployeeId(), loggedInEmployee.getEmployeeId(), RatingTypes.SELF, cycle.getCycleId()).orElse(null);
+                if (existing != null && existing.getRatingStatus() == RatingStatus.BROADCASTED) {
+                    return new RatingsResponseDto(existing);
+                }
+                if (existing != null) {
+                    existing.setRatingValue(ratingsRequestDto.getRating_value());
+                    existing.setRatingDescription(ratingDescription(existing));
+                    existing.setRatingStatus(RatingStatus.SUBMITTED);
+                    ratingsRepo.save(existing);
+                    return new RatingsResponseDto(existing);
+                }
+                ratings = buildRatingStrategy(ratingsRequestDto, RatingTypes.SELF);
+                ratings.setRatingStatus(RatingStatus.SUBMITTED);
+                break;
+            }
+            case TL_TO_TM: {
+                Ratings existing = ratingsRepo.findExistingRating(loggedInEmployee.getEmployeeId(), ratingsRequestDto.getEmployee_id(), RatingTypes.TL_TO_TM, cycle.getCycleId()).orElse(null);
+                if (existing != null && existing.getRatingStatus() == RatingStatus.BROADCASTED) {
+                    return new RatingsResponseDto(existing);
+                }
+                if (existing != null) {
+                    existing.setRatingValue(ratingsRequestDto.getRating_value());
+                    existing.setRatingDescription(ratingDescription(existing));
+                    existing.setRatingStatus(RatingStatus.SUBMITTED);
+                    ratingsRepo.save(existing);
+                    return new RatingsResponseDto(existing);
+                }
+                ratings = buildRatingStrategy(ratingsRequestDto, RatingTypes.TL_TO_TM);
+                ratings.setRatingStatus(RatingStatus.SUBMITTED_BY_TL);
+                break;
+            }
+            case PM_TO_TL: {
+                Ratings existing = ratingsRepo.findExistingRating(loggedInEmployee.getEmployeeId(), ratingsRequestDto.getEmployee_id(), RatingTypes.PM_TO_TL, cycle.getCycleId()).orElse(null);
+                if (existing != null && existing.getRatingStatus() == RatingStatus.BROADCASTED) {
+                    return new RatingsResponseDto(existing);
+                }
+                if (existing != null) {
+                    existing.setRatingValue(ratingsRequestDto.getRating_value());
+                    existing.setRatingDescription(ratingDescription(existing));
+                    existing.setRatingStatus(RatingStatus.SUBMITTED);
+                    ratingsRepo.save(existing);
+                    return new RatingsResponseDto(existing);
+                }
+                ratings = buildRatingStrategy(ratingsRequestDto, RatingTypes.PM_TO_TL);
+                ratings.setRatingStatus(RatingStatus.SUBMITTED_BY_PM);
+                break;
+            }
+            case PM_TO_TM: {
+                Ratings existing = ratingsRepo.findExistingRating(loggedInEmployee.getEmployeeId(), ratingsRequestDto.getEmployee_id(), RatingTypes.PM_TO_TM, cycle.getCycleId()).orElse(null);
+                if (existing != null && existing.getRatingStatus() == RatingStatus.BROADCASTED) {
+                    return new RatingsResponseDto(existing);
+                }
+                if (existing != null) {
+                    existing.setRatingValue(ratingsRequestDto.getRating_value());
+                    existing.setRatingDescription(ratingDescription(existing));
+                    existing.setRatingStatus(RatingStatus.SUBMITTED);
+                    ratingsRepo.save(existing);
+                    return new RatingsResponseDto(existing);
+                }
+//                boolean isSubmittedByTl = ratingsRepo.isTlSubmitted(ratingsRequestDto.getEmployee_id(), RatingRoles.TL_TO_INDIVIDUAL);
+//                if (!isSubmittedByTl) {
+//                    throw new APIException("TL has not submitted rating for this individual. PM rating not allowed.");
+//                }
+                ratings = buildRatingStrategy(ratingsRequestDto, RatingTypes.PM_TO_TM);
+                ratings.setRatedBy(loggedInEmployee);
+                ratings.setRatingStatus(RatingStatus.SUBMITTED_BY_PM);
+                break;
+            }
+            default:
+                throw new APIException("Invalid Rating Role provided.");
         }
-
-        Ratings rating = buildRatingStrategy(ratingsRequestDto, RatingRoles.PM_TO_INDIVIDUAL);
-        rating.setRatedBy(loggedInEmployee);
-        rating.setRatingStatus(RatingStatus.SUBMITTED_BY_PM);
-
-        Ratings saved = ratingsRepo.save(rating);
+        Ratings saved = ratingsRepo.save(ratings);
         return new RatingsResponseDto(saved);
     }
 
@@ -157,6 +186,14 @@ public class RatingsServiceImpl implements RatingsService {
         Ratings rating = ratingsRepo.findById(ratingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Rating not found with ID: " + ratingId));
         return new RatingsResponseDto(rating);
+    }
+
+    private Ratings getExistingRating(Long employeeId, Long ratedById, RatingTypes role) {
+
+        RatingsCycle cycle = ratingsCycleRepo.findByStatus(CycleStatus.ACTIVE)
+                .orElseThrow(() -> new APIException("No ACTIVE cycle found"));
+
+        return ratingsRepo.findExistingRating(employeeId, ratedById, role, cycle.getCycleId()).orElse(null);
     }
 
     @Override
@@ -344,9 +381,7 @@ public class RatingsServiceImpl implements RatingsService {
                 .average();
     }
 
-
-
-    private RatingRoles deriveRatingRole(Employees ratedBy, Employees employee) {
+    private RatingTypes deriveRatingRole(Employees ratedBy, Employees employee) {
 
         Long ratedByRole = ratedBy.getRole().getRoleId();
         Long employeeRole = employee.getRole().getRoleId();
@@ -359,21 +394,21 @@ public class RatingsServiceImpl implements RatingsService {
                 .orElseThrow(() -> new ResourceNotFoundException("TL role not found"))
                 .getRoleId();
 
-        Long EMP = rolesRepo.findById(4L)
+        Long TM = rolesRepo.findById(4L)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee role not found"))
                 .getRoleId();
 
         if (ratedBy.getEmployeeId().equals(employee.getEmployeeId())) {
-            return RatingRoles.SELF;
+            return RatingTypes.SELF;
         }
         if (ratedByRole.equals(PM) && employeeRole.equals(TL)) {
-            return RatingRoles.PM_TO_TL;
+            return RatingTypes.PM_TO_TL;
         }
-        if (ratedByRole.equals(PM) && employeeRole.equals(EMP)) {
-            return RatingRoles.PM_TO_INDIVIDUAL;
+        if (ratedByRole.equals(PM) && employeeRole.equals(TM)) {
+            return RatingTypes.PM_TO_TM;
         }
-        if (ratedByRole.equals(TL) && employeeRole.equals(EMP)) {
-            return RatingRoles.TL_TO_INDIVIDUAL;
+        if (ratedByRole.equals(TL) && employeeRole.equals(TM)) {
+            return RatingTypes.TL_TO_TM;
         }
         throw new APIException(
                 "Rating combination is Invalid between " +

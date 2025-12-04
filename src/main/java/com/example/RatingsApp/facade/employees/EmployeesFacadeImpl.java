@@ -78,8 +78,8 @@ public class EmployeesFacadeImpl implements EmployeesFacade{
     }
 
     @Override
-    public EmployeesResponseDto changeTeam(EmployeesRequestDto employeesRequestDto, Long employeeId) {
-        return employeesService.changeTeam(employeesRequestDto,employeeId);
+    public EmployeesResponseDto changeTeam(Long employeeId, EmployeesRequestDto employeesRequestDto) {
+        return employeesService.changeTeam(employeeId, employeesRequestDto);
     }
 
     @Override

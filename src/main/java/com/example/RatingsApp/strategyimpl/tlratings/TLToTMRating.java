@@ -1,9 +1,8 @@
-package com.example.RatingsApp.strategyimpl.pmratings;
+package com.example.RatingsApp.strategyimpl.tlratings;
 
 import com.example.RatingsApp.dto.RatingsDto.RatingsRequestDto;
 import com.example.RatingsApp.entity.Employees;
 import com.example.RatingsApp.entity.Ratings;
-import com.example.RatingsApp.entity.Roles;
 import com.example.RatingsApp.entity.enums.RatingStatus;
 import com.example.RatingsApp.exception.APIException;
 import com.example.RatingsApp.exception.ResourceNotFoundException;
@@ -12,14 +11,14 @@ import com.example.RatingsApp.repository.RolesRepo;
 import com.example.RatingsApp.strategy.RatingStrategy;
 import org.springframework.stereotype.Component;
 
-@Component("PM_TO_TL")
-public class PmToTLRating implements RatingStrategy {
+@Component("TL_TO_EMPLOYEE")
+public class TLToTMRating implements RatingStrategy {
 
     private final EmployeesRepo employeesRepo;
 
     private final RolesRepo rolesRepo;
 
-    public PmToTLRating(EmployeesRepo employeesRepo, RolesRepo rolesRepo) {
+    public TLToTMRating(EmployeesRepo employeesRepo, RolesRepo rolesRepo) {
         this.employeesRepo = employeesRepo;
         this.rolesRepo = rolesRepo;
     }
@@ -40,29 +39,29 @@ public class PmToTLRating implements RatingStrategy {
         Employees employee = employeesRepo.findById(employeeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + employeeId));
 
-        Long PM = rolesRepo.findById(2L)
-                .orElseThrow(() -> new ResourceNotFoundException("PM role not found"))
-                .getRoleId();
-
         Long TL = rolesRepo.findById(3L)
                 .orElseThrow(() -> new ResourceNotFoundException("TL role not found"))
                 .getRoleId();
 
-        if (!ratedBy.getRole().getRoleId().equals(PM)) {
-            throw new APIException("Only PM can give this rating.");
+        Long TM = rolesRepo.findById(4L)
+                .orElseThrow(() -> new ResourceNotFoundException("TM role not found"))
+                .getRoleId();
+
+        if (!ratedBy.getRole().getRoleId().equals(TL)) {
+            throw new APIException("Only TL can give this rating.");
         }
 
-        if (!employee.getRole().getRoleId().equals(TL)) {
-            throw new APIException("Only TL can receive this rating.");
+        if (!employee.getRole().getRoleId().equals(TM)) {
+            throw new APIException("Only TM can receive this rating.");
         }
 
         if (!ratedBy.getTeam().getTeamId().equals(employee.getTeam().getTeamId())) {
-            throw new APIException("PM can only rate TLs of their own team.");
+            throw new APIException("TL can only rate TM's of their own team.");
         }
 
         Ratings ratings = new Ratings();
 
-        ratings.setRatingStatus(RatingStatus.SUBMITTED_BY_PM);
+        ratings.setRatingStatus(RatingStatus.SUBMITTED_BY_TL);
         ratings.setRatingValue(ratingsRequestDto.getRating_value());
 
         return ratings;

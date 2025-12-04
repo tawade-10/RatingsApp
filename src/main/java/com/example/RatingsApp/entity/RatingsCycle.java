@@ -1,6 +1,7 @@
 package com.example.RatingsApp.entity;
 
 import com.example.RatingsApp.entity.enums.CycleStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -18,18 +19,18 @@ public class RatingsCycle {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long cycleId;
 
-    @Column(nullable = false, unique = false)
+    @Column(nullable = false)
     private String cycleName;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private CycleStatus status;
 
     private LocalDate startDate;
 
     private LocalDate endDate;
 
-    @OneToMany(mappedBy = "ratingsCycle",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "ratingsCycle", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @JsonIgnore
     private List<Ratings> ratings;
 
     public Long getCycleId() {

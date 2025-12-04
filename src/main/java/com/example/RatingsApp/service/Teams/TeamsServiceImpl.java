@@ -38,18 +38,6 @@ public class TeamsServiceImpl implements TeamsService {
             return new TeamsResponseDto(existingTeam.get());
         }
 
-//        if (teamsRequestDto.getPmId() == null || Objects.equals(teamsRequestDto.getPmId(), "")) {
-//            throw new IllegalArgumentException("Role name cannot be null or empty");
-//        }
-
-//        Employees pm = employeesRepo.findByEmployeeIdIgnoreCase(teamsRequestDto.getPmId())
-//                .orElseThrow(() -> new ResourceNotFoundException("Employee found with ID: " + teamsRequestDto.getPmId() + " is not a PM"));
-//
-//        Roles role = pm.getRole();
-//        if (role == null || !"R101".equalsIgnoreCase(role.getRoleId())) {
-//            throw new APIException("The employee (ID: " + pm.getEmployeeId() + ") is not a PM. Only employees with roleId = R101 can be assigned as PM.");
-//        }
-
         Teams team = new Teams();
 //      team.setTeamId(teamsRequestDto.getTeamId());
         team.setTeamName(teamsRequestDto.getTeamName());

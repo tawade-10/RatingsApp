@@ -1,48 +1,31 @@
 package com.example.RatingsApp.dto.RatingsDto;
 
 import com.example.RatingsApp.entity.Ratings;
+import com.example.RatingsApp.entity.enums.RatingTypes;
 
 public class RatingsRequestDto {
 
-//    private String ratingId;
-
-  //  private RatingRoles rating_role;
-
+    private RatingTypes rating_types;
     private Long employee_id;
-
     private Long rated_by_id;
-
     private int rating_value;
 
-  //  private String ratings_cycle;
-
     public RatingsRequestDto(Ratings ratings) {
-    //    this.ratingId = ratings.getRatingId();
-    //    this.rating_role = rating_role;
+        this.rating_types = ratings.getRatingTypes();
         this.employee_id = ratings.getEmployee().getEmployeeId();
         this.rated_by_id = ratings.getRatedBy().getEmployeeId();
         this.rating_value = ratings.getRatingValue();
-    //    this.ratings_cycle = ratings.getRatingsCycle().getCycleName();
     }
 
-    public RatingsRequestDto() {
+    public RatingsRequestDto() {}
+
+    public RatingTypes getRating_types() {
+        return rating_types;
     }
 
-//    public String getRatingId() {
-//        return ratingId;
-//    }
-//
-//    public void setRatingId(String ratingId) {
-//        this.ratingId = ratingId;
-//    }
-
-//    public RatingRoles getRating_role() {
-//        return rating_role;
-//    }
-//
-//    public void setRating_role(RatingRoles rating_role) {
-//        this.rating_role = rating_role;
-//    }
+    public void setRating_types(RatingTypes rating_types) {
+        this.rating_types = rating_types;
+    }
 
     public Long getEmployee_id() {
         return employee_id;
@@ -67,12 +50,4 @@ public class RatingsRequestDto {
     public void setRating_value(int rating_value) {
         this.rating_value = rating_value;
     }
-
-//    public String getRatings_cycle() {
-//        return ratings_cycle;
-//    }
-//
-//    public void setRatings_cycle(String ratings_cycle) {
-//        this.ratings_cycle = ratings_cycle;
-//    }
 }

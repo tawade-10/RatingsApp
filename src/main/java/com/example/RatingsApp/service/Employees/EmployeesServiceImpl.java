@@ -58,16 +58,6 @@ public class EmployeesServiceImpl implements EmployeesService {
         Roles role = rolesRepo.findById(employeesRequestDto.getRoleId())
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found with ID: " + employeesRequestDto.getRoleId()));
 
-//        Optional<Employees> existingEmployeeByName = employeesRepo.findByName(employeesRequestDto.getName());
-//        if (existingEmployeeByName.isPresent()) {
-//            throw new APIException("Employee with name '" + employeesRequestDto.getName() + "' already exists!");
-//        }
-//
-//        Optional<Employees> existingEmployeeByEmail = employeesRepo.findByEmail(employeesRequestDto.getEmail());
-//        if (existingEmployeeByEmail.isPresent()) {
-//            throw new APIException("Employee with email '" + employeesRequestDto.getEmail() + "' already exists!");
-//        }
-
         Optional<Employees> existingEmployeeByName = employeesRepo.findByName(employeesRequestDto.getName());
         if (existingEmployeeByName.isPresent()) {
             return new EmployeesResponseDto(existingEmployeeByName.get());
@@ -105,7 +95,6 @@ public class EmployeesServiceImpl implements EmployeesService {
 
         return employeesPage.map(EmployeesResponseDto::new);
     }
-
 
     @Override
     public Page<EmployeesResponseDto> getEmployeeByName(int page, int size, String name) {
@@ -147,9 +136,16 @@ public class EmployeesServiceImpl implements EmployeesService {
         Teams team = teamsRepo.findById(teamId)
                 .orElseThrow(() -> new ResourceNotFoundException("Team not found with ID: " + teamId));
 
-//        if (employee.getTeam() != null) {
-//            throw new APIException("Employee with ID '" + employeesRequestDto.getEmployeeId() + "' is already assigned to a team.");
-//        }
+        if (employee.getTeam() != null) {
+            return new EmployeesResponseDto(employee);
+        }
+
+        employee.setTeam(team);
+
+        if (employee.getRole().getRoleId() == 2L) {
+            team.setPm(employee);
+            teamsRepo.save(team);
+        }
 
         employee.setTeam(team);
         Employees saveUpdatedEmployee =  employeesRepo.save(employee);
@@ -157,7 +153,7 @@ public class EmployeesServiceImpl implements EmployeesService {
     }
 
     @Override
-    public EmployeesResponseDto changeTeam(EmployeesRequestDto employeesRequestDto, Long employeeId) {
+    public EmployeesResponseDto changeTeam(Long employeeId, EmployeesRequestDto employeesRequestDto) {
 
         Long teamId = employeesRequestDto.getTeamId();
 

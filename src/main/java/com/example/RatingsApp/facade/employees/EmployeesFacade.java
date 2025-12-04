@@ -32,7 +32,7 @@ public interface EmployeesFacade {
 
     EmployeesResponseDto addEmployeeToTeam(EmployeesRequestDto employeesRequestDto, Long teamId);
 
-    EmployeesResponseDto changeTeam(EmployeesRequestDto employeesRequestDto, Long employeeId);
+    EmployeesResponseDto changeTeam( Long employeeId, EmployeesRequestDto employeesRequestDto);
 
     EmployeesResponseDto changeRole(EmployeesRequestDto employeesRequestDto, Long employeeId, Long roleId);
 }

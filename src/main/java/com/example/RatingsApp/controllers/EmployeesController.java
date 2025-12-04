@@ -52,7 +52,6 @@ public class EmployeesController {
         return ResponseEntity.ok(employees);
     }
 
-
     @GetMapping("/employees_by_name")
     public ResponseEntity<Page<EmployeesResponseDto>> getEmployeesByName(
             @RequestParam(defaultValue = "0") int page,
@@ -94,13 +93,13 @@ public class EmployeesController {
         return new ResponseEntity<>(updatedEmployee, HttpStatus.OK);
     }
 
-    @PutMapping("/change-team")
-    public ResponseEntity<EmployeesResponseDto> changeTeam(@RequestBody EmployeesRequestDto employeesRequestDto, Long employeeId){
-        EmployeesResponseDto updatedTeam = employeesFacade.changeTeam(employeesRequestDto,employeeId);
-        return new ResponseEntity<>(updatedTeam,HttpStatus.OK);
+    @PutMapping("/change-team/{employeeId}")
+    public ResponseEntity<EmployeesResponseDto> changeTeam(@PathVariable Long employeeId, @RequestBody EmployeesRequestDto employeesRequestDto) {
+        EmployeesResponseDto updatedTeam = employeesFacade.changeTeam(employeeId, employeesRequestDto);
+        return new ResponseEntity<>(updatedTeam, HttpStatus.OK);
     }
 
-    @PutMapping("/change-role")
+    @PutMapping("/change-role/{employeeId}")
     public ResponseEntity<EmployeesResponseDto> changeRole(@RequestBody EmployeesRequestDto employeesRequestDto, Long employeeId, Long roleId){
         EmployeesResponseDto updatedRole = employeesFacade.changeRole(employeesRequestDto,employeeId,roleId);
         return new ResponseEntity<>(updatedRole,HttpStatus.OK);

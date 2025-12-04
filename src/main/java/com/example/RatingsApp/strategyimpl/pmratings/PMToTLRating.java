@@ -3,26 +3,22 @@ package com.example.RatingsApp.strategyimpl.pmratings;
 import com.example.RatingsApp.dto.RatingsDto.RatingsRequestDto;
 import com.example.RatingsApp.entity.Employees;
 import com.example.RatingsApp.entity.Ratings;
-import com.example.RatingsApp.entity.enums.RatingDescription;
-import com.example.RatingsApp.entity.enums.RatingRoles;
 import com.example.RatingsApp.entity.enums.RatingStatus;
 import com.example.RatingsApp.exception.APIException;
 import com.example.RatingsApp.exception.ResourceNotFoundException;
 import com.example.RatingsApp.repository.EmployeesRepo;
 import com.example.RatingsApp.repository.RolesRepo;
 import com.example.RatingsApp.strategy.RatingStrategy;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component("PM_TO_EMPLOYEE")
-public class PmToIndividualRating implements RatingStrategy {
+@Component("PM_TO_TL")
+public class PMToTLRating implements RatingStrategy {
 
     private final EmployeesRepo employeesRepo;
 
     private final RolesRepo rolesRepo;
 
-    @Autowired
-    public PmToIndividualRating(EmployeesRepo employeesRepo, RolesRepo rolesRepo) {
+    public PMToTLRating(EmployeesRepo employeesRepo, RolesRepo rolesRepo) {
         this.employeesRepo = employeesRepo;
         this.rolesRepo = rolesRepo;
     }
@@ -47,20 +43,20 @@ public class PmToIndividualRating implements RatingStrategy {
                 .orElseThrow(() -> new ResourceNotFoundException("PM role not found"))
                 .getRoleId();
 
-        Long INDIVIDUAL = rolesRepo.findById(4L)
-                .orElseThrow(() -> new ResourceNotFoundException("INDIVIDUAL role not found"))
+        Long TL = rolesRepo.findById(3L)
+                .orElseThrow(() -> new ResourceNotFoundException("TL role not found"))
                 .getRoleId();
 
         if (!ratedBy.getRole().getRoleId().equals(PM)) {
             throw new APIException("Only PM can give this rating.");
         }
 
-        if (!employee.getRole().getRoleId().equals(INDIVIDUAL)) {
-            throw new APIException("Only INDIVIDUAL can receive this rating.");
+        if (!employee.getRole().getRoleId().equals(TL)) {
+            throw new APIException("Only TL can receive this rating.");
         }
 
         if (!ratedBy.getTeam().getTeamId().equals(employee.getTeam().getTeamId())) {
-            throw new APIException("PM can only rate INDIVIDUAL's of their own team.");
+            throw new APIException("PM can only rate TLs of their own team.");
         }
 
         Ratings ratings = new Ratings();

@@ -3,8 +3,7 @@ package com.example.RatingsApp.repository;
 import com.example.RatingsApp.entity.Employees;
 import com.example.RatingsApp.entity.Ratings;
 // import com.example.RatingsApp.entity.enums.RatingCycles;
-import com.example.RatingsApp.entity.RatingsCycle;
-import com.example.RatingsApp.entity.enums.RatingRoles;
+import com.example.RatingsApp.entity.enums.RatingTypes;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -29,10 +28,18 @@ public interface RatingsRepo extends JpaRepository<Ratings,Long> {
     @Query("SELECT CASE WHEN COUNT(r) > 0 THEN TRUE ELSE FALSE END " +
             "FROM Ratings r " +
             "WHERE r.employee.employeeId = :employeeId " +
-            "AND r.ratingRole = :ratingRole " +
+            "AND r.ratingTypes = :ratingTypes " +
             "AND r.ratingStatus = com.example.RatingsApp.entity.enums.RatingStatus.SUBMITTED_BY_TL")
     boolean isTlSubmitted(@Param("employeeId") Long employeeId,
-                          @Param("ratingRole") RatingRoles ratingRole);
+                          @Param("ratingTypes") RatingTypes ratingTypes);
+
+    @Query("SELECT r " +
+            "FROM Ratings r WHERE r.employee.employeeId = :employeeId " +
+            "AND r.ratedBy.employeeId = :ratedById " +
+            "AND r.ratingTypes = :ratingTypes " +
+            "AND r.ratingsCycle.cycleId = :cycleId")
+    Optional<Ratings> findExistingRating(Long ratedById, Long employeeId, RatingTypes ratingTypes, Long cycleId);
+
 
     // Optional<Ratings> findByRatingCycles(RatingCycles ratingCycles);
 

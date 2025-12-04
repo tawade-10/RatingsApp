@@ -1,10 +1,10 @@
 package com.example.RatingsApp.entity;
 
 import com.example.RatingsApp.entity.enums.RatingDescription;
-import com.example.RatingsApp.entity.enums.RatingRoles;
+import com.example.RatingsApp.entity.enums.RatingTypes;
 import com.example.RatingsApp.entity.enums.RatingStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "ratings")
@@ -17,33 +17,30 @@ public class Ratings {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ratingId;
 
-    // The employee being rated
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "employee_id",referencedColumnName = "employeeId", nullable = false)
+    @JoinColumn(name = "employee_id", nullable = false)
+    @JsonIgnore
     private Employees employee;
 
-    // The person who gives the rating
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "rated_by_id",referencedColumnName = "employeeId", nullable = false)
+    @JoinColumn(name = "rated_by_id", nullable = false)
+    @JsonIgnore
     private Employees ratedBy;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private RatingRoles ratingRole;
+    private RatingTypes ratingTypes;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private RatingStatus ratingStatus;
 
-    @Column(nullable = false)
     private int ratingValue;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private RatingDescription ratingDescription;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cycle_name",referencedColumnName = "cycleName" ,nullable = false)
+    @JoinColumn(name = "cycle_id", nullable = false)
+    @JsonIgnore
     private RatingsCycle ratingsCycle;
 
     public Long getRatingId() {
@@ -70,12 +67,12 @@ public class Ratings {
         this.ratedBy = ratedBy;
     }
 
-    public RatingRoles getRatingRole() {
-        return ratingRole;
+    public RatingTypes getRatingTypes() {
+        return ratingTypes;
     }
 
-    public void setRatingRole(RatingRoles ratingRole) {
-        this.ratingRole = ratingRole;
+    public void setRatingTypes(RatingTypes ratingTypes) {
+        this.ratingTypes = ratingTypes;
     }
 
     public RatingStatus getRatingStatus() {

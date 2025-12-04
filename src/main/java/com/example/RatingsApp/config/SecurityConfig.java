@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
@@ -35,23 +36,27 @@ public class SecurityConfig {
 
         http
                 .csrf(csrf -> csrf.disable())
+
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                )
+
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login").permitAll()
+                        .requestMatchers("/login", "/logout", "/sendotp").permitAll()
                         .requestMatchers("/register").hasAuthority("Admin")
                         .requestMatchers("/api/roles/**").hasAuthority("Admin")
                         .requestMatchers("/api/employees/**").hasAuthority("Admin")
-                        .requestMatchers("/api/ratingsCycle").hasAnyAuthority("Admin")
+                        .requestMatchers("/api/ratingsCycle").hasAuthority("Admin")
                         .requestMatchers("/api/teams/**").hasAnyAuthority("Admin", "PM")
-                       // .requestMatchers("/api/ratings/{ratingId}/approve").hasAnyAuthority("R102","R101","R100")
-                        .requestMatchers("/api/ratings/self/**").hasAnyAuthority("INDIVIDUAL", "TL", "PM")
-                        .requestMatchers("/api/ratings/tl/**").hasAnyAuthority("TL", "PM")
-                        .requestMatchers("/api/ratings/pm/**").hasAuthority("PM")
-                        .requestMatchers("/api/ratings/**").hasAnyAuthority("PM", "TL", "INDIVIDUAL","Admin")
-                        .requestMatchers("/api/ratings/{ratingId}/broadcast").hasAnyAuthority("Admin","PM")
+                        .requestMatchers("/api/ratings/**").hasAnyAuthority("PM", "TL", "TM", "Admin")
+                        .requestMatchers("/api/ratings/{ratingId}/broadcast")
+                        .hasAnyAuthority("Admin","PM")
                         .anyRequest().authenticated()
                 )
+
                 .httpBasic(Customizer.withDefaults())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 

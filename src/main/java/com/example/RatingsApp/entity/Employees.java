@@ -1,5 +1,6 @@
 package com.example.RatingsApp.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
@@ -32,21 +33,24 @@ public class Employees implements UserDetails {
     @Column(nullable = false)
     private String password;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "role_id", referencedColumnName = "roleId", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "role_id", nullable = false)
     private Roles role;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "team_id", referencedColumnName = "teamId", nullable = true)
+    @JoinColumn(name = "team_id")
     private Teams team;
 
-    @OneToMany(mappedBy = "ratedBy") // why
+    @OneToMany(mappedBy = "ratedBy", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @JsonIgnore
     private List<Ratings> ratingsGiven;
 
-    @OneToMany(mappedBy = "employee")
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @JsonIgnore
     private List<Ratings> ratingsReceived;
 
     @OneToMany(mappedBy = "pm")
+    @JsonIgnore
     private List<Teams> managedTeams = new ArrayList<>();
 
     public Long getEmployeeId() {

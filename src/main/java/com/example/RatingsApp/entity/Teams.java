@@ -1,5 +1,6 @@
 package com.example.RatingsApp.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -19,11 +20,12 @@ public class Teams {
     @Column(nullable = false, unique = true)
     private String teamName;
 
-    @ManyToOne
-    @JoinColumn(name = "pm_id", referencedColumnName = "employeeId")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pm_id")
     private Employees pm;
 
     @OneToMany(mappedBy = "team")
+    @JsonIgnore
     private List<Employees> members;
 
     public Long getTeamId() {

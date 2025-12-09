@@ -1,6 +1,7 @@
 package com.example.RatingsApp.service.Ratings;
 
 import com.example.RatingsApp.Factory.RatingFactory;
+import com.example.RatingsApp.dto.EmployeesDto.EmployeesResponseDto;
 import com.example.RatingsApp.dto.RatingsDto.RatingsRequestDto;
 import com.example.RatingsApp.dto.RatingsDto.RatingsResponseDto;
 import com.example.RatingsApp.entity.*;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.OptionalDouble;
 import java.util.stream.Collectors;
@@ -46,10 +48,10 @@ public class RatingsServiceImpl implements RatingsService {
 
     private Ratings buildRatingStrategy(RatingsRequestDto ratingsRequestDto, RatingTypes role) {
 
-        Employees employee = employeesRepo.findById(ratingsRequestDto.getEmployee_id())
+        Employees employee = employeesRepo.findByEmployeeId(ratingsRequestDto.getEmployee_id())
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
 
-        Employees ratedBy = employeesRepo.findById(ratingsRequestDto.getRated_by_id())
+        Employees ratedBy = employeesRepo.findByEmployeeId(ratingsRequestDto.getRated_by_id())
                 .orElseThrow(() -> new ResourceNotFoundException("RatedBy employee not found"));
 
         RatingsCycle cycle = ratingsCycleRepo.findByStatus(CycleStatus.ACTIVE)
@@ -67,18 +69,44 @@ public class RatingsServiceImpl implements RatingsService {
         return rating;
     }
 
+//    @Override
+//    public List<RatingsResponseDto> getPendingRatings(String employeeId) {
+//
+//        Employees employee = employeesRepo.findByEmployeeId(employeeId)
+//                .orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+//
+//        List<Ratings> pending = ratingsRepo.
+//
+//        return pending.stream().map(RatingsResponseDto::new).toList();
+//    }
+
     @Override
-    public RatingsResponseDto getPendingRatings(Long teamId) {
+    public List<RatingsResponseDto> getBroadcastedRatings() {
 
-        Teams team = teamsRepo.findById(teamId)
-                .orElseThrow(() -> new ResourceNotFoundException("Team not found"));
+        List<Ratings> broadcastedRatings = ratingsRepo.findByRatingStatus(RatingStatus.BROADCASTED);
 
-        RatingsCycle cycle = ratingsCycleRepo.findByStatus(CycleStatus.ACTIVE)
-                .orElseThrow(() -> new APIException("No ACTIVE cycle"));
+        return broadcastedRatings.stream().map(RatingsResponseDto::new).toList();
+    }
+
+    @Override
+    public List<RatingsResponseDto> getRatingsByTeam(String teamId) {
+
+        Teams team = teamsRepo.findByTeamId(teamId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Team not found with ID: " + teamId));
 
         List<Employees> employees = employeesRepo.findByTeam(team);
 
-        return null;
+        List<Ratings> ratings = ratingsRepo.findByEmployeeIn(employees);
+
+        return ratings.stream().map(RatingsResponseDto::new).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<RatingsResponseDto> getSelfRatings() {
+
+        List<Ratings> ratings = ratingsRepo.findByRatingTypes(RatingTypes.SELF);
+
+        return ratings.stream().map(RatingsResponseDto::new).collect(Collectors.toList());
     }
 
     @Override
@@ -95,6 +123,10 @@ public class RatingsServiceImpl implements RatingsService {
 
         RatingsCycle cycle = ratingsCycleRepo.findByStatus(CycleStatus.ACTIVE)
                 .orElseThrow(() -> new APIException("No ACTIVE ratings cycle found"));
+
+        if (loggedInEmployee.getTeam() == null || loggedInEmployee.getTeam().getTeamId() == null) {
+            throw new APIException("Employee not yet assigned to a team!");
+        }
 
         Ratings ratings;
 
@@ -159,10 +191,6 @@ public class RatingsServiceImpl implements RatingsService {
                     ratingsRepo.save(existing);
                     return new RatingsResponseDto(existing);
                 }
-//                boolean isSubmittedByTl = ratingsRepo.isTlSubmitted(ratingsRequestDto.getEmployee_id(), RatingRoles.TL_TO_INDIVIDUAL);
-//                if (!isSubmittedByTl) {
-//                    throw new APIException("TL has not submitted rating for this individual. PM rating not allowed.");
-//                }
                 ratings = buildRatingStrategy(ratingsRequestDto, RatingTypes.PM_TO_TM);
                 ratings.setRatedBy(loggedInEmployee);
                 ratings.setRatingStatus(RatingStatus.SUBMITTED_BY_PM);
@@ -182,13 +210,13 @@ public class RatingsServiceImpl implements RatingsService {
     }
 
     @Override
-    public RatingsResponseDto getRatingById(Long ratingId) {
-        Ratings rating = ratingsRepo.findById(ratingId)
+    public RatingsResponseDto getRatingById(String ratingId) {
+        Ratings rating = ratingsRepo.findByRatingId(ratingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Rating not found with ID: " + ratingId));
         return new RatingsResponseDto(rating);
     }
 
-    private Ratings getExistingRating(Long employeeId, Long ratedById, RatingTypes role) {
+    private Ratings getExistingRating(String employeeId, String ratedById, RatingTypes role) {
 
         RatingsCycle cycle = ratingsCycleRepo.findByStatus(CycleStatus.ACTIVE)
                 .orElseThrow(() -> new APIException("No ACTIVE cycle found"));
@@ -197,18 +225,18 @@ public class RatingsServiceImpl implements RatingsService {
     }
 
     @Override
-    public RatingsResponseDto updateRating(Long ratingId, RatingsRequestDto ratingsRequestDto) {
-        Ratings rating = ratingsRepo.findById(ratingId)
+    public RatingsResponseDto updateRating(String ratingId, RatingsRequestDto ratingsRequestDto) {
+        Ratings rating = ratingsRepo.findByRatingId(ratingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Rating not found with ID: " + ratingId));
 
         if (rating.getRatingStatus() == RatingStatus.BROADCASTED) {
             throw new APIException("Rating is Broadcasted and cannot be modified.");
         }
 
-        Employees employee = employeesRepo.findById(ratingsRequestDto.getEmployee_id())
-                .orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
-        Employees ratedBy = employeesRepo.findById(ratingsRequestDto.getRated_by_id())
-                .orElseThrow(() -> new ResourceNotFoundException("Rated By Employee not found"));
+//        Employees employee = employeesRepo.findByEmployeeId(ratingsRequestDto.getEmployee_id())
+//                .orElseThrow(() -> new ResourceNotFoundException("Employee not found"));
+//        Employees ratedBy = employeesRepo.findByEmployeeId(ratingsRequestDto.getRated_by_id())
+//                .orElseThrow(() -> new ResourceNotFoundException("Rated By Employee not found"));
 
 //        RatingsCycle cycle = ratingsCycleRepo.findByStatus(CycleStatus.ACTIVE)
 //                .orElseThrow(() -> new APIException("No ACTIVE ratings cycle available."));
@@ -225,8 +253,8 @@ public class RatingsServiceImpl implements RatingsService {
     }
 
     @Override
-    public RatingsResponseDto deleteRating(Long ratingId) {
-        Ratings rating = ratingsRepo.findById(ratingId)
+    public RatingsResponseDto deleteRating(String ratingId) {
+        Ratings rating = ratingsRepo.findByRatingId(ratingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Rating not found with ID: " + ratingId));
         ratingsRepo.delete(rating);
         return null;
@@ -317,15 +345,15 @@ public class RatingsServiceImpl implements RatingsService {
 //    }
 
     @Override
-    public RatingsResponseDto broadcastRating(Long ratingId, RatingsRequestDto ratingsRequestDto) {
+    public RatingsResponseDto broadcastRating(String ratingId, RatingsRequestDto ratingsRequestDto) {
 
-        Ratings rating = ratingsRepo.findById(ratingId)
+        Ratings rating = ratingsRepo.findByRatingId(ratingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Rating not found"));
 
-        Employees broadcaster = employeesRepo.findById(ratingsRequestDto.getRated_by_id())
+        Employees broadcaster = employeesRepo.findByEmployeeId(ratingsRequestDto.getRated_by_id())
                 .orElseThrow(() -> new ResourceNotFoundException("Broadcaster not found"));
 
-        Long broadcasterId = broadcaster.getRole().getRoleId();
+        String broadcasterId = broadcaster.getRole().getRoleId();
 
         rating.setRatingStatus(RatingStatus.BROADCASTED);
         ratingsRepo.save(rating);
@@ -333,8 +361,8 @@ public class RatingsServiceImpl implements RatingsService {
     }
 
     @Override
-    public List<RatingsResponseDto> getReceivedRatings(Long employeeId) {
-        Employees employee = employeesRepo.findById(employeeId)
+    public List<RatingsResponseDto> getReceivedRatings(String employeeId) {
+        Employees employee = employeesRepo.findByEmployeeId(employeeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + employeeId));
 
         List<Ratings> ratingsList = ratingsRepo.findByEmployee(employee);
@@ -343,9 +371,9 @@ public class RatingsServiceImpl implements RatingsService {
     }
 
     @Override
-    public List<RatingsResponseDto> getGivenRatings(Long ratedById) {
+    public List<RatingsResponseDto> getGivenRatings(String ratedById) {
 
-        Employees ratedBy = employeesRepo.findById(ratedById)
+        Employees ratedBy = employeesRepo.findByEmployeeId(ratedById)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + ratedById));
 
         List<Ratings> ratingsList = ratingsRepo.findByRatedBy(ratedBy);
@@ -365,9 +393,9 @@ public class RatingsServiceImpl implements RatingsService {
     }
 
     @Override
-    public OptionalDouble getAverageByTeam(Long teamId) {
+    public OptionalDouble getAverageByTeam(String teamId) {
 
-        Teams team = teamsRepo.findById(teamId)
+        Teams team = teamsRepo.findByTeamId(teamId)
                 .orElseThrow(() -> new ResourceNotFoundException("Team not found with ID: " + teamId));
 
         List<Employees> employees = employeesRepo.findByTeam(team);
@@ -383,18 +411,18 @@ public class RatingsServiceImpl implements RatingsService {
 
     private RatingTypes deriveRatingRole(Employees ratedBy, Employees employee) {
 
-        Long ratedByRole = ratedBy.getRole().getRoleId();
-        Long employeeRole = employee.getRole().getRoleId();
+        String ratedByRole = ratedBy.getRole().getRoleId();
+        String employeeRole = employee.getRole().getRoleId();
 
-        Long PM = rolesRepo.findById(2L)
+        String PM = rolesRepo.findById(2L)
                 .orElseThrow(() -> new ResourceNotFoundException("PM role not found"))
                 .getRoleId();
 
-        Long TL = rolesRepo.findById(3L)
+        String TL = rolesRepo.findById(3L)
                 .orElseThrow(() -> new ResourceNotFoundException("TL role not found"))
                 .getRoleId();
 
-        Long TM = rolesRepo.findById(4L)
+        String TM = rolesRepo.findById(4L)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee role not found"))
                 .getRoleId();
 
@@ -424,21 +452,19 @@ public class RatingsServiceImpl implements RatingsService {
             return RatingDescription.OUTSTANDING;
         }
         else if (ratingValue >= 7 && ratingValue <= 8) {
-            return RatingDescription.GOOD;
+            return RatingDescription.EXCEEDING_EXPECTATION;
         }
         else if (ratingValue >= 5 && ratingValue <= 6) {
-            return RatingDescription.AVERAGE;
+            return RatingDescription.MEET_EXPECTATION;
         }
         else if (ratingValue >= 3 && ratingValue <= 4) {
-            return RatingDescription.BELOW_AVERAGE;
+            return RatingDescription.NEEDS_IMPROVEMENT;
         }
         else if (ratingValue >= 1 && ratingValue <= 2) {
-            return RatingDescription.POOR;
+            return RatingDescription.BELOW_EXPECTATION;
         }
         else {
             throw new IllegalArgumentException("Invalid rating value: " + ratingValue);
         }
     }
-
-
 }

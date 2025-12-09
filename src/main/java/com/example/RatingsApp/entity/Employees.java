@@ -12,17 +12,16 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
-//lombok @Getter @Setter
 @Entity
 @Table(name = "employee")
 public class Employees implements UserDetails {
 
-//    @Id
-//    @GenericGenerator(name = "custom-id", type = com.example.RatingsApp.config.CustomIdGenerator.class)
-//    @GeneratedValue(generator = "custom-id")
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long employeeId;
+    @GeneratedValue(generator = "employee-id-generator")
+    @GenericGenerator(name = "employee-id-generator",
+            strategy = "com.example.RatingsApp.config.CustomIdGenerator")
+    @Column(name = "employee_id", unique = true)
+    private String employeeId;
 
     @Column(nullable = false)
     private String name;
@@ -42,22 +41,19 @@ public class Employees implements UserDetails {
     private Teams team;
 
     @OneToMany(mappedBy = "ratedBy", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    @JsonIgnore
     private List<Ratings> ratingsGiven;
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    @JsonIgnore
     private List<Ratings> ratingsReceived;
 
     @OneToMany(mappedBy = "pm")
-    @JsonIgnore
     private List<Teams> managedTeams = new ArrayList<>();
 
-    public Long getEmployeeId() {
+    public String getEmployeeId() {
         return employeeId;
     }
 
-    public void setEmployeeId(Long employeeId) {
+    public void setEmployeeId(String employeeId) {
         this.employeeId = employeeId;
     }
 

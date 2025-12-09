@@ -12,12 +12,11 @@ import java.util.List;
 @Table(name = "ratings_cycle")
 public class RatingsCycle {
 
-//    @Id
-//    @GenericGenerator(name = "custom-id", type = com.example.RatingsApp.config.CustomIdGenerator.class)
-//    @GeneratedValue(generator = "custom-id")
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long cycleId;
+    @GeneratedValue(generator = "cycle-id-generator")
+    @GenericGenerator(name = "cycle-id-generator",
+            strategy = "com.example.RatingsApp.config.CustomIdGenerator")
+    private String cycleId;
 
     @Column(nullable = false)
     private String cycleName;
@@ -30,14 +29,13 @@ public class RatingsCycle {
     private LocalDate endDate;
 
     @OneToMany(mappedBy = "ratingsCycle", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    @JsonIgnore
     private List<Ratings> ratings;
 
-    public Long getCycleId() {
+    public String getCycleId() {
         return cycleId;
     }
 
-    public void setCycleId(Long cycleId) {
+    public void setCycleId(String cycleId) {
         this.cycleId = cycleId;
     }
 

@@ -32,13 +32,13 @@ public class EmployeesController {
     }
 
     @PutMapping("/team/{teamId}")
-    public ResponseEntity<EmployeesResponseDto> addEmployeeToTeam(@PathVariable Long teamId, @RequestBody EmployeesRequestDto employeesRequestDto){
+    public ResponseEntity<EmployeesResponseDto> addEmployeeToTeam(@PathVariable String teamId, @RequestBody EmployeesRequestDto employeesRequestDto){
         EmployeesResponseDto addedEmployee = employeesFacade.addEmployeeToTeam(employeesRequestDto,teamId);
         return new ResponseEntity<>(addedEmployee,HttpStatus.OK);
     }
 
     @GetMapping("{employeeId}")
-    public ResponseEntity<EmployeesResponseDto> getEmployeeById(@PathVariable Long employeeId){
+    public ResponseEntity<EmployeesResponseDto> getEmployeeById(@PathVariable String employeeId){
         EmployeesResponseDto getEmployee = employeesFacade.getEmployeeById(employeeId);
         return ResponseEntity.ok(getEmployee);
     }
@@ -62,21 +62,20 @@ public class EmployeesController {
         return ResponseEntity.ok(listEmployeesByName);
     }
 
-
     @GetMapping("/employees_by_team/{teamId}")
-    public ResponseEntity<List<EmployeesResponseDto>> getEmployeesByTeam(@PathVariable Long teamId){
+    public ResponseEntity<List<EmployeesResponseDto>> getEmployeesByTeam(@PathVariable String teamId){
         List<EmployeesResponseDto> listEmployeesByTeam = employeesFacade.getEmployeeByTeam(teamId);
         return ResponseEntity.ok(listEmployeesByTeam);
     }
 
     @GetMapping("/employees_by_role/{roleId}")
-    public ResponseEntity<List<EmployeesResponseDto>> getEmployeesByRole(@PathVariable Long roleId){
+    public ResponseEntity<List<EmployeesResponseDto>> getEmployeesByRole(@PathVariable String roleId){
         List<EmployeesResponseDto> listEmployeesByRole = employeesFacade.getEmployeesByRole(roleId);
         return ResponseEntity.ok(listEmployeesByRole);
     }
 
     @GetMapping("/pm/{teamId}")
-    public ResponseEntity<EmployeesResponseDto> getPmByTeam(@PathVariable Long teamId){
+    public ResponseEntity<EmployeesResponseDto> getPmByTeam(@PathVariable String teamId){
         EmployeesResponseDto PmByTeam = employeesFacade.getPmByTeam(teamId);
         return ResponseEntity.ok(PmByTeam);
     }
@@ -88,25 +87,25 @@ public class EmployeesController {
     }
 
     @PutMapping("{employeeId}")
-    public ResponseEntity<EmployeesResponseDto> updateEmployee(@PathVariable Long employeeId, @RequestBody EmployeesRequestDto employeesRequestDto){
+    public ResponseEntity<EmployeesResponseDto> updateEmployee(@PathVariable String employeeId, @RequestBody EmployeesRequestDto employeesRequestDto){
         EmployeesResponseDto updatedEmployee = employeesFacade.updateEmployee(employeeId, employeesRequestDto);
         return new ResponseEntity<>(updatedEmployee, HttpStatus.OK);
     }
 
     @PutMapping("/change-team/{employeeId}")
-    public ResponseEntity<EmployeesResponseDto> changeTeam(@PathVariable Long employeeId, @RequestBody EmployeesRequestDto employeesRequestDto) {
+    public ResponseEntity<EmployeesResponseDto> changeTeam(@PathVariable String employeeId, @RequestBody EmployeesRequestDto employeesRequestDto) {
         EmployeesResponseDto updatedTeam = employeesFacade.changeTeam(employeeId, employeesRequestDto);
         return new ResponseEntity<>(updatedTeam, HttpStatus.OK);
     }
 
     @PutMapping("/change-role/{employeeId}")
-    public ResponseEntity<EmployeesResponseDto> changeRole(@RequestBody EmployeesRequestDto employeesRequestDto, Long employeeId, Long roleId){
-        EmployeesResponseDto updatedRole = employeesFacade.changeRole(employeesRequestDto,employeeId,roleId);
+    public ResponseEntity<EmployeesResponseDto> changeRole(@PathVariable String employeeId, @RequestBody EmployeesRequestDto employeesRequestDto){
+        EmployeesResponseDto updatedRole = employeesFacade.changeRole(employeeId,employeesRequestDto);
         return new ResponseEntity<>(updatedRole,HttpStatus.OK);
     }
 
     @DeleteMapping("{employeeId}")
-    public ResponseEntity<String> deleteEmployee(@PathVariable Long employeeId){
+    public ResponseEntity<String> deleteEmployee(@PathVariable String employeeId){
         EmployeesResponseDto deletedEmployee = employeesFacade.deleteEmployee(employeeId);
         return ResponseEntity.ok("Employee Deleted!");
     }

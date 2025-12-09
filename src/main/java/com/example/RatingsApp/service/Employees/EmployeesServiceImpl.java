@@ -2,13 +2,12 @@ package com.example.RatingsApp.service.Employees;
 
 import com.example.RatingsApp.dto.EmployeesDto.EmployeesRequestDto;
 import com.example.RatingsApp.dto.EmployeesDto.EmployeesResponseDto;
-import com.example.RatingsApp.dto.RolesDto.RolesResponseDto;
-import com.example.RatingsApp.entity.Employees;
-import com.example.RatingsApp.entity.Roles;
-import com.example.RatingsApp.entity.Teams;
+import com.example.RatingsApp.dto.RatingsDto.RatingsResponseDto;
+import com.example.RatingsApp.entity.*;
 import com.example.RatingsApp.exception.APIException;
 import com.example.RatingsApp.exception.ResourceNotFoundException;
 import com.example.RatingsApp.repository.EmployeesRepo;
+import com.example.RatingsApp.repository.RatingsRepo;
 import com.example.RatingsApp.repository.RolesRepo;
 import com.example.RatingsApp.repository.TeamsRepo;
 import com.example.RatingsApp.service.Security.JwtService;
@@ -22,7 +21,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -35,16 +36,19 @@ public class EmployeesServiceImpl implements EmployeesService {
 
     private final TeamsRepo teamsRepo;
 
+    private final RatingsRepo ratingsRepo;
+
     private final PasswordEncoder passwordEncoder;
 
     private final AuthenticationManager authenticationManager;
 
     private final JwtService jwtService;
 
-    public EmployeesServiceImpl(EmployeesRepo employeesRepo, RolesRepo rolesRepo, TeamsRepo teamsRepo, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtService jwtService) {
+    public EmployeesServiceImpl(EmployeesRepo employeesRepo, RolesRepo rolesRepo, TeamsRepo teamsRepo, RatingsRepo ratingsRepo, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtService jwtService) {
         this.employeesRepo = employeesRepo;
         this.rolesRepo = rolesRepo;
         this.teamsRepo = teamsRepo;
+        this.ratingsRepo = ratingsRepo;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
@@ -55,8 +59,12 @@ public class EmployeesServiceImpl implements EmployeesService {
 
         Employees employee = new Employees();
 
-        Roles role = rolesRepo.findById(employeesRequestDto.getRoleId())
+        Roles role = rolesRepo.findByRoleId(employeesRequestDto.getRoleId())
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found with ID: " + employeesRequestDto.getRoleId()));
+
+        if(Objects.equals(role.getRoleId(), "ROL001")){
+            throw new APIException("Admin role cannot be assigned to anyone!");
+        }
 
         Optional<Employees> existingEmployeeByName = employeesRepo.findByName(employeesRequestDto.getName());
         if (existingEmployeeByName.isPresent()) {
@@ -80,8 +88,8 @@ public class EmployeesServiceImpl implements EmployeesService {
     }
 
     @Override
-    public EmployeesResponseDto getEmployeeById(Long employeeId) {
-        Employees employee = employeesRepo.findById(employeeId)
+    public EmployeesResponseDto getEmployeeById(String employeeId) {
+        Employees employee = employeesRepo.findByEmployeeId(employeeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + employeeId));
         return new EmployeesResponseDto(employee);
     }
@@ -126,41 +134,53 @@ public class EmployeesServiceImpl implements EmployeesService {
         return jwtService.generateToken(user);
     }
 
-
     @Override
-    public EmployeesResponseDto addEmployeeToTeam(EmployeesRequestDto employeesRequestDto, Long teamId) {
+    public EmployeesResponseDto addEmployeeToTeam(EmployeesRequestDto employeesRequestDto, String teamId) {
 
-        Employees employee = employeesRepo.findById(employeesRequestDto.getEmployeeId())
+        Employees employee = employeesRepo.findByEmployeeId(employeesRequestDto.getEmployeeId())
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + employeesRequestDto.getEmployeeId()));
 
-        Teams team = teamsRepo.findById(teamId)
+        Teams team = teamsRepo.findByTeamId(teamId)
                 .orElseThrow(() -> new ResourceNotFoundException("Team not found with ID: " + teamId));
 
         if (employee.getTeam() != null) {
             return new EmployeesResponseDto(employee);
         }
 
-        employee.setTeam(team);
+        if (Objects.equals(employee.getRole().getRoleId(), "ROL001")) {
+            throw new APIException("Admin cannot be assigned to a Team");
+        }
 
-        if (employee.getRole().getRoleId() == 2L) {
+        if (Objects.equals(employee.getRole().getRoleId(), "ROL002")) {
+
+            if (team.getPm() != null) {
+                return new EmployeesResponseDto(team.getPm());
+            }
+
             team.setPm(employee);
+            employee.setTeam(team);
+
+            employeesRepo.save(employee);
             teamsRepo.save(team);
+
+            return new EmployeesResponseDto(employee);
         }
 
         employee.setTeam(team);
-        Employees saveUpdatedEmployee =  employeesRepo.save(employee);
-        return new EmployeesResponseDto(saveUpdatedEmployee);
+        Employees updated = employeesRepo.save(employee);
+
+        return new EmployeesResponseDto(updated);
     }
 
     @Override
-    public EmployeesResponseDto changeTeam(Long employeeId, EmployeesRequestDto employeesRequestDto) {
+    public EmployeesResponseDto changeTeam(String employeeId, EmployeesRequestDto employeesRequestDto) {
 
-        Long teamId = employeesRequestDto.getTeamId();
+        String teamId = employeesRequestDto.getTeamId();
 
-        Employees employee = employeesRepo.findById(employeeId)
+        Employees employee = employeesRepo.findByEmployeeId(employeeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + employeeId));
 
-        Teams newTeam = teamsRepo.findById(teamId)
+        Teams newTeam = teamsRepo.findByTeamId(teamId)
                 .orElseThrow(() -> new ResourceNotFoundException("Team not found with ID: " + teamId));
 
         employee.setTeam(newTeam);
@@ -170,12 +190,14 @@ public class EmployeesServiceImpl implements EmployeesService {
     }
 
     @Override
-    public EmployeesResponseDto changeRole(EmployeesRequestDto employeesRequestDto, Long employeeId, Long roleId) {
+    public EmployeesResponseDto changeRole(String employeeId, EmployeesRequestDto employeesRequestDto) {
 
-        Employees employee = employeesRepo.findById(employeeId)
+        String roleId = employeesRequestDto.getRoleId();
+
+        Employees employee = employeesRepo.findByEmployeeId(employeeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + employeeId));
 
-        Roles newRole = rolesRepo.findById(roleId)
+        Roles newRole = rolesRepo.findByRoleId(roleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found with ID: " + roleId));
 
         employee.setRole(newRole);
@@ -185,9 +207,9 @@ public class EmployeesServiceImpl implements EmployeesService {
     }
 
     @Override
-    public EmployeesResponseDto updateEmployee(Long employeeId, EmployeesRequestDto employeesRequestDto) {
+    public EmployeesResponseDto updateEmployee(String employeeId, EmployeesRequestDto employeesRequestDto) {
 
-        Employees employee = employeesRepo.findById(employeeId)
+        Employees employee = employeesRepo.findByEmployeeId(employeeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + employeeId));
 
         employee.setName(employeesRequestDto.getName());
@@ -198,16 +220,16 @@ public class EmployeesServiceImpl implements EmployeesService {
     }
 
     @Override
-    public EmployeesResponseDto deleteEmployee(Long employeeId) {
-        Employees employee = employeesRepo.findById(employeeId)
+    public EmployeesResponseDto deleteEmployee(String employeeId) {
+        Employees employee = employeesRepo.findByEmployeeId(employeeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + employeeId));
         employeesRepo.delete(employee);
         return null;
     }
 
     @Override
-    public List<EmployeesResponseDto> getEmployeeByTeam(Long teamId) {
-        Teams team = teamsRepo.findById(teamId)
+    public List<EmployeesResponseDto> getEmployeeByTeam(String teamId) {
+        Teams team = teamsRepo.findByTeamId(teamId)
                 .orElseThrow(() -> new ResourceNotFoundException("Team not found with ID: " + teamId));
 
         List<Employees> employees = employeesRepo.findByTeam(team);
@@ -216,8 +238,8 @@ public class EmployeesServiceImpl implements EmployeesService {
     }
 
     @Override
-    public List<EmployeesResponseDto> getEmployeesByRole(Long roleId) {
-        Roles role = rolesRepo.findById(roleId)
+    public List<EmployeesResponseDto> getEmployeesByRole(String roleId) {
+        Roles role = rolesRepo.findByRoleId(roleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Role not found with ID: " + roleId));
 
         List<Employees> employees = employeesRepo.findByRole(role);
@@ -226,15 +248,15 @@ public class EmployeesServiceImpl implements EmployeesService {
     }
 
     @Override
-    public EmployeesResponseDto getPmByTeam(Long teamId) {
-        Teams team = teamsRepo.findById(teamId)
+    public EmployeesResponseDto getPmByTeam(String teamId) {
+        Teams team = teamsRepo.findByTeamId(teamId)
                 .orElseThrow(() -> new ResourceNotFoundException("Team not found with ID: " + teamId));
 
-        Long pmId = team.getPm().getEmployeeId();
+        String pmId = team.getPm().getEmployeeId();
         if (pmId == null) {
             throw new IllegalArgumentException("PM ID must be provided in the request body.");
         }
-        Employees pm = employeesRepo.findById(pmId).orElseThrow(
+        Employees pm = employeesRepo.findByEmployeeId(pmId).orElseThrow(
                 () -> new ResourceNotFoundException("Employee (PM) not found with ID: " + pmId)
         );
         return new EmployeesResponseDto(pm);
@@ -246,7 +268,7 @@ public class EmployeesServiceImpl implements EmployeesService {
         Roles pmRole = rolesRepo.findByRoleNameIgnoreCase("PM")
                 .orElseThrow(() -> new ResourceNotFoundException("PM Role not found"));
 
-        Long pmRoleId = pmRole.getRoleId();
+        String pmRoleId = pmRole.getRoleId();
 
         List<Employees> employees = employeesRepo.findAll(Sort.by(Sort.Direction.ASC, "employeeId"));
 

@@ -26,24 +26,24 @@ public class TLToTMRating implements RatingStrategy {
     @Override
     public Ratings giveRating(RatingsRequestDto ratingsRequestDto) {
 
-        Long ratedById = ratingsRequestDto.getRated_by_id();
-        Long employeeId = ratingsRequestDto.getEmployee_id();
+        String ratedById = ratingsRequestDto.getRated_by_id();
+        String employeeId = ratingsRequestDto.getEmployee_id();
 
         if (ratedById == null || employeeId == null) {
             throw new APIException("Both RatedBy ID and Employee ID must be provided.");
         }
 
-        Employees ratedBy = employeesRepo.findById(ratedById)
+        Employees ratedBy = employeesRepo.findByEmployeeId(ratedById)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + ratedById));
 
-        Employees employee = employeesRepo.findById(employeeId)
+        Employees employee = employeesRepo.findByEmployeeId(employeeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + employeeId));
 
-        Long TL = rolesRepo.findById(3L)
+        String TL = rolesRepo.findByRoleId("ROL003")
                 .orElseThrow(() -> new ResourceNotFoundException("TL role not found"))
                 .getRoleId();
 
-        Long TM = rolesRepo.findById(4L)
+        String TM = rolesRepo.findByRoleId("ROL004")
                 .orElseThrow(() -> new ResourceNotFoundException("TM role not found"))
                 .getRoleId();
 

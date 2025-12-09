@@ -6,10 +6,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.OptionalDouble;
 
 @Repository
 public interface TeamsRepo extends JpaRepository<Teams,Long> {
     Optional<Teams> findByTeamNameIgnoreCase(String teamName);
 
     Optional<Teams> findByPm(Employees pm);
+
+    Optional<Teams> findByTeamId(String teamId);
 }

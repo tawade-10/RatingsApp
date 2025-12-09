@@ -28,24 +28,24 @@ public class PMToTMRating implements RatingStrategy {
     @Override
     public Ratings giveRating(RatingsRequestDto ratingsRequestDto) {
 
-        Long ratedById = ratingsRequestDto.getRated_by_id();
-        Long employeeId = ratingsRequestDto.getEmployee_id();
+        String ratedById = ratingsRequestDto.getRated_by_id();
+        String employeeId = ratingsRequestDto.getEmployee_id();
 
         if (ratedById == null || employeeId == null) {
             throw new APIException("Both RatedBy ID and Employee ID must be provided.");
         }
 
-        Employees ratedBy = employeesRepo.findById(ratedById)
+        Employees ratedBy = employeesRepo.findByEmployeeId(ratedById)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + ratedById));
 
-        Employees employee = employeesRepo.findById(employeeId)
+        Employees employee = employeesRepo.findByEmployeeId(employeeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found with ID: " + employeeId));
 
-        Long PM = rolesRepo.findById(2L)
+        String PM = rolesRepo.findByRoleId("ROL002")
                 .orElseThrow(() -> new ResourceNotFoundException("PM role not found"))
                 .getRoleId();
 
-        Long INDIVIDUAL = rolesRepo.findById(4L)
+        String INDIVIDUAL = rolesRepo.findByRoleId("ROL004")
                 .orElseThrow(() -> new ResourceNotFoundException("INDIVIDUAL role not found"))
                 .getRoleId();
 

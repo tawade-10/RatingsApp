@@ -10,29 +10,29 @@ import java.util.List;
 public interface EmployeesFacade {
     EmployeesResponseDto createEmployee(@Valid EmployeesRequestDto employeesRequestDto);
 
-    EmployeesResponseDto getEmployeeById(Long employeeId);
+    EmployeesResponseDto getEmployeeById(String employeeId);
 
     Page<EmployeesResponseDto> getAllEmployees(int page, int size);
 
     Page<EmployeesResponseDto> getEmployeeByName(int page, int size, String name);
 
-    List<EmployeesResponseDto> getEmployeeByTeam(Long teamId);
+    List<EmployeesResponseDto> getEmployeeByTeam(String teamId);
 
-    List<EmployeesResponseDto> getEmployeesByRole(Long roleId);
+    List<EmployeesResponseDto> getEmployeesByRole(String roleId);
 
-    EmployeesResponseDto getPmByTeam(Long teamId);
+    EmployeesResponseDto getPmByTeam(String teamId);
 
     List<EmployeesResponseDto> getAllPm();
 
-    EmployeesResponseDto updateEmployee(Long employeeId, EmployeesRequestDto employeesRequestDto);
+    EmployeesResponseDto updateEmployee(String employeeId, EmployeesRequestDto employeesRequestDto);
 
-    EmployeesResponseDto deleteEmployee(Long employeeId);
+    EmployeesResponseDto deleteEmployee(String employeeId);
 
     String verify(EmployeesRequestDto employeesRequestDto);
 
-    EmployeesResponseDto addEmployeeToTeam(EmployeesRequestDto employeesRequestDto, Long teamId);
+    EmployeesResponseDto addEmployeeToTeam(EmployeesRequestDto employeesRequestDto, String teamId);
 
-    EmployeesResponseDto changeTeam( Long employeeId, EmployeesRequestDto employeesRequestDto);
+    EmployeesResponseDto changeTeam(String employeeId, EmployeesRequestDto employeesRequestDto);
 
-    EmployeesResponseDto changeRole(EmployeesRequestDto employeesRequestDto, Long employeeId, Long roleId);
+    EmployeesResponseDto changeRole(String employeeId, EmployeesRequestDto employeesRequestDto);
 }

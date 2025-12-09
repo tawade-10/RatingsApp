@@ -3,6 +3,7 @@ package com.example.RatingsApp.repository;
 import com.example.RatingsApp.entity.Employees;
 import com.example.RatingsApp.entity.Ratings;
 // import com.example.RatingsApp.entity.enums.RatingCycles;
+import com.example.RatingsApp.entity.enums.RatingStatus;
 import com.example.RatingsApp.entity.enums.RatingTypes;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,10 +16,6 @@ import java.util.Optional;
 @Repository
 public interface RatingsRepo extends JpaRepository<Ratings,Long> {
 
-//    Optional<Ratings> findByRatingId(String ratingId);
-
-    List<Ratings> findByEmployee_EmployeeId(Long employeeId);
-
     List<Ratings> findByEmployee(Employees employee);
 
     List<Ratings> findByRatedBy(Employees ratedBy);
@@ -30,7 +27,7 @@ public interface RatingsRepo extends JpaRepository<Ratings,Long> {
             "WHERE r.employee.employeeId = :employeeId " +
             "AND r.ratingTypes = :ratingTypes " +
             "AND r.ratingStatus = com.example.RatingsApp.entity.enums.RatingStatus.SUBMITTED_BY_TL")
-    boolean isTlSubmitted(@Param("employeeId") Long employeeId,
+    boolean isTlSubmitted(@Param("employeeId") String employeeId,
                           @Param("ratingTypes") RatingTypes ratingTypes);
 
     @Query("SELECT r " +
@@ -38,10 +35,13 @@ public interface RatingsRepo extends JpaRepository<Ratings,Long> {
             "AND r.ratedBy.employeeId = :ratedById " +
             "AND r.ratingTypes = :ratingTypes " +
             "AND r.ratingsCycle.cycleId = :cycleId")
-    Optional<Ratings> findExistingRating(Long ratedById, Long employeeId, RatingTypes ratingTypes, Long cycleId);
+    Optional<Ratings> findExistingRating(String ratedById, String employeeId, RatingTypes ratingTypes, String cycleId);
 
+    Optional<Ratings> findByRatingId(String ratingId);
 
-    // Optional<Ratings> findByRatingCycles(RatingCycles ratingCycles);
+    List<Ratings> findByRatingStatus(RatingStatus ratingStatus);
 
-   // Optional<Ratings> findByEmployeeAndRatingCycles(Employees employee, RatingCycles ratingCycles);
+    List<Ratings> findByEmployeeIn(List<Employees> employees);
+
+    List<Ratings> findByRatingTypes(RatingTypes ratingTypes);
 }

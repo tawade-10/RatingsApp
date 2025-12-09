@@ -22,21 +22,19 @@ public class TeamsController {
     }
 
     @PostMapping
-    public ResponseEntity<TeamsResponseDto> createTeam(@RequestBody TeamsRequestDto teamsRequestDto, Long roleId){
+    public ResponseEntity<TeamsResponseDto> createTeam(@RequestBody TeamsRequestDto teamsRequestDto, String roleId){
         TeamsResponseDto savedTeam = teamsService.createTeam(teamsRequestDto, roleId);
         return new ResponseEntity<>(savedTeam, HttpStatus.CREATED);
     }   
 
     @PutMapping("/{teamId}")
-    public ResponseEntity<TeamsResponseDto> assignPmId(
-            @PathVariable Long teamId,
-            @RequestBody TeamsRequestDto teamsRequestDto) {
+    public ResponseEntity<TeamsResponseDto> assignPmId(@PathVariable String teamId, @RequestBody TeamsRequestDto teamsRequestDto) {
         TeamsResponseDto savedPmId = teamsService.assignPm(teamId, teamsRequestDto);
         return new ResponseEntity<>(savedPmId, HttpStatus.OK);
     }
 
     @GetMapping("/id/{teamId}")
-    public ResponseEntity<TeamsResponseDto> getTeamById(@PathVariable Long teamId) {
+    public ResponseEntity<TeamsResponseDto> getTeamById(@PathVariable String teamId) {
         TeamsResponseDto teamResponse = teamsService.getTeamById(teamId);
         return ResponseEntity.ok(teamResponse);
     }
@@ -54,13 +52,13 @@ public class TeamsController {
     }
 
     @PutMapping("/update-team/{teamId}")
-    public ResponseEntity<TeamsResponseDto> updateTeam(@PathVariable Long teamId, @RequestBody TeamsRequestDto teamsRequestDto) {
+    public ResponseEntity<TeamsResponseDto> updateTeam(@PathVariable String teamId, @RequestBody TeamsRequestDto teamsRequestDto) {
         TeamsResponseDto savedUpdatedTeam = teamsService.updateTeam(teamId, teamsRequestDto);
         return new ResponseEntity<>(savedUpdatedTeam, HttpStatus.OK);
     }
 
     @DeleteMapping("{teamId}")
-    public ResponseEntity<String> deleteTeam(@PathVariable Long teamId){
+    public ResponseEntity<String> deleteTeam(@PathVariable String teamId){
         TeamsResponseDto deletedTeam = teamsService.deleteTeam(teamId);
         return ResponseEntity.ok("Team Deleted!");
     }

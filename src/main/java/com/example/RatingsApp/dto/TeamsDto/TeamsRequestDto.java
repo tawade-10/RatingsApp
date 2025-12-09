@@ -6,12 +6,12 @@ public class TeamsRequestDto {
 
     private String teamName;
 
-    private Long pmId;
+    private String pmId;
 
     public TeamsRequestDto() {
     }
 
-    public TeamsRequestDto(String teamName, Long pmId) {
+    public TeamsRequestDto(String teamName, String pmId) {
 //        this.teamId = teamId;
         this.teamName = teamName;
         this.pmId = pmId;
@@ -33,11 +33,11 @@ public class TeamsRequestDto {
         this.teamName = teamName;
     }
 
-    public Long getPmId() {
+    public String getPmId() {
         return pmId;
     }
 
-    public void setPmId(Long pmId) {
+    public void setPmId(String pmId) {
         this.pmId = pmId;
     }
 }

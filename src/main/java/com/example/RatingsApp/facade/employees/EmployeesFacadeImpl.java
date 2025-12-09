@@ -23,7 +23,7 @@ public class EmployeesFacadeImpl implements EmployeesFacade{
     }
 
     @Override
-    public EmployeesResponseDto getEmployeeById(Long employeeId) {
+    public EmployeesResponseDto getEmployeeById(String employeeId) {
         return employeesService.getEmployeeById(employeeId);
     }
 
@@ -38,17 +38,17 @@ public class EmployeesFacadeImpl implements EmployeesFacade{
     }
 
     @Override
-    public List<EmployeesResponseDto> getEmployeeByTeam(Long teamId) {
+    public List<EmployeesResponseDto> getEmployeeByTeam(String teamId) {
         return employeesService.getEmployeeByTeam(teamId);
     }
 
     @Override
-    public List<EmployeesResponseDto> getEmployeesByRole(Long roleId) {
+    public List<EmployeesResponseDto> getEmployeesByRole(String roleId) {
         return employeesService.getEmployeesByRole(roleId);
     }
 
     @Override
-    public EmployeesResponseDto getPmByTeam(Long teamId) {
+    public EmployeesResponseDto getPmByTeam(String teamId) {
         return employeesService.getPmByTeam(teamId);
     }
 
@@ -58,12 +58,12 @@ public class EmployeesFacadeImpl implements EmployeesFacade{
     }
 
     @Override
-    public EmployeesResponseDto updateEmployee(Long employeeId, EmployeesRequestDto employeesRequestDto) {
+    public EmployeesResponseDto updateEmployee(String employeeId, EmployeesRequestDto employeesRequestDto) {
         return employeesService.updateEmployee(employeeId,employeesRequestDto);
     }
 
     @Override
-    public EmployeesResponseDto deleteEmployee(Long employeeId) {
+    public EmployeesResponseDto deleteEmployee(String employeeId) {
         return employeesService.deleteEmployee(employeeId);
     }
 
@@ -73,17 +73,17 @@ public class EmployeesFacadeImpl implements EmployeesFacade{
     }
 
     @Override
-    public EmployeesResponseDto addEmployeeToTeam(EmployeesRequestDto employeesRequestDto, Long teamId) {
+    public EmployeesResponseDto addEmployeeToTeam(EmployeesRequestDto employeesRequestDto, String teamId) {
         return employeesService.addEmployeeToTeam(employeesRequestDto,teamId);
     }
 
     @Override
-    public EmployeesResponseDto changeTeam(Long employeeId, EmployeesRequestDto employeesRequestDto) {
+    public EmployeesResponseDto changeTeam(String employeeId, EmployeesRequestDto employeesRequestDto) {
         return employeesService.changeTeam(employeeId, employeesRequestDto);
     }
 
     @Override
-    public EmployeesResponseDto changeRole(EmployeesRequestDto employeesRequestDto, Long employeeId, Long roleId) {
-        return employeesService.changeRole(employeesRequestDto,employeeId,roleId);
+    public EmployeesResponseDto changeRole(String employeeId, EmployeesRequestDto employeesRequestDto) {
+        return employeesService.changeRole(employeeId, employeesRequestDto);
     }
 }

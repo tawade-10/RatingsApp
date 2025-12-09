@@ -5,26 +5,29 @@ import com.example.RatingsApp.entity.enums.RatingTypes;
 import com.example.RatingsApp.entity.enums.RatingStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.GenericGenerator;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "ratings")
 public class Ratings {
 
-//    @Id
-//    @GenericGenerator(name = "custom-id", type = com.example.RatingsApp.config.CustomIdGenerator.class)
-//    @GeneratedValue(generator = "custom-id")
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long ratingId;
+    @GeneratedValue(generator = "rating-id-generator")
+    @GenericGenerator(name = "rating-id-generator",
+            strategy = "com.example.RatingsApp.config.CustomIdGenerator")
+    private String ratingId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", nullable = false)
-    @JsonIgnore
     private Employees employee;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "rated_by_id", nullable = false)
-    @JsonIgnore
     private Employees ratedBy;
 
     @Enumerated(EnumType.STRING)
@@ -40,14 +43,19 @@ public class Ratings {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cycle_id", nullable = false)
-    @JsonIgnore
     private RatingsCycle ratingsCycle;
 
-    public Long getRatingId() {
+    @Column(updatable = false)
+    private LocalDate createdDate;
+
+    @Column(updatable = false)
+    private LocalTime createdTime;
+
+    public String getRatingId() {
         return ratingId;
     }
 
-    public void setRatingId(Long ratingId) {
+    public void setRatingId(String ratingId) {
         this.ratingId = ratingId;
     }
 
@@ -105,5 +113,27 @@ public class Ratings {
 
     public void setRatingsCycle(RatingsCycle ratingsCycle) {
         this.ratingsCycle = ratingsCycle;
+    }
+
+    @PrePersist
+    public void onCreate() {
+        this.createdDate = LocalDate.now();
+        this.createdTime = LocalTime.now();
+    }
+
+    public LocalDate getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(LocalDate createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public LocalTime getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(LocalTime createdTime) {
+        this.createdTime = createdTime;
     }
 }

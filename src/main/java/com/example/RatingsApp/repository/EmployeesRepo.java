@@ -1,6 +1,7 @@
 package com.example.RatingsApp.repository;
 
 import com.example.RatingsApp.entity.Employees;
+import com.example.RatingsApp.entity.Ratings;
 import com.example.RatingsApp.entity.Roles;
 import com.example.RatingsApp.entity.Teams;
 import org.springframework.data.domain.Page;
@@ -27,4 +28,6 @@ public interface EmployeesRepo extends JpaRepository<Employees,Long> {
 //    Optional<Employees> findByEmployeeIdIgnoreCase(String employeeId);
 
     Optional<Employees> findByEmail(String email);
+
+    Optional<Employees> findByEmployeeId(String pmId);
 }

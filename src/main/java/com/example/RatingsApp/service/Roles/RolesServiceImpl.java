@@ -43,13 +43,13 @@ public class RolesServiceImpl implements RolesService {
     }
 
     @Override
-    public RolesResponseDto getRoleById(Long roleId){
+    public RolesResponseDto getRoleById(String roleId){
 
         if(roleId == null){
             throw new IllegalArgumentException("Role id must not be null");
         }
 
-        Roles role = rolesRepo.findById(roleId)
+        Roles role = rolesRepo.findByRoleId(roleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Role with id " + roleId + " not found"));
 
         return new RolesResponseDto(role);
@@ -62,8 +62,8 @@ public class RolesServiceImpl implements RolesService {
     }
 
     @Override
-    public RolesResponseDto updateRole(Long roleId, RolesRequestDto rolesRequestDto) {
-        Roles existingRole = rolesRepo.findById(roleId)
+    public RolesResponseDto updateRole(String roleId, RolesRequestDto rolesRequestDto) {
+        Roles existingRole = rolesRepo.findByRoleId(roleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Role with the given id doesn't exist: " + roleId));
 
         existingRole.setRoleName(rolesRequestDto.getRoleName());
@@ -72,8 +72,8 @@ public class RolesServiceImpl implements RolesService {
     }
 
     @Override
-    public RolesResponseDto deleteRole(Long roleId) {
-        Roles role = rolesRepo.findById(roleId).orElseThrow(
+    public RolesResponseDto deleteRole(String roleId) {
+        Roles role = rolesRepo.findByRoleId(roleId).orElseThrow(
                 () -> new ResourceNotFoundException("Role with the given id doesn't exist : "+ roleId)
         );
         rolesRepo.delete(role);

@@ -4,7 +4,7 @@ import com.example.RatingsApp.entity.Roles;
 
 public class RolesResponseDto {
 
-    private Long roleId;
+    private String roleId;
 
     private String roleName;
 
@@ -13,11 +13,11 @@ public class RolesResponseDto {
         this.roleName = role.getRoleName();
     }
 
-    public Long getRoleId() {
+    public String getRoleId() {
         return roleId;
     }
 
-    public void setRoleId(Long roleId) {
+    public void setRoleId(String roleId) {
         this.roleId = roleId;
     }
 

@@ -69,7 +69,6 @@ public class RatingsCycleServiceImpl implements RatingsCycleService{
         return new RatingsCycleResponseDto(saved);
     }
 
-
     @Override
     public List<RatingsCycleResponseDto> getAllCycles() {
         List<RatingsCycle> listRatings = ratingsCycleRepo.findAll(Sort.by(Sort.Direction.ASC, "cycleId"));

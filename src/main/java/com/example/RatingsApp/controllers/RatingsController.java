@@ -27,31 +27,6 @@ public class RatingsController {
         return new ResponseEntity<>(savedRating, HttpStatus.CREATED);
     }
 
-//    @PostMapping("/self")
-//    public ResponseEntity<RatingsResponseDto> createSelfRating(@Valid @RequestBody RatingsRequestDto ratingsRequestDto) {
-//        RatingsResponseDto selfRating = ratingsFacade.createSelfRating(ratingsRequestDto);
-//        return new ResponseEntity<>(selfRating, HttpStatus.CREATED);
-//    }
-//
-//    @PostMapping("/tl")
-//    public ResponseEntity<RatingsResponseDto> createTlToIndividualRating(@Valid @RequestBody RatingsRequestDto ratingsRequestDto) {
-//
-//        RatingsResponseDto tlToEmployeeRating = ratingsFacade.createTlToIndividualRating(ratingsRequestDto);
-//        return new ResponseEntity<>(tlToEmployeeRating, HttpStatus.CREATED);
-//    }
-//
-//    @PostMapping("/pm/pm_to_individual")
-//    public ResponseEntity<RatingsResponseDto> createPmToIndividualRating(@Valid @RequestBody RatingsRequestDto ratingsRequestDto) {
-//        RatingsResponseDto pmToEmployeeRating = ratingsFacade.createPmToIndividualRating(ratingsRequestDto);
-//        return new ResponseEntity<>(pmToEmployeeRating, HttpStatus.CREATED);
-//    }
-//
-//    @PostMapping("/pm/pm_to_tl")
-//    public ResponseEntity<RatingsResponseDto> createPmToTlRating(@Valid @RequestBody RatingsRequestDto ratingsRequestDto) {
-//        RatingsResponseDto pmToTlRating = ratingsFacade.createPmToTlRating(ratingsRequestDto);
-//        return new ResponseEntity<>(pmToTlRating, HttpStatus.CREATED);
-//    }
-
     @GetMapping
     public ResponseEntity<List<RatingsResponseDto>> getAllRatings() {
         List<RatingsResponseDto> listRatings = ratingsFacade.getAllRatings();
@@ -59,19 +34,19 @@ public class RatingsController {
     }
 
     @GetMapping("{ratingId}")
-    public ResponseEntity<RatingsResponseDto> getRatingById(@PathVariable Long ratingId) {
+    public ResponseEntity<RatingsResponseDto> getRatingById(@PathVariable String ratingId) {
         RatingsResponseDto getRatings = ratingsFacade.getRatingById(ratingId);
         return ResponseEntity.ok(getRatings);
     }
 
     @GetMapping("/received/{employeeId}")
-    public ResponseEntity<List<RatingsResponseDto>> getReceivedRatings(@PathVariable Long employeeId) {
+    public ResponseEntity<List<RatingsResponseDto>> getReceivedRatings(@PathVariable String employeeId) {
         List<RatingsResponseDto> receivedRatings = ratingsFacade.getReceivedRatings(employeeId);
         return ResponseEntity.ok(receivedRatings);
     }
 
     @GetMapping("/given/{ratedById}")
-    public ResponseEntity<List<RatingsResponseDto>> getGivenRatings(@PathVariable Long ratedById) {
+    public ResponseEntity<List<RatingsResponseDto>> getGivenRatings(@PathVariable String ratedById) {
         List<RatingsResponseDto> givenRatings = ratingsFacade.getGivenRatings(ratedById);
         return ResponseEntity.ok(givenRatings);
     }
@@ -89,35 +64,43 @@ public class RatingsController {
     }
 
     @GetMapping("/average/team/{teamId}")
-    public ResponseEntity<OptionalDouble> getAverageByTeam(@PathVariable Long teamId) {
+    public ResponseEntity<OptionalDouble> getAverageByTeam(@PathVariable String teamId) {
         OptionalDouble average = ratingsFacade.getAverageByTeam(teamId);
         return ResponseEntity.ok(average);
     }
 
-    @GetMapping("/pending/team/{teamId}")
-    public ResponseEntity<RatingsResponseDto> getPendingRatings(@PathVariable Long teamId){
-        RatingsResponseDto pendingRatings = ratingsFacade.getPendingRatings(teamId);
-        return ResponseEntity.ok(pendingRatings);
+    @GetMapping("/broadcast")
+    public ResponseEntity<List<RatingsResponseDto>> getBroadcastedRatings(){
+        List<RatingsResponseDto> broadcastedRatings = ratingsFacade.getBroadcastedRatings();
+        return ResponseEntity.ok(broadcastedRatings);
+    }
+
+    @GetMapping("/team/{teamId}")
+    public ResponseEntity<List<RatingsResponseDto>> getRatingsByTeam(@PathVariable String teamId){
+        List<RatingsResponseDto> listRatingsByTeam = ratingsFacade.getRatingsByTeam(teamId);
+        return ResponseEntity.ok(listRatingsByTeam);
+    }
+
+    @GetMapping("/self")
+    public ResponseEntity<List<RatingsResponseDto>> getSelfRatings(){
+        List<RatingsResponseDto> listSelfRatings = ratingsFacade.getSelfRatings();
+        return ResponseEntity.ok(listSelfRatings);
     }
 
     @PutMapping("{ratingId}")
-    public ResponseEntity<RatingsResponseDto> updateRating(
-            @PathVariable Long ratingId, @RequestBody RatingsRequestDto ratingsRequestDto) {
-
+    public ResponseEntity<RatingsResponseDto> updateRating(@PathVariable String ratingId, @RequestBody RatingsRequestDto ratingsRequestDto) {
         RatingsResponseDto updatedRating = ratingsFacade.updateRating(ratingId, ratingsRequestDto);
         return ResponseEntity.ok(updatedRating);
     }
 
     @PutMapping("/broadcast/{ratingId}")
-    public ResponseEntity<RatingsResponseDto> broadcastRating(
-            @PathVariable Long ratingId, @RequestBody RatingsRequestDto ratingsRequestDto) {
-
+    public ResponseEntity<RatingsResponseDto> broadcastRating(@PathVariable String ratingId, @RequestBody RatingsRequestDto ratingsRequestDto) {
         RatingsResponseDto broadcastedRating = ratingsFacade.broadcastRating(ratingId, ratingsRequestDto);
         return ResponseEntity.ok(broadcastedRating);
     }
 
     @DeleteMapping("{ratingId}")
-    public ResponseEntity<String> deleteRating(@PathVariable Long ratingId) {
+    public ResponseEntity<String> deleteRating(@PathVariable String ratingId) {
         ratingsFacade.deleteRating(ratingId);
         return ResponseEntity.ok("Rating Deleted!");
     }

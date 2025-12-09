@@ -37,48 +37,45 @@
 //    void createRoleSuccess() {
 //
 //        RolesRequestDto requestDto = new RolesRequestDto();
-//        requestDto.setRoleId("R101");
 //        requestDto.setRoleName("PM");
 //
-//        when(rolesRepo.findByRoleIdIgnoreCase("R101")).thenReturn(Optional.empty());
 //        when(rolesRepo.findByRoleNameIgnoreCase("PM")).thenReturn(Optional.empty());
 //
 //        Roles savedRole = new Roles();
-//        savedRole.setRoleId("R101");
 //        savedRole.setRoleName("PM");
+//
 //        when(rolesRepo.save(any(Roles.class))).thenReturn(savedRole);
 //
 //        RolesResponseDto response = rolesService.createRole(requestDto);
 //
 //        assertNotNull(response);
-//        assertEquals("R101",response.getRoleId());
 //        assertEquals("PM", response.getRoleName());
+//        verify(rolesRepo, times(1)).save(any(Roles.class));
 //    }
 //
 //    @Test
-//    void createRoleAlreadyExistsThrowsException() {
+//    void createRoleAlreadyExists_ThrowsException() {
 //
 //        RolesRequestDto requestDto = new RolesRequestDto();
-//        requestDto.setRoleId("R101");
 //        requestDto.setRoleName("PM");
 //
 //        Roles existing = new Roles();
-//        existing.setRoleId("R101");
+//        existing.setRoleId("ROL002");
 //        existing.setRoleName("PM");
 //
-//        when(rolesRepo.findByRoleIdIgnoreCase("R101")).thenReturn(Optional.of(existing));
+//        when(rolesRepo.findByRoleNameIgnoreCase("PM")).thenReturn(Optional.of(existing));
 //
 //        APIException ex = assertThrows(APIException.class, () -> {
 //            rolesService.createRole(requestDto);
 //        });
 //
-//        assertEquals("The given role ID 'R101' already exists!", ex.getMessage());
-//        verify(rolesRepo, times(1)).findByRoleIdIgnoreCase("R101");
+//        assertEquals("The given role 'PM' already exists!", ex.getMessage());
 //        verify(rolesRepo, never()).save(any(Roles.class));
 //    }
 //
 //    @Test
-//    void createRoleNotNullThrowsException(){
+//    void createRole_NullRoleName_ThrowsException(){
+//
 //        RolesRequestDto requestDto = new RolesRequestDto();
 //        requestDto.setRoleName(null);
 //
@@ -91,60 +88,56 @@
 //    void getAllRolesSuccess() {
 //
 //        Roles role1 = new Roles();
-//        role1.setRoleId("R101");
+//        role1.setRoleId("ROL001");
 //        role1.setRoleName("PM");
 //
 //        Roles role2 = new Roles();
-//        role2.setRoleId("R102");
+//        role2.setRoleId("ROL002");
 //        role2.setRoleName("TL");
 //
 //        when(rolesRepo.findAll(Sort.by(Sort.Direction.ASC, "roleId")))
 //                .thenReturn(List.of(role1, role2));
 //
-//        List<RolesResponseDto> rolesList = rolesService.getAllRoles();
+//        List<RolesResponseDto> list = rolesService.getAllRoles();
 //
-//        assertNotNull(rolesList);
-//        assertEquals(2, rolesList.size());
-//        assertEquals("PM", rolesList.get(0).getRoleName());
-//        assertEquals("TL", rolesList.get(1).getRoleName());
-//        verify(rolesRepo, times(1)).findAll(Sort.by(Sort.Direction.ASC, "roleId"));
+//        assertEquals(2, list.size());
+//        assertEquals("PM", list.get(0).getRoleName());
+//        assertEquals("TL", list.get(1).getRoleName());
 //    }
 //
 //    @Test
-//    void getAllRolesEmptyList(){
+//    void getAllRoles_EmptyList_ReturnsEmpty() {
 //
-//        when(rolesRepo.findAll()).thenReturn(List.of());
+//        when(rolesRepo.findAll(Sort.by(Sort.Direction.ASC, "roleId"))).thenReturn(List.of());
 //
-//        List<RolesResponseDto> rolesList = rolesService.getAllRoles();
+//        List<RolesResponseDto> list = rolesService.getAllRoles();
 //
-//        assertNotNull(rolesList);
-//        assertTrue(rolesList.isEmpty());
-//        verify(rolesRepo, times(1)).findAll(Sort.by(Sort.Direction.ASC, "roleId"));
+//        assertNotNull(list);
+//        assertTrue(list.isEmpty());
 //    }
 //
 //    @Test
-//    void getRoleByIdSuccess(){
+//    void getRoleByIdSuccess() {
 //
-//        Roles savedRole = new Roles();
-//        savedRole.setRoleId("R101");
-//        savedRole.setRoleName("PM");
+//        Roles role = new Roles();
+//        role.setRoleId("ROL002");
+//        role.setRoleName("PM");
 //
-//        when(rolesRepo.findByRoleIdIgnoreCase("R101")).thenReturn(Optional.of(savedRole));
+//        when(rolesRepo.findByRoleId("ROL002")).thenReturn(Optional.of(role));
 //
-//        RolesResponseDto response = rolesService.getRoleById("R101");
+//        RolesResponseDto response = rolesService.getRoleById("ROL002");
+//
+//        assertNotNull(response);
 //        assertEquals("PM", response.getRoleName());
 //    }
 //
 //    @Test
-//    void roleIdNotFoundThrowsException() {
+//    void getRoleById_NotFound_ThrowsException() {
 //
-//        Roles savedRole = new Roles();
-//        savedRole.setRoleId("R101");
+//        when(rolesRepo.findByRoleId("ROL002")).thenReturn(Optional.empty());
 //
-//        when(rolesRepo.findByRoleIdIgnoreCase("R101")).thenReturn(Optional.empty());
-//
-//        ResourceNotFoundException ex = assertThrows(ResourceNotFoundException.class, () -> {
-//            rolesService.getRoleById("R101");
+//        assertThrows(ResourceNotFoundException.class, () -> {
+//            rolesService.getRoleById("ROL002");
 //        });
 //    }
 //
@@ -152,70 +145,66 @@
 //    void updateRoleSuccess() {
 //
 //        RolesRequestDto requestDto = new RolesRequestDto();
-//        requestDto.setRoleId("R101");
-//        requestDto.setRoleName("PM");
+//        requestDto.setRoleName("Project Manager");
 //
-//        Roles existingRole = new Roles();
-//        existingRole.setRoleId("R101");
-//        existingRole.setRoleName("PM");
+//        Roles existing = new Roles();
+//        existing.setRoleId("ROL002");
+//        existing.setRoleName("PM");
 //
-//        Roles updatedRole = new Roles();
-//        updatedRole.setRoleId("R101");
-//        updatedRole.setRoleName("Project Manager");
+//        when(rolesRepo.findByRoleId("ROL002")).thenReturn(Optional.of(existing));
 //
-//        when(rolesRepo.findByRoleIdIgnoreCase("R101")).thenReturn(Optional.of(existingRole));
-//        when(rolesRepo.save(any(Roles.class))).thenReturn(updatedRole);
+//        Roles updated = new Roles();
+//        updated.setRoleId("ROL002");
+//        updated.setRoleName("Project Manager");
 //
-//        RolesResponseDto response = rolesService.updateRole("R101", requestDto);
+//        when(rolesRepo.save(any(Roles.class)))
+//                .thenReturn(updated);
+//
+//        RolesResponseDto response = rolesService.updateRole("ROL002", requestDto);
 //
 //        assertNotNull(response);
-//        assertEquals("R101", response.getRoleId());
 //        assertEquals("Project Manager", response.getRoleName());
-//
-//        verify(rolesRepo, times(1)).findByRoleIdIgnoreCase("R101");
-//        verify(rolesRepo, times(1)).save(any(Roles.class));
 //    }
 //
 //    @Test
-//    void updateRoleNotFoundThrowsException() {
+//    void updateRole_NotFound_ThrowsException() {
+//
 //        RolesRequestDto requestDto = new RolesRequestDto();
-//        requestDto.setRoleId("R101");
 //        requestDto.setRoleName("PM");
 //
-//        when(rolesRepo.findByRoleIdIgnoreCase("R101")).thenReturn(Optional.empty());
+//        when(rolesRepo.findByRoleId("ROL002")).thenReturn(Optional.empty());
 //
-//        ResourceNotFoundException ex = assertThrows(ResourceNotFoundException.class, () -> {
-//            rolesService.updateRole("R101", requestDto);
+//        assertThrows(ResourceNotFoundException.class, () -> {
+//            rolesService.updateRole("ROL002", requestDto);
 //        });
 //
 //        verify(rolesRepo, never()).save(any());
 //    }
 //
 //    @Test
-//    void deleteRoleSuccess(){
+//    void deleteRoleSuccess() {
 //
-//        Roles existingRole = new Roles();
-//        existingRole.setRoleId("R101");
+//        Roles role = new Roles();
+//        role.setRoleId("ROL002");
+//        role.setRoleName("PM");
 //
-//        when(rolesRepo.findByRoleIdIgnoreCase("R101")).thenReturn(Optional.of(existingRole));
-//        rolesService.deleteRole("R101");
-//        verify(rolesRepo, times(1)).findByRoleIdIgnoreCase("R101");
-//        System.out.println("Role Delete Test Success");
+//        when(rolesRepo.findByRoleId("ROL002")).thenReturn(Optional.of(role));
+//
+//        rolesService.deleteRole("ROL002");
+//
+//        verify(rolesRepo, times(1)).findByRoleId("ROL002");
+//        verify(rolesRepo, times(1)).delete(role);
 //    }
 //
 //    @Test
-//    void roleIdNotFoundForDeletingThrowsException(){
+//    void deleteRole_NotFound_ThrowsException() {
 //
-//        RolesRequestDto requestDto = new RolesRequestDto();
-//        requestDto.setRoleId("R101");
-//        requestDto.setRoleName("PM");
+//        when(rolesRepo.findByRoleId("ROL002")).thenReturn(Optional.empty());
 //
-//        when(rolesRepo.findByRoleIdIgnoreCase("R01")).thenReturn(Optional.empty());
-//
-//        ResourceNotFoundException ex = assertThrows(ResourceNotFoundException.class, () -> {
-//            rolesService.updateRole("R101", requestDto);
+//        assertThrows(ResourceNotFoundException.class, () -> {
+//            rolesService.deleteRole("ROL002");
 //        });
 //
-//        verify(rolesRepo, never()).save(any());
+//        verify(rolesRepo, never()).delete(any());
 //    }
 //}

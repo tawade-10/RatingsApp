@@ -12,25 +12,25 @@ public interface RatingsFacade {
 
     List<RatingsResponseDto> getAllRatings();
 
-    RatingsResponseDto getRatingById(Long ratingId);
+    RatingsResponseDto getRatingById(String ratingId);
 
-    RatingsResponseDto updateRating(Long ratingId, RatingsRequestDto ratingsRequestDto);
+    RatingsResponseDto updateRating(String ratingId, RatingsRequestDto ratingsRequestDto);
 
-    void deleteRating(Long ratingId);
+    void deleteRating(String ratingId);
 
     List<RatingsResponseDto> getRatingsByCycles(String ratingsCycle);
 
   //  RatingsResponseDto approveRating(String ratingId,RatingsRequestDto ratingsRequestDto);
 
-    RatingsResponseDto broadcastRating(Long ratingId, RatingsRequestDto ratingsRequestDto);
+    RatingsResponseDto broadcastRating(String ratingId, RatingsRequestDto ratingsRequestDto);
 
-    List<RatingsResponseDto> getReceivedRatings(Long employeeId);
+    List<RatingsResponseDto> getReceivedRatings(String employeeId);
 
-    List<RatingsResponseDto> getGivenRatings(Long ratedById);
+    List<RatingsResponseDto> getGivenRatings(String ratedById);
 
     OptionalDouble getAverageByCycle(String cycleName);
 
-    OptionalDouble getAverageByTeam(Long teamId);
+    OptionalDouble getAverageByTeam(String teamId);
 
 //    RatingsResponseDto createSelfRating(@Valid RatingsRequestDto ratingsRequestDto);
 //
@@ -40,5 +40,9 @@ public interface RatingsFacade {
 //
 //    RatingsResponseDto createPmToTlRating(@Valid RatingsRequestDto ratingsRequestDto);
 
-    RatingsResponseDto getPendingRatings(Long teamId);
+    List<RatingsResponseDto> getBroadcastedRatings();
+
+    List<RatingsResponseDto> getRatingsByTeam(String teamId);
+
+    List<RatingsResponseDto> getSelfRatings();
 }

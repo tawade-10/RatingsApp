@@ -10,12 +10,11 @@ import java.util.List;
 @Table(name = "team")
 public class Teams {
 
-//    @Id
-//    @GenericGenerator(name = "custom-id", type = com.example.RatingsApp.config.CustomIdGenerator.class)
-//    @GeneratedValue(generator = "custom-id")
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long teamId;
+    @GeneratedValue(generator = "team-id-generator")
+    @GenericGenerator(name = "team-id-generator",
+            strategy = "com.example.RatingsApp.config.CustomIdGenerator")
+    private String teamId;
 
     @Column(nullable = false, unique = true)
     private String teamName;
@@ -25,14 +24,13 @@ public class Teams {
     private Employees pm;
 
     @OneToMany(mappedBy = "team")
-    @JsonIgnore
     private List<Employees> members;
 
-    public Long getTeamId() {
+    public String getTeamId() {
         return teamId;
     }
 
-    public void setTeamId(Long teamId) {
+    public void setTeamId(String teamId) {
         this.teamId = teamId;
     }
 

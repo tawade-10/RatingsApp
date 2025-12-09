@@ -5,15 +5,19 @@ import com.example.RatingsApp.entity.Ratings;
 import com.example.RatingsApp.entity.enums.RatingDescription;
 import com.example.RatingsApp.entity.enums.RatingStatus;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+
 public class RatingsResponseDto {
 
-    private Long ratingId;
+    private String ratingId;
 
-    private Long employeeId;
+    private String employeeId;
 
     private String employeeName;
 
-    private Long ratedById;
+    private String ratedById;
 
     private String ratedByName;
 
@@ -25,31 +29,37 @@ public class RatingsResponseDto {
 
     private String ratings_cycle;
 
-    public RatingsResponseDto(Ratings rating) {
-        this.ratingId = rating.getRatingId();
-        this.employeeId = rating.getEmployee().getEmployeeId();
-        this.employeeName = rating.getEmployee().getName();
-        this.ratedById = rating.getRatedBy().getEmployeeId();
-        this.ratedByName = rating.getRatedBy().getName();
-        this.ratingStatus = rating.getRatingStatus();
-        this.ratingValue = rating.getRatingValue();
-        this.ratingDescription = rating.getRatingDescription();
-        this.ratings_cycle = (rating.getRatingsCycle() != null) ? rating.getRatingsCycle().getCycleName() : null;
+    private LocalDate dateCreated;
+
+    private LocalTime timeCreated;
+
+    public RatingsResponseDto(Ratings ratings) {
+        this.ratingId = ratings.getRatingId();
+        this.employeeId = ratings.getEmployee().getEmployeeId();
+        this.employeeName = ratings.getEmployee().getName();
+        this.ratedById = ratings.getRatedBy().getEmployeeId();
+        this.ratedByName = ratings.getRatedBy().getName();
+        this.ratingStatus = ratings.getRatingStatus();
+        this.ratingValue = ratings.getRatingValue();
+        this.ratingDescription = ratings.getRatingDescription();
+        this.ratings_cycle = (ratings.getRatingsCycle() != null) ? ratings.getRatingsCycle().getCycleName() : null;
+        this.dateCreated = ratings.getCreatedDate();
+        this.timeCreated = ratings.getCreatedTime();
     }
 
-    public Long getRatingId() {
+    public String getRatingId() {
         return ratingId;
     }
 
-    public void setRatingId(Long ratingId) {
+    public void setRatingId(String ratingId) {
         this.ratingId = ratingId;
     }
 
-    public Long getEmployeeId() {
+    public String getEmployeeId() {
         return employeeId;
     }
 
-    public void setEmployeeId(Long employeeId) {
+    public void setEmployeeId(String employeeId) {
         this.employeeId = employeeId;
     }
 
@@ -61,11 +71,11 @@ public class RatingsResponseDto {
         this.employeeName = employeeName;
     }
 
-    public Long getRatedById() {
+    public String getRatedById() {
         return ratedById;
     }
 
-    public void setRatedById(Long ratedById) {
+    public void setRatedById(String ratedById) {
         this.ratedById = ratedById;
     }
 
@@ -107,5 +117,21 @@ public class RatingsResponseDto {
 
     public void setRatings_cycle(String ratings_cycle) {
         this.ratings_cycle = ratings_cycle;
+    }
+
+    public LocalDate getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(LocalDate dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public LocalTime getTimeCreated() {
+        return timeCreated;
+    }
+
+    public void setTimeCreated(LocalTime timeCreated) {
+        this.timeCreated = timeCreated;
     }
 }

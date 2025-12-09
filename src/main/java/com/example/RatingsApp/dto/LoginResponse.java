@@ -3,11 +3,11 @@ package com.example.RatingsApp.dto;
 public class LoginResponse {
 
     private String token;
-    private Long employeeId;
+    private String employeeId;
     private String email;
     private String role;
 
-    public LoginResponse(String token, Long employeeId, String email, String role) {
+    public LoginResponse(String token, String employeeId, String email, String role) {
         this.token = token;
         this.employeeId = employeeId;
         this.email = email;
@@ -18,7 +18,7 @@ public class LoginResponse {
         return token;
     }
 
-    public Long getEmployeeId() {
+    public String getEmployeeId() {
         return employeeId;
     }
 

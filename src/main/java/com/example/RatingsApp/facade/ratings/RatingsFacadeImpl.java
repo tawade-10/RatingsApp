@@ -27,17 +27,17 @@ public class RatingsFacadeImpl implements RatingsFacade {
     }
 
     @Override
-    public RatingsResponseDto getRatingById(Long ratingId) {
+    public RatingsResponseDto getRatingById(String ratingId) {
         return ratingsService.getRatingById(ratingId);
     }
 
     @Override
-    public RatingsResponseDto updateRating(Long ratingId, RatingsRequestDto ratingsRequestDto) {
+    public RatingsResponseDto updateRating(String ratingId, RatingsRequestDto ratingsRequestDto) {
         return ratingsService.updateRating(ratingId, ratingsRequestDto);
     }
 
     @Override
-    public void deleteRating(Long ratingId) {
+    public void deleteRating(String ratingId) {
         ratingsService.deleteRating(ratingId);
     }
 
@@ -46,23 +46,18 @@ public class RatingsFacadeImpl implements RatingsFacade {
         return ratingsService.getRatingsByCycles(ratingsCycle);
     }
 
-//    @Override
-//    public RatingsResponseDto approveRating(String ratingId,RatingsRequestDto ratingsRequestDto) {
-//        return ratingsService.approveRating(ratingId,ratingsRequestDto);
-//    }
-
     @Override
-    public RatingsResponseDto broadcastRating(Long ratingId, RatingsRequestDto ratingsRequestDto) {
+    public RatingsResponseDto broadcastRating(String ratingId, RatingsRequestDto ratingsRequestDto) {
         return ratingsService.broadcastRating(ratingId,ratingsRequestDto);
     }
 
     @Override
-    public List<RatingsResponseDto> getReceivedRatings(Long employeeId) {
+    public List<RatingsResponseDto> getReceivedRatings(String employeeId) {
         return ratingsService.getReceivedRatings(employeeId);
     }
 
     @Override
-    public List<RatingsResponseDto> getGivenRatings(Long ratedById) {
+    public List<RatingsResponseDto> getGivenRatings(String ratedById) {
         return ratingsService.getGivenRatings(ratedById);
     }
 
@@ -72,7 +67,7 @@ public class RatingsFacadeImpl implements RatingsFacade {
     }
 
     @Override
-    public OptionalDouble getAverageByTeam(Long teamId) {
+    public OptionalDouble getAverageByTeam(String teamId) {
         return ratingsService.getAverageByTeam(teamId);
     }
 
@@ -97,7 +92,17 @@ public class RatingsFacadeImpl implements RatingsFacade {
 //    }
 
     @Override
-    public RatingsResponseDto getPendingRatings(Long teamId) {
-        return ratingsService.getPendingRatings(teamId);
+    public List<RatingsResponseDto> getRatingsByTeam(String teamId) {
+        return ratingsService.getRatingsByTeam(teamId);
+    }
+
+    @Override
+    public List<RatingsResponseDto> getSelfRatings() {
+        return ratingsService.getSelfRatings();
+    }
+
+    @Override
+    public List<RatingsResponseDto> getBroadcastedRatings() {
+        return ratingsService.getBroadcastedRatings();
     }
 }
